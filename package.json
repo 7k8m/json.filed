@@ -1,0 +1,21 @@
+{
+  "name": "json.filed",
+  "version": "1.0.0",
+  "description": "Save/load a json to/from a file",
+  "main": "index.js",
+  "files": ["index.js"],
+  "keywords": [
+    "file",
+    "json"
+  ],
+  "author": "Tomohito Nakayama <nkym.tmht@hotmail.co.jp>",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.21.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/7k8m/json.filed.git"
+  }
+}
