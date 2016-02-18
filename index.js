@@ -109,7 +109,7 @@ function save( data, file, afterSaved){
     JSON.stringify(data),
     'utf8',
     (err)=>{
-      if (err) throw err;
+      if (err) throw new JsonFiledError('IOError failed to save json');
       afterSaved();//file is closed in afterSaved, if needed.
     }
   );
