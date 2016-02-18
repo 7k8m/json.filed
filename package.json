@@ -14,6 +14,9 @@
     "chai": "^1.9.1",
     "mocha": "^1.21.4"
   },
+  "dependencies": {
+    "bson": "^0.4.21"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/7k8m/json.filed.git"
