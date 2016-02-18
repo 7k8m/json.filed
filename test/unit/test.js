@@ -69,7 +69,39 @@ describe('The value function does not return ', function () {
       },
       1000
     );
-    
+
+  });
+});
+
+
+const testFile4Path = './' + Math.random() + '.json';
+describe('Function return null', function () {
+  it('does not make json to be written.', function (done) {
+    jf.filed( testFile4Path, function( obj ) {
+      return initialValue;
+    });
+
+    setTimeout(
+      function(){
+        jf.filed( testFile4Path, function( obj ) {
+          expect(obj).to.eql(initialValue);
+          obj.msg = "this value is not written also."
+          return null
+        });
+      },
+      1000
+    );
+
+    setTimeout(
+      function(){
+        jf.filed( testFile4Path, function( obj ) {
+          expect(obj).to.eql(initialValue);
+          done();
+        });
+      },
+      1000
+    );
+
   });
 });
 

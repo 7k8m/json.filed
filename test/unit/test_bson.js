@@ -73,6 +73,38 @@ describe('The value function does not return ', function () {
   });
 });
 
+
+const testFile4Path = './' + Math.random() + '.bson';
+describe('Function return null', function () {
+  it('does not make json to be written.', function (done) {
+    jf.bFiled( testFile4Path, function( obj ) {
+      return initialValue;
+    });
+
+    setTimeout(
+      function(){
+        jf.bFiled( testFile4Path, function( obj ) {
+          expect(obj).to.eql(initialValue);
+          obj.msg = "this value is not written also."
+          return null
+        });
+      },
+      1000
+    );
+
+    setTimeout(
+      function(){
+        jf.bFiled( testFile4Path, function( obj ) {
+          expect(obj).to.eql(initialValue);
+          done();
+        });
+      },
+      1000
+    );
+
+  });
+});
+
 describe('Null file Path', function () {
   it('should cause JsonFiledError', function (done) {
     try{
