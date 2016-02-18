@@ -1,6 +1,24 @@
 # json.filed
 library to read/write json from/to file
 
+## module
+    var jf = require('json.filed')
+
+## functions
+* filed
+* bFiled
+
+````
+jf.filed( filePath, function( json ) { your code to process json here } )
+jf.bFiled( filePath, function( json ) { your code to process json here } )
+````
+----
+
++ Actual file is json fomrat in `filed`, bson format in `bFiled`.
++ `filePath` specifies the path to read and/or write.
++ Returned value from `function( json ) { ... }` is written to the file.
+    + Nothing is written, if function does not return object.
+
 ## example
 ### greeting.js
     var jf = require('json.filed');
