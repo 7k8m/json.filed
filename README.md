@@ -36,3 +36,12 @@ library to read/write json from/to file
     good after noon world.
     $ cat data.json
     {"msg":"good after noon world."}
+
+## binary format (bson) support
+### greeting.binary.js
+     var jf = require('json.filed');
+    
+    jf.bFiled('./data.bson',function(bson) {
+      return {msg: 'hello world.'}; // write 1st greeting to data.bson
+    });
+
