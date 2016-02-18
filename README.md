@@ -14,10 +14,12 @@ jf.bFiled( filePath, function( json ) { your code to process json here } )
 ````
 ----
 
-+ Actual file is formatted in json by `filed`, bson by `bFiled`.
-+ `filePath` specifies the path to read and/or write.
-+ Returned value from `function( json ) { ... }` is written to the file.
-    + Nothing is written, if function does not return object.
++ File format is json in `filed`, bson in `bFiled`.
++ `filePath` is path to read and/or write.
++ `function( json ) { ... }` is where process json.
+    + json from file is passed to function as a `json` parameter 
+    + `return json` from function, written to the file.
+        + Nothing written, if return no object.
 
 ## example
 ### greeting.js
