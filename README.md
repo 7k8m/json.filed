@@ -14,7 +14,7 @@ jf.bFiled( filePath, function( json ) { your code to process json here } )
 ````
 ----
 
-+ Actual file is json fomrat in `filed`, bson format in `bFiled`.
++ Actual file is formatted in json by `filed`, bson by `bFiled`.
 + `filePath` specifies the path to read and/or write.
 + Returned value from `function( json ) { ... }` is written to the file.
     + Nothing is written, if function does not return object.
