@@ -46,7 +46,7 @@ function pathGenerator( file ){
   if ( typeof file == 'string' ){
     return singlePath(file);
 
-  } else if ( file.toString() == '[object Generator]') {
+  } else if ( file[Symbol.iterator] ) {
     return file;
 
   }else{
