@@ -7,6 +7,7 @@ See the accompanying LICENSE file for terms.
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 const bson = require('bson');
 const BSON = new bson.BSONPure.BSON();
 
@@ -22,14 +23,8 @@ module.exports.initialValue =
 
 module.exports.filed =
   function( filePath, processOfFiledJson){
-    filedCore( filePath, processOfFiledJson, JB_JSON );
+    filedCore( filePath, processOfFiledJson, calcJb( filePath ) );
   };
-
-module.exports.bFiled =
-  function( filePath, processOfFiledBson){
-    filedCore( filePath, processOfFiledBson, JB_BSON );
-  };
-
 
 function filedCore( filePath, processOfFiledJson, jb){
 
@@ -158,6 +153,20 @@ function encode( obj, jb ){
   if( jb == JB_BSON ) return BSON.serialize( obj, false, true, false);
   else if( jb == JB_JSON ) return JSON.stringify( obj );
   else throw new JsonFiledError('encode: jb must be JSON or BSON');
+}
+
+function calcJb( filePath ){
+
+  switch( path.extname( filePath ).toLowerCase() ){
+
+    case ".bson":
+      return JB_BSON;
+
+    case ".json":
+    default:
+      return JB_JSON;
+
+  }
 }
 
 function JsonFiledError(msg,innerError){

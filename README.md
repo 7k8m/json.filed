@@ -10,14 +10,13 @@ library to read/write json from/to file
 
 ````
 jf.filed( filePath, function( json ) { your code to process json here } )
-jf.bFiled( filePath, function( json ) { your code to process json here } )
 ````
 ----
 
-+ File format is json in `filed`, bson in `bFiled`.
 + `filePath` is path to read and/or write.
+    + File format is bson when `.bson`, json when `.json` or `others`.
 + `function( json ) { ... }` is where process json.
-    + json from file is passed to function as a `json` parameter 
+    + json from file is passed to function as a `json` parameter
     + `return json` from function, written to the file.
         + Nothing written, if return no object.
 
@@ -60,8 +59,7 @@ jf.bFiled( filePath, function( json ) { your code to process json here } )
 ## binary format (bson) support
 ### greeting.binary.js
      var jf = require('json.filed');
-    
-    jf.bFiled('./data.bson',function(bson) {
+
+    jf.filed('./data.bson',function(bson) {
       return {msg: 'hello world.'}; // write 1st greeting to data.bson
     });
-
