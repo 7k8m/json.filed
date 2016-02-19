@@ -21,16 +21,44 @@ module.exports = {};
 module.exports.initialValue =
   function() { return initialValue; };
 
-module.exports.filed =
-  function( filePath, processOfFiledJson){
-    filedCore( filePath, processOfFiledJson, calcJb( filePath ) );
-  };
+module.exports.filed = function (file) { return new filed (file); }
 
-function filedCore( filePath, processOfFiledJson, jb){
+function filed( file ){
 
-  if(filePath == null){
-    throw new JsonFiledError( 'Path to file object is needed.' );
+  if(file == null){
+    throw new JsonFiledError( 'File is needed.' );
   }
+
+  this.io = function( userProcess ){
+      execute(file, io, userProcess);
+  }
+
+};
+
+function execute( file, filedProcess, userProcess){
+  let generator = pathGenerator( file );
+  for( let filePath of generator ){
+    filedProcess(filePath, userProcess, calcJb(filePath));
+  }
+}
+
+function pathGenerator( file ){
+  if ( typeof file == "string" ){
+    return singlePath(file);
+
+  } else if ( file.toString() == 'GeneratorFunction') {
+    return file;
+
+  }else{
+    throw new JsonFiledError( 'Failed to create path Generator' );
+  }
+}
+
+function * singlePath( file ){
+  yield file;
+}
+
+function io( filePath, userProcess, jb){
 
   fs.open(
     filePath,
@@ -50,7 +78,7 @@ function filedCore( filePath, processOfFiledJson, jb){
             if (err) throw new JsonFiledError('IOError Failed to read file.');
 
             apply(
-              processOfFiledJson,
+              userProcess,
               decode( data, jb ),
               filePath,
               function(){}, // no need to close filePath
@@ -77,7 +105,7 @@ function filedCore( filePath, processOfFiledJson, jb){
               function(){
                 //apply process
                 apply(
-                  processOfFiledJson,
+                  userProcess,
                   initialValue,
                   fd,
                   function(){// close descriptor.
