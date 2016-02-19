@@ -454,13 +454,28 @@ function encoding( jb ){
 }
 
 function decode( obj, jb ){
-  if( jb == JB_BSON ) return BSON.deserialize(obj);
+  if( jb == JB_BSON ){
+    return BSON.deserialize(
+      obj,
+      {
+        evalFunctions:true,
+        cacheFunctions:true
+      }//experimental
+    );
+  }
   else if ( jb == JB_JSON ) return JSON.parse(obj);
   else raiseError('decode: jb must be JSON or BSON');
 }
 
 function encode( obj, jb ){
-  if( jb == JB_BSON ) return BSON.serialize( obj, false, true, false);
+  if( jb == JB_BSON ) {
+    return BSON.serialize(
+      obj,
+      false,
+      true,
+      true //experimental
+    );
+  }
   else if( jb == JB_JSON ) return JSON.stringify( obj );
   else raiseError('encode: jb must be JSON or BSON');
 }

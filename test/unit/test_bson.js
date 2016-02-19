@@ -126,3 +126,26 @@ describe('Upper case file extension ', function () {
     })
 
 });
+
+const serializedFunctionFilePath = './serializedFunction.' + Math.random() + '.bson';
+const hello = 'hello';
+
+describe('Serialized function ', function () {
+  it('can be executed.', function (done) {
+    jf.filed( serializedFunctionFilePath ).io(
+        function( obj, filePath ) {
+          return { say: function( greeting ){ return greeting; } };
+        }
+      );
+
+    setTimeout(
+      function(){
+        jf.filed( serializedFunctionFilePath ).io( function( obj ) {
+          expect( obj.say( hello ) ).to.eql( hello );
+          done();
+        });
+      },
+      1000);
+    })
+
+});
