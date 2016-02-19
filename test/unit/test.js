@@ -116,3 +116,23 @@ describe('Null file Path', function () {
     }
   });
 });
+
+const testFile5Path = './' + Math.random() + '.xson';
+var value_in_xson = { msg: "format is json" };
+describe('File with extension neither json nor bson ', function () {
+  it('should be json.', function (done) {
+    jf.filed( testFile5Path, function( obj ) {
+      return value_in_xson;
+    });
+
+    setTimeout(
+      function(){
+        jf.filed( testFile5Path, function( obj ) {
+          expect(obj).to.eql( value_in_xson );
+          done();
+        });
+      },
+      1000);
+    })
+
+});
