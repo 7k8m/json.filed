@@ -65,6 +65,7 @@ jf.filed( file ).io( function( json, filePath ) { your code to process json here
     $ cat data.json
     {"msg":"good after noon world."}
 
+
 ### greetings.js
     var jf = require('json.filed');
     
@@ -72,7 +73,7 @@ jf.filed( file ).io( function( json, filePath ) { your code to process json here
         return {msg: filePath }; // write 1st greeting to data.json
     });
 
-
+### Above scripts are executed as ...
     $ node greetings.js
     $ cat hello.json
     {"msg":"./hello.json"}
