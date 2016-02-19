@@ -253,3 +253,40 @@ describe('Upper case file extension ', function () {
     })
 
 });
+
+const testFile9Path = './' + Math.random() + '.json';
+
+const test9msg = "all messages are same"
+
+const testFile9LinkedPath_1 = './' + Math.random() + '.json';
+const testFile9LinkedPath_2 = './' + Math.random() + '.json';
+
+describe('linked files ', function () {
+  it('should have same values', function (done) {
+    jf.filed( testFile9Path ).io(
+        function( obj, filePath ) {
+          return { msg:  test9msg };
+        }
+      );
+
+    setTimeout(
+      function(){
+        jf.filed( testFile9Path ).link( function( obj, filePath ) {
+          return [ testFile9LinkedPath_1, testFile9LinkedPath_2 ];
+        });
+      },
+      500);
+
+    var count = 0;
+    setTimeout(
+      function(){
+        jf.filed( [testFile9LinkedPath_1, testFile9LinkedPath_2] ).io( function( obj, filePath ) {
+          expect( obj.msg ).to.eql( test9msg );
+          count ++;
+          if(count == 2) done();
+        });
+      },
+      1000);
+    })
+
+});

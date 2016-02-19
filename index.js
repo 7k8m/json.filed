@@ -30,7 +30,11 @@ function filed( file ){
   }
 
   this.io = function( userProcess ){
-      execute(file, io, userProcess);
+    execute(file, io, userProcess);
+  }
+
+  this.link = function( userProcess ){
+    execute(file, link, userProcess);
   }
 
 };
@@ -84,7 +88,8 @@ function io( filePath, userProcess, jb){
               filePath,
               function(){}, // no need to close filePath
               jb,
-              filePath
+              filePath,
+              save
             );
           }
         );
@@ -114,7 +119,8 @@ function io( filePath, userProcess, jb){
                     fs.close( fd );
                   },
                   jb,
-                  filePath
+                  filePath,
+                  save
                 );
               },
               jb
@@ -128,19 +134,56 @@ function io( filePath, userProcess, jb){
 
 }
 
+function link( filePath, userProcess, jb){
+
+  fs.open(
+    filePath,
+    'r+',
+    (err,fd) => {
+
+      if( ! err ){
+        //link only when file exists.
+
+        //read from file and process
+        fs.readFile(
+          fd,
+          encoding(jb),
+          (err, data) => {
+
+            fs.close(fd);
+            if (err) raiseError('IOError Failed to read file.');
+
+            apply(
+              userProcess,
+              decode( data, jb ),
+              filePath,
+              function(){}, // closed already and no need to close
+              jb,
+              filePath,
+              fsLink
+
+            );
+          }
+        );
+      }
+    }
+  );
+
+}
 
 //apply process function to json.
-function apply( process, json, file, closeFile, jb, filePath){
+function apply( process, json, file, closeFile, jb, filePath, postProcess){
 
   var result = process(json,filePath);
 
   if(result != undefined && result != null){
-    //if result returned, upate json file to result.
-    save(
+    //if result returned, executePostProcess
+    postProcess(
       result,
       file,
       closeFile, //executed after saved.
-      jb
+      jb,
+      filePath
     );
 
   }else{
@@ -151,7 +194,8 @@ function apply( process, json, file, closeFile, jb, filePath){
 }
 
 //file can be either of file path and descriptor
-function save( data, file, closeFile, jb ){
+function save( data, file, closeFile, jb, filePath){
+
   try{
     fs.writeFile(
       file,
@@ -167,6 +211,23 @@ function save( data, file, closeFile, jb ){
     closeFile();
     throw raiseError("failed in save", error);
   }
+}
+
+function fsLink( linkPath, file, closeFile, jb, originalFilePath){ //"fs" is to avoid name conflict.
+
+  //link runs only after file was closed. closeFile is passed as compatibility of postProcess interface
+  //closeFile();
+  let itr = pathIterator( linkPath );
+  for(let newFilePath of itr ){
+    fs.link(
+      originalFilePath,
+      newFilePath,
+      function(err){
+        if(err) raiseError("Failed to link from " + originalFilePath + " to " + newFilePath,err);
+      }
+    );
+  }
+
 }
 
 function encoding( jb ){
