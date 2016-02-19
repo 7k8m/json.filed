@@ -217,6 +217,20 @@ describe('File parameter', function () {
 
 });
 
+describe('File parameter', function () {
+  it('can\'t be number', function () {
+
+    try{
+      jf.filed( 0 ).io(
+          function( obj, filePath ) {
+            return { path: filePath};
+          }
+      );
+    }catch(error){
+      expect( error ).to.be.an.instanceof( jf.JsonFiledError );
+    }
+  });
+});
 
 const testFile8Path = './' + Math.random() + '.JSON';
 
