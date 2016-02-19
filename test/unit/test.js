@@ -290,3 +290,32 @@ describe('linked files ', function () {
     })
 
 });
+
+const testFile10Path = './' + Math.random() + '.json';
+
+describe('Function that return no object', function () {
+  it('should not cause error in link', function (done) {
+    jf.filed( testFile10Path ).io(
+        function( obj, filePath ) {
+          return { msg:  "hello" };
+        }
+      );
+
+    setTimeout(
+      function(){
+        jf.filed( testFile10Path ).link( function( obj, filePath ) {
+          //return no object
+        });
+      },
+      500);
+
+    setTimeout(
+      function(){
+        done();
+      },
+      1000
+    );
+
+  })
+
+});

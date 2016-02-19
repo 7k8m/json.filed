@@ -28,6 +28,21 @@ jf.filed( file ).io( function( json, filePath ) { your code to process json here
     + `return json` from function, written to the file of `filePath` parameter.
         + Nothing written, if return no object.
 
+### link
+````
+jf.filed( file ).link( function( json, filePath ) { your code to process json here } )
+````
+
++ `function( json, filePath ) { ... }` is where process json.
+    + json from file is passed to function as a `json` parameter
+    + `filePath` is where json from.
+    + `return newPath` from function, file of incoming `filePath` linked to newPath
+        + newPath is string or iterator
+            + if string, filePath.
+            + if iterator, above filePath is iterated.
+        + Nothing newly linked,if return no object.
+
+
 ## examples
 
 ### greeting.js
