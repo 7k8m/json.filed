@@ -26,7 +26,7 @@ module.exports.filed = function (file) { return new filed (file); }
 function filed( file ){
 
   if(file == null){
-    throw new JsonFiledError( 'File is needed.' );
+    raiseError( 'File is needed.' );
   }
 
   this.io = function( userProcess ){
@@ -46,11 +46,12 @@ function pathGenerator( file ){
   if ( typeof file == 'string' ){
     return singlePath(file);
 
-  } else if ( file[Symbol.iterator] ) {
+  } else if ( file[ Symbol.iterator ] ) {
     return file;
 
   }else{
-    throw new JsonFiledError( 'Failed to create path Generator' );
+    raiseError( 'Failed to create path Generator' );
+
   }
 }
 
@@ -75,7 +76,7 @@ function io( filePath, userProcess, jb){
           (err, data) => {
 
             fs.close(fd);
-            if (err) throw new JsonFiledError('IOError Failed to read file.');
+            if (err) raiseError('IOError Failed to read file.');
 
             apply(
               userProcess,
@@ -97,7 +98,7 @@ function io( filePath, userProcess, jb){
           'w+',
           (err,fd) => {
 
-            if(err) throw new JsonFiledError('IOError Failed to create file.') ;
+            if(err) raiseError('IOError Failed to create file.') ;
 
             //save to file and apply process.
             save(
@@ -123,8 +124,9 @@ function io( filePath, userProcess, jb){
         );
       }
     }
-  )
-};
+  );
+
+}
 
 
 //apply process function to json.
@@ -157,32 +159,32 @@ function save( data, file, closeFile, jb ){
       encoding(jb),
       (err)=>{
         closeFile();//file is closed in afterSaved, if needed.
-        if (err) throw new JsonFiledError('IOError failed to save json');
+        if (err) raiseError('IOError failed to save json');
 
       }
     );
   }catch(error){
     closeFile();
-    throw new JsonFiledError(error);
+    throw raiseError("failed in save", error);
   }
 }
 
 function encoding( jb ){
   if( jb == JB_BSON ) return null;
   else if( jb == JB_JSON ) return 'utf8';
-  else throw new JsonFiledError('encoding: jb must be JSON or BSON');
+  else raiseError('encoding: jb must be JSON or BSON');
 }
 
 function decode( obj, jb ){
   if( jb == JB_BSON ) return BSON.deserialize(obj);
   else if ( jb == JB_JSON ) return JSON.parse(obj);
-  else throw new JsonFiledError('decode: jb must be JSON or BSON');
+  else raiseError('decode: jb must be JSON or BSON');
 }
 
 function encode( obj, jb ){
   if( jb == JB_BSON ) return BSON.serialize( obj, false, true, false);
   else if( jb == JB_JSON ) return JSON.stringify( obj );
-  else throw new JsonFiledError('encode: jb must be JSON or BSON');
+  else raiseError('encode: jb must be JSON or BSON');
 }
 
 function calcJb( filePath ){
@@ -203,5 +205,9 @@ function JsonFiledError(msg,innerError){
   this.msg = msg;
   this.innerError = innerError;
 };
+
+function raiseError(msg,innerError){
+  throw new JsonFiledError(msg,innerError);
+}
 
 module.exports.JsonFiledError = JsonFiledError;
