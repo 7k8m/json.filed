@@ -7,20 +7,24 @@ library to read/write json from/to file
 ## functions
 ### filed
 ````
-jf.filed( filePath )
+jf.filed( file )
 ````
 ----
 
-+ `filePath` is path to read and/or write.
-    + File format is bson when `.bson`, json when `.json` or `others`.
++ `file`
+    + file is string or generator
+        + if string, file is path to read and/or write.
+            + File format is bson when `.bson`, json when `.json` or `others`.
+        + if generator, above path is generated.
 
 ### io
 ````
-jf.filed( filePath ).io( function( json, filePath ) { your code to process json here } )
+jf.filed( file ).io( function( json, filePath ) { your code to process json here } )
 ````
 
 + `function( json, filePath ) { ... }` is where process json.
     + json from file is passed to function as a `json` parameter
+    + `filePath` is where I/O json from/to.
     + `return json` from function, written to the file of `filePath` parameter.
         + Nothing written, if return no object.
 
