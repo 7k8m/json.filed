@@ -105,14 +105,24 @@ describe('Function return null', function () {
   });
 });
 
-describe('Null file Path', function () {
-  it('should cause JsonFiledError', function (done) {
-    try{
-      jf.filed( null).io( function( obj ) {
-      });
-    }catch(e){
-      expect(e).to.be.an.instanceof( jf.JsonFiledError );
-      done();
-    }
-  });
+const testFile8Path = './' + Math.random() + '.BSON';
+
+describe('Upper case file extension ', function () {
+  it('should not affect result.', function (done) {
+    jf.filed( testFile8Path ).io(
+        function( obj, filePath ) {
+          return { path: testFile8Path };
+        }
+      );
+
+    setTimeout(
+      function(){
+        jf.filed( testFile8Path ).io( function( obj, filePath ) {
+          expect( obj.path ).to.eql( testFile8Path );
+          done();
+        });
+      },
+      1000);
+    })
+
 });
