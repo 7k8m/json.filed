@@ -160,8 +160,39 @@ function * testFile6 () {
 
 describe('File parameter', function () {
   it('can be generator', function (done) {
-    
+
     jf.filed( testFile6() ).io(
+        function( obj, filePath ) {
+          return { path: filePath};
+        }
+      );
+
+    var i = 0;
+    setTimeout(
+      function(){
+        jf.filed( testFile6() ).io(
+          function( obj, filePath ) {
+
+            expect(obj.path).to.eql( filePath );
+            i ++;
+            if(i == 2){
+              done();
+            }
+
+          });
+      },
+      1000);
+    })
+
+});
+
+var testFilePath7_1 = './' + Math.random() + '.json';
+var testFilePath7_2 = './' + Math.random() + '.json';
+
+describe('File parameter', function () {
+  it('can be array', function (done) {
+
+    jf.filed( [testFilePath7_1,testFilePath7_2] ).io(
         function( obj, filePath ) {
           return { path: filePath};
         }
