@@ -158,13 +158,12 @@ function * testFile6 () {
     yield testFilePath6_2;
 }
 
-var msgObj = { msg: 'a message' };
-
 describe('File parameter', function () {
   it('can be generator', function (done) {
+    
     jf.filed( testFile6() ).io(
-        function( obj ) {
-          return msgObj;
+        function( obj, filePath ) {
+          return { path: filePath};
         }
       );
 
@@ -172,9 +171,9 @@ describe('File parameter', function () {
     setTimeout(
       function(){
         jf.filed( testFile6() ).io(
-          function( obj ) {
+          function( obj, filePath ) {
 
-            expect(obj).to.eql( msgObj );
+            expect(obj.path).to.eql( filePath );
             i ++;
             if(i == 2){
               done();
