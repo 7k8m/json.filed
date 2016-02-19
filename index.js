@@ -82,7 +82,8 @@ function io( filePath, userProcess, jb){
               decode( data, jb ),
               filePath,
               function(){}, // no need to close filePath
-              jb
+              jb,
+              filePath
             );
           }
         );
@@ -111,7 +112,8 @@ function io( filePath, userProcess, jb){
                   function(){// close descriptor.
                     fs.close( fd );
                   },
-                  jb
+                  jb,
+                  filePath
                 );
               },
               jb
@@ -126,9 +128,9 @@ function io( filePath, userProcess, jb){
 
 
 //apply process function to json.
-function apply( process, json, file, closeFile, jb ){
+function apply( process, json, file, closeFile, jb, filePath){
 
-  var result = process(json);
+  var result = process(json,filePath);
 
   if(result != undefined && result != null){
     //if result returned, upate json file to result.

@@ -16,12 +16,12 @@ jf.filed( filePath )
 
 ### io
 ````
-jf.filed( filePath ).io( function( json ) { your code to process json here } )
+jf.filed( filePath ).io( function( json, filePath ) { your code to process json here } )
 ````
 
-+ `function( json ) { ... }` is where process json.
++ `function( json, filePath ) { ... }` is where process json.
     + json from file is passed to function as a `json` parameter
-    + `return json` from function, written to the file.
+    + `return json` from function, written to the file of `filePath` parameter.
         + Nothing written, if return no object.
 
 ## example
