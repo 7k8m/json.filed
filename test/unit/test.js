@@ -149,3 +149,40 @@ describe('File with extension neither json nor bson ', function () {
     })
 
 });
+
+var testFilePath6_1 = './' + Math.random() + '.json';
+var testFilePath6_2 = './' + Math.random() + '.json';
+
+function * testFile6 () {
+    yield testFilePath6_1;
+    yield testFilePath6_2;
+}
+
+var msgObj = { msg: 'a message' };
+
+describe('File parameter', function () {
+  it('can be generator', function (done) {
+    jf.filed( testFile6() ).io(
+        function( obj ) {
+          return msgObj;
+        }
+      );
+
+    var i = 0;
+    setTimeout(
+      function(){
+        jf.filed( testFile6() ).io(
+          function( obj ) {
+
+            expect(obj).to.eql( msgObj );
+            i ++;
+            if(i == 2){
+              done();
+            }
+
+          });
+      },
+      1000);
+    })
+
+});

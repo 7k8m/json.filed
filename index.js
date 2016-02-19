@@ -43,10 +43,10 @@ function execute( file, filedProcess, userProcess){
 }
 
 function pathGenerator( file ){
-  if ( typeof file == "string" ){
+  if ( typeof file == 'string' ){
     return singlePath(file);
 
-  } else if ( file.toString() == 'GeneratorFunction') {
+  } else if ( file.toString() == '[object Generator]') {
     return file;
 
   }else{
