@@ -36,13 +36,13 @@ function filed( file ){
 };
 
 function execute( file, filedProcess, userProcess){
-  let generator = pathGenerator( file );
-  for( let filePath of generator ){
+  let itr = pathIterator( file );
+  for( let filePath of itr ){
     filedProcess(filePath, userProcess, calcJb(filePath));
   }
 }
 
-function pathGenerator( file ){
+function pathIterator( file ){
   if ( typeof file == 'string' ){
     return singlePath(file);
 
@@ -50,7 +50,7 @@ function pathGenerator( file ){
     return file;
 
   }else{
-    raiseError( 'Failed to create path Generator' );
+    raiseError( 'Failed to create path Iterator' );
 
   }
 }
