@@ -66,11 +66,11 @@ jf.filed( file ).io( function( json, filePath ) { your code to process json here
     {"msg":"good after noon world."}
 
 ### greetings.js
-　　　　var jf = require('json.filed');
-　　　　
-　　　　jf.filed(['./hello.json','./😄.json']).io( function(json,filePath) {
-　　　　  return {msg: filePath }; // write 1st greeting to data.json
-　　　　});
+    var jf = require('json.filed');
+    
+    jf.filed(['./hello.json','./😄.json']).io( function(json,filePath) {
+        return {msg: filePath }; // write 1st greeting to data.json
+    });
 
 
     $ node greetings.js
