@@ -28,7 +28,8 @@ jf.filed( file ).io( function( json, filePath ) { your code to process json here
     + `return json` from function, written to the file of `filePath` parameter.
         + Nothing written, if return no object.
 
-## example
+## examples
+
 ### greeting.js
     var jf = require('json.filed');
 
@@ -63,6 +64,21 @@ jf.filed( file ).io( function( json, filePath ) { your code to process json here
     good after noon world.
     $ cat data.json
     {"msg":"good after noon world."}
+
+### greetings.js
+　　　　var jf = require('json.filed');
+　　　　
+　　　　jf.filed(['./hello.json','./😄.json']).io( function(json,filePath) {
+　　　　  return {msg: filePath }; // write 1st greeting to data.json
+　　　　});
+
+
+    $ node greetings.js
+    $ cat hello.json
+    {"msg":"./hello.json"}
+    $ cat 😄.json 
+    {"msg":"./😄.json"}
+
 
 ## binary format (bson) support
 ### greeting.binary.js
