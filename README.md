@@ -12,10 +12,10 @@ jf.filed( file )
 ----
 
 + `file`
-    + file is string or generator
+    + file is string or iterator
         + if string, file is path to read and/or write.
             + File format is bson when `.bson`, json when `.json` or `others`.
-        + if generator, above path is generated.
+        + if iterator, above path is iterated.
 
 ### io
 ````
@@ -68,7 +68,7 @@ jf.filed( file ).io( function( json, filePath ) { your code to process json here
 
 ### greetings.js
     var jf = require('json.filed');
-    
+
     jf.filed(['./hello.json','./😄.json']).io( function(json,filePath) {
         return {msg: filePath }; // write 1st greeting to data.json
     });
@@ -77,7 +77,7 @@ jf.filed( file ).io( function( json, filePath ) { your code to process json here
     $ node greetings.js
     $ cat hello.json
     {"msg":"./hello.json"}
-    $ cat 😄.json 
+    $ cat 😄.json
     {"msg":"./😄.json"}
 
 
