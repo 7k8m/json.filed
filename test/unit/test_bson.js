@@ -4,16 +4,16 @@ var jf = require('../../'),
     expect    = require('chai').expect,
     fs = require('fs');
 
-describe('bFiled( obj )', function () {
+describe('bFiled( obj ).io', function () {
     it('should be a function', function () {
-        expect(jf.filed).to.be.a('function');
+        expect(jf.filed("file").io).to.be.a('function');
     });
 });
 
 const testFilePath = './' + Math.random() + '.bson';
 describe('The initialValue', function () {
   it('should be equal to defined in json.filed.', function (done) {
-    jf.filed( testFilePath, function( obj ) {
+    jf.filed( testFilePath ).io( function( obj ) {
         expect(obj).to.eql(jf.initialValue());
         done();
     });
@@ -25,13 +25,13 @@ const testFile2Path = './' + Math.random() + '.bson';
 var updatedValue = { msg: 'updated' };
 describe('The updated value', function () {
   it('should be read again as updated.', function (done) {
-    jf.filed( testFile2Path, function( obj ) {
+    jf.filed( testFile2Path ).io( function( obj ) {
       return updatedValue;
     });
 
     setTimeout(
       function(){
-        jf.filed( testFile2Path, function( obj ) {
+        jf.filed( testFile2Path ).io( function( obj ) {
           expect(obj).to.eql(updatedValue);
           done();
         });
@@ -45,13 +45,13 @@ const testFile3Path = './' + Math.random() + '.bson';
 var initialValue = { msg: 'initial' };
 describe('The value function does not return ', function () {
   it('should not be written.', function (done) {
-    jf.filed( testFile3Path, function( obj ) {
+    jf.filed( testFile3Path).io( function( obj ) {
       return initialValue;
     });
 
     setTimeout(
       function(){
-        jf.filed( testFile3Path, function( obj ) {
+        jf.filed( testFile3Path).io( function( obj ) {
           expect(obj).to.eql(initialValue);
           obj.msg = "this value is not written."
           //return obj
@@ -62,7 +62,7 @@ describe('The value function does not return ', function () {
 
     setTimeout(
       function(){
-        jf.filed( testFile3Path, function( obj ) {
+        jf.filed( testFile3Path).io( function( obj ) {
           expect(obj).to.eql(initialValue);
           done();
         });
@@ -77,13 +77,13 @@ describe('The value function does not return ', function () {
 const testFile4Path = './' + Math.random() + '.bson';
 describe('Function return null', function () {
   it('does not make json to be written.', function (done) {
-    jf.filed( testFile4Path, function( obj ) {
+    jf.filed( testFile4Path).io( function( obj ) {
       return initialValue;
     });
 
     setTimeout(
       function(){
-        jf.filed( testFile4Path, function( obj ) {
+        jf.filed( testFile4Path).io( function( obj ) {
           expect(obj).to.eql(initialValue);
           obj.msg = "this value is not written also."
           return null
@@ -94,7 +94,7 @@ describe('Function return null', function () {
 
     setTimeout(
       function(){
-        jf.filed( testFile4Path, function( obj ) {
+        jf.filed( testFile4Path).io( function( obj ) {
           expect(obj).to.eql(initialValue);
           done();
         });
@@ -108,7 +108,7 @@ describe('Function return null', function () {
 describe('Null file Path', function () {
   it('should cause JsonFiledError', function (done) {
     try{
-      jf.filed( null, function( obj ) {
+      jf.filed( null).io( function( obj ) {
       });
     }catch(e){
       expect(e).to.be.an.instanceof( jf.JsonFiledError );

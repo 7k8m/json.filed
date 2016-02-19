@@ -5,14 +5,20 @@ library to read/write json from/to file
     var jf = require('json.filed')
 
 ## functions
-* filed
+### filed
 ````
-jf.filed( filePath, function( json ) { your code to process json here } )
+jf.filed( filePath )
 ````
 ----
 
 + `filePath` is path to read and/or write.
     + File format is bson when `.bson`, json when `.json` or `others`.
+
+### io
+````
+jf.filed( filePath ).io( function( json ) { your code to process json here } )
+````
+
 + `function( json ) { ... }` is where process json.
     + json from file is passed to function as a `json` parameter
     + `return json` from function, written to the file.
@@ -22,14 +28,14 @@ jf.filed( filePath, function( json ) { your code to process json here } )
 ### greeting.js
     var jf = require('json.filed');
 
-    jf.filed('./data.json',function(json) {
+    jf.filed('./data.json').io( function(json) {
       return {msg: 'hello world.'}; // write 1st greeting to data.json
     });
 
 ### greeting2.js
     var jf = require('json.filed');
 
-    jf.filed('./data.json',function(json) {
+    jf.filed('./data.json').io( function(json) {
       console.log(json.msg); // previous wrote greeting, 'hello'
       json.msg = 'good after noon world.'; // update msg
       return json; // return to write json file
@@ -38,7 +44,7 @@ jf.filed( filePath, function( json ) { your code to process json here } )
 ### greeting3.js
     var jf = require('json.filed');
 
-    jf.filed('./data.json',function(json) {
+    jf.filed('./data.json').io( function(json) {
       console.log(json.msg);// previous wrote greeting, 'good afternoon'
       json.msg = 'good night world.'; // update msg
       // not write this time, because I'm sleepy 😴
@@ -58,6 +64,6 @@ jf.filed( filePath, function( json ) { your code to process json here } )
 ### greeting.binary.js
      var jf = require('json.filed');
 
-    jf.filed('./data.bson',function(bson) {
+    jf.filed('./data.bson').io( function(bson) {
       return {msg: 'hello world.'}; // write 1st greeting to data.bson
     });
