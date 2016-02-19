@@ -6,8 +6,6 @@ library to read/write json from/to file
 
 ## functions
 * filed
-* bFiled
-
 ````
 jf.filed( filePath, function( json ) { your code to process json here } )
 ````
