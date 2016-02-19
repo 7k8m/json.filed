@@ -103,7 +103,7 @@ function filedCore( filePath, processOfFiledJson, jb){
 
 
 //apply process function to json.
-function apply( process, json, file, afterApply, jb ){
+function apply( process, json, file, closeFile, jb ){
 
   var result = process(json);
 
@@ -112,28 +112,34 @@ function apply( process, json, file, afterApply, jb ){
     save(
       result,
       file,
-      afterApply, //executed after saved.
+      closeFile, //executed after saved.
       jb
     );
 
   }else{
-    afterApply();
+    closeFile();
 
   }
 
 }
 
 //file can be either of file path and descriptor
-function save( data, file, afterSaved, jb ){
-  fs.writeFile(
-    file,
-    encode(data,jb),
-    encoding(jb),
-    (err)=>{
-      if (err) throw new JsonFiledError('IOError failed to save json');
-      afterSaved();//file is closed in afterSaved, if needed.
-    }
-  );
+function save( data, file, closeFile, jb ){
+  try{
+    fs.writeFile(
+      file,
+      encode(data,jb),
+      encoding(jb),
+      (err)=>{
+        closeFile();//file is closed in afterSaved, if needed.
+        if (err) throw new JsonFiledError('IOError failed to save json');
+
+      }
+    );
+  }catch(error){
+    closeFile();
+    throw new JsonFiledError(error);
+  }
 }
 
 function encoding( jb ){
@@ -154,8 +160,9 @@ function encode( obj, jb ){
   else throw new JsonFiledError('encode: jb must be JSON or BSON');
 }
 
-function JsonFiledError(msg){
+function JsonFiledError(msg,innerError){
   this.msg = msg;
+  this.innerError = innerError;
 };
 
 module.exports.JsonFiledError = JsonFiledError;
