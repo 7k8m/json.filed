@@ -216,3 +216,26 @@ describe('File parameter', function () {
     })
 
 });
+
+
+const testFile8Path = './' + Math.random() + '.JSON';
+
+describe('Upper case file extension ', function () {
+  it('should not affect result.', function (done) {
+    jf.filed( testFile8Path ).io(
+        function( obj, filePath ) {
+          return { path: testFile8Path };
+        }
+      );
+
+    setTimeout(
+      function(){
+        jf.filed( testFile8Path ).io( function( obj, filePath ) {
+          expect( obj.path ).to.eql( testFile8Path );
+          done();
+        });
+      },
+      1000);
+    })
+
+});
