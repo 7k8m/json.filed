@@ -1,6 +1,6 @@
 {
   "name": "json.filed",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Save/load a json to/from a file",
   "main": "index.js",
   "files": ["index.js"],
