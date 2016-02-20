@@ -81,3 +81,50 @@ describe('Pass function', function () {
     ).exec();
   });
 });
+
+const testFilePath4 = './' + Math.random() + '.json';
+var testValue4 = { msg: "value from pass to io." };
+describe('Pass function', function () {
+  it('should pass filePath to next io function', function (done) {
+    jf.filed( testFilePath4 ).io(
+      function( obj, filePath) {
+        return testValue4;
+      }
+    ).pass(
+      function(obj, filePath){
+          expect( filePath ).to.eql( testFilePath4 );
+          expect( obj ).to.eql( testValue4 );
+      }
+    ).io(
+      function(obj, filePath){
+          expect( filePath ).to.eql( testFilePath4 );
+          expect( obj ).to.eql( testValue4 );
+          done();
+      }
+    ).exec();
+  });
+});
+
+const testFilePath5 = './' + Math.random() + '.json';
+var testValue5 = { msg: "value from pass to link." };
+describe('Pass function', function () {
+  it('should pass filePath to next link function', function (done) {
+    jf.filed( testFilePath5 )
+    .io(
+      function( obj, filePath) {
+        return testValue5;
+      }
+    ).pass(
+      function(obj, filePath){
+          expect( filePath ).to.eql( testFilePath5 );
+          expect( obj ).to.eql( testValue5 );
+      }
+    ).link(
+      function(obj, filePath){
+          expect( filePath ).to.eql( testFilePath5 );
+          expect( obj ).to.eql( testValue5 );
+          done();
+      }
+    ).exec();
+  });
+});
