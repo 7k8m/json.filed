@@ -84,7 +84,7 @@ function passExecuter( userProcess, root){
 
   this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess, root)},this);
   this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess, root) },this);
-  this.pass = addChildExecuterFunction(function(userProcess){ return new passExecuter(userProccess, root) },this);
+  this.pass = addChildExecuterFunction(function(userProcess){ return new passExecuter(userProcess, root) },this);
 
   this.exec = function(){ root.exec() };
 
@@ -156,7 +156,7 @@ function io( filePath, userProcess, jb, chainedProcess){
               userProcess,
               decode( data, jb ),
               filePath,
-              function(){}, // no need to close filePath
+              function( afterCloseProcess ){ afterCloseProcess() }, // no need to close filePath, but need to call chainedProcess.
               jb,
               filePath,
               saveAfterApply,
@@ -187,8 +187,17 @@ function io( filePath, userProcess, jb, chainedProcess){
                     userProcess,
                     initialValue,
                     fd,
-                    function(){// close descriptor.
-                      fs.close( fd );
+                    function(afterCloseProcess){// close descriptor.
+                      fs.close(
+                        fd,
+                        function(err){
+                          afterCloseProcess();
+                          if(err){
+                            raiseError("io:failsed to close file");
+                          }
+
+                        }
+                      );
                     },
                     jb,
                     filePath,
@@ -231,7 +240,7 @@ function link( filePath, userProcess, jb, chainedProcess){
               userProcess,
               json,
               filePath,
-              function(){}, // closed already and no need to close
+              function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
               jb,
               filePath,
               fsLink,
@@ -270,7 +279,7 @@ function pass( filePath, userProcess, jb, chainedProcess){
               userProcess,
               json,
               filePath,
-              function(){}, // closed already and no need to close
+              function( afterCloseProcess ){ afterCloseProcess();}, // closed already and no need to close, but need to call chained process.
               jb,
               filePath,
               passPostProcess,
@@ -306,8 +315,7 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess, chain
     );
 
   }else{
-    closeFile(function(){chainedProcess(originalJson,filePath)});
-
+    closeFile( function(){ chainedProcess( filePath )} );
   }
 
 }
@@ -332,13 +340,20 @@ function saveCore( data, file, closeFile, jb,
       encode(data,jb),
       encoding(jb),
       (err)=>{
-        closeFile();//file is closed in afterSaved, if needed.
+        closeFile(
+          function() {
+            if( chainedProcess ) chainedProcess(filePath);
+          }
+        );//file is closed in afterSaved, if needed.
         if (err) raiseError('IOError failed to save json');
-        if( chainedProcess ) chainedProcess(filePath);
       }
     );
   }catch(error){
-    closeFile();
+    closeFile(
+      function() {
+        if( chainedProcess ) chainedProcess(filePath);
+      }
+    );
     throw raiseError("failed in save", error);
   }
 }
