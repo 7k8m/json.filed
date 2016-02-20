@@ -42,11 +42,22 @@ jf.filed( file )
             + if iterator, above filePath is iterated.
         + Nothing newly linked,if return no object.
 
+### pass
+````
+.pass( function( json, filePath ) { your code to process json here } )
+````
+
++ `function( json, filePath ) { ... }` is where process json.
+    + json from file is passed to function as a `json` parameter
+    + `filePath` is where json from.
+    + result of process does not affect execution of pass, and pass just continues next.
+
 ## chaining
 ````
 jf.filed( file )
 .io( function( json, filePath ) { your code to process json here } )
 .link( function( json, filePath )) { your another code to proces json here} )
+.pass( function( json, filePath )) { your another code to process json here} )
 ````
 
 io and link can be chained as above.
