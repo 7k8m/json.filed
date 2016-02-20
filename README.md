@@ -42,7 +42,7 @@ jf.filed( file ).link( function( json, filePath ) { your code to process json he
             + if iterator, above filePath is iterated.
         + Nothing newly linked,if return no object.
 
-### chaining
+## chaining
 ````
 jf.filed( file )
 .io( function( json, filePath ) { your code to process json here } )
