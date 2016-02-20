@@ -148,20 +148,26 @@ function io( filePath, userProcess, jb, chainedProcess){
           fd,
           encoding(jb),
           (err, data) => {
-
-            fs.close(fd);
             if (err) raiseError('IOError Failed to read file.');
-            let originalJson = decode( data, jb);
-            apply(
-              userProcess,
-              decode( data, jb ),
-              filePath,
-              function( afterCloseProcess ){ afterCloseProcess() }, // no need to close filePath, but need to call chainedProcess.
-              jb,
-              filePath,
-              saveAfterApply,
-              chainedProcess,
-              originalJson
+
+            fs.close(fd,
+              function(err){
+
+                if(err) raiseError('IOError failed to close file.');
+
+                let originalJson = decode( data, jb);
+                apply(
+                  userProcess,
+                  decode( data, jb ),
+                  filePath,
+                  function( afterCloseProcess ){ afterCloseProcess() }, // no need to close filePath, but need to call chainedProcess.
+                  jb,
+                  filePath,
+                  saveAfterApply,
+                  chainedProcess,
+                  originalJson
+                );
+              }
             );
           }
         );
