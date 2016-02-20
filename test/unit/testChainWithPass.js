@@ -4,18 +4,44 @@ var jf = require('../../'),
     expect    = require('chai').expect,
     fs = require('fs');
 
-const testFilePath = './' + Math.random() + '.json';
-var testValue = { msg: "value from previous IO." };
+const testFilePath0 = './' + Math.random() + '.json';
+var testValue0 = { msg: "test value of 0" };
 describe('Pass function', function () {
   it('should receive filePath and value which previous IO function passed and returned', function (done) {
-    jf.filed( testFilePath ).io(
+    jf.filed( testFilePath0 ).io(
       function( obj, filePath) {
-        return testValue;
+        return testValue0;
+      }
+    ).exec();
+
+    setTimeout(
+      function(){
+        jf.filed( testFilePath0 )
+        .pass(
+          function(obj, filePath){
+            expect( filePath ).to.eql( testFilePath0 );
+            expect( obj ).to.eql( testValue0 );
+            done();
+          }
+        ).exec();
+      },
+      1000);
+
+  });
+});
+
+const testFilePath1 = './' + Math.random() + '.json';
+var testValue1 = { msg: "value from previous IO." };
+describe('Pass function', function () {
+  it('should receive filePath and value which previous IO function passed and returned', function (done) {
+    jf.filed( testFilePath1 ).io(
+      function( obj, filePath) {
+        return testValue1;
       }
     ).pass(
       function(obj, filePath){
-          expect( filePath ).to.eql( testFilePath );
-          expect( obj ).to.eql( testValue );
+          expect( filePath ).to.eql( testFilePath1 );
+          expect( obj ).to.eql( testValue1 );
           done();
       }
     ).exec();
