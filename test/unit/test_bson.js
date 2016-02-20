@@ -4,9 +4,9 @@ var jf = require('../../'),
     expect    = require('chai').expect,
     fs = require('fs');
 
-describe('bFiled( obj ).io', function () {
+describe('bFiled( obj ).io(function(){}).exec', function () {
     it('should be a function', function () {
-        expect(jf.filed("file").io).to.be.a('function');
+        expect(jf.filed("file").io(function(){}).exec).to.be.a('function');
     });
 });
 
@@ -16,7 +16,7 @@ describe('The initialValue', function () {
     jf.filed( testFilePath ).io( function( obj ) {
         expect(obj).to.eql(jf.initialValue());
         done();
-    });
+    }).exec();
   });
 });
 
@@ -27,14 +27,14 @@ describe('The updated value', function () {
   it('should be read again as updated.', function (done) {
     jf.filed( testFile2Path ).io( function( obj ) {
       return updatedValue;
-    });
+    }).exec();
 
     setTimeout(
       function(){
         jf.filed( testFile2Path ).io( function( obj ) {
           expect(obj).to.eql(updatedValue);
           done();
-        });
+        }).exec();
       },
       1000);
     })
@@ -47,7 +47,7 @@ describe('The value function does not return ', function () {
   it('should not be written.', function (done) {
     jf.filed( testFile3Path).io( function( obj ) {
       return initialValue;
-    });
+    }).exec();
 
     setTimeout(
       function(){
@@ -55,7 +55,7 @@ describe('The value function does not return ', function () {
           expect(obj).to.eql(initialValue);
           obj.msg = "this value is not written."
           //return obj
-        });
+        }).exec();
       },
       1000
     );
@@ -65,7 +65,7 @@ describe('The value function does not return ', function () {
         jf.filed( testFile3Path).io( function( obj ) {
           expect(obj).to.eql(initialValue);
           done();
-        });
+        }).exec();
       },
       1000
     );
@@ -79,7 +79,7 @@ describe('Function return null', function () {
   it('does not make json to be written.', function (done) {
     jf.filed( testFile4Path).io( function( obj ) {
       return initialValue;
-    });
+    }).exec();
 
     setTimeout(
       function(){
@@ -87,7 +87,7 @@ describe('Function return null', function () {
           expect(obj).to.eql(initialValue);
           obj.msg = "this value is not written also."
           return null
-        });
+        }).exec();
       },
       1000
     );
@@ -97,7 +97,7 @@ describe('Function return null', function () {
         jf.filed( testFile4Path).io( function( obj ) {
           expect(obj).to.eql(initialValue);
           done();
-        });
+        }).exec();
       },
       1000
     );
@@ -113,14 +113,14 @@ describe('Upper case file extension ', function () {
         function( obj, filePath ) {
           return { path: testFile8Path };
         }
-      );
+      ).exec();
 
     setTimeout(
       function(){
         jf.filed( testFile8Path ).io( function( obj, filePath ) {
           expect( obj.path ).to.eql( testFile8Path );
           done();
-        });
+        }).exec();
       },
       1000);
     })

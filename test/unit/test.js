@@ -4,9 +4,9 @@ var jf = require('../../'),
     expect    = require('chai').expect,
     fs = require('fs');
 
-describe('filed( obj )', function () {
+describe('filed( obj ).io(function(){}).exec', function () {
     it('should be a function', function () {
-        expect(jf.filed( "filePath" ).io).to.be.a('function');
+        expect(jf.filed( "filePath" ).io(function(){}).exec).to.be.a('function');
     });
 });
 
@@ -18,7 +18,7 @@ describe('The initialValue', function () {
         expect(obj).to.eql(jf.initialValue());
         done();
       }
-    );
+    ).exec();
   });
 });
 
@@ -31,14 +31,14 @@ describe('The updated value', function () {
         function( obj ) {
           return updatedValue;
         }
-      );
+      ).exec();
 
     setTimeout(
       function(){
         jf.filed( testFile2Path ).io( function( obj ) {
           expect(obj).to.eql(updatedValue);
           done();
-        });
+        }).exec();
       },
       1000);
     })
@@ -52,7 +52,7 @@ describe('The value function does not return ', function () {
     jf.filed( testFile3Path ).io(
       function( obj ) {
         return initialValue;
-      });
+      }).exec();
 
     setTimeout(
       function(){
@@ -61,7 +61,7 @@ describe('The value function does not return ', function () {
             expect(obj).to.eql(initialValue);
             obj.msg = "this value is not written."
             //return obj
-          });
+          }).exec();
       },
       1000
     );
@@ -72,7 +72,7 @@ describe('The value function does not return ', function () {
           function( obj ) {
             expect(obj).to.eql(initialValue);
             done();
-          });
+          }).exec();
         },
         1000
       );
@@ -88,7 +88,7 @@ describe('Function return null', function () {
       function( obj ) {
         return initialValue;
       }
-    );
+    ).exec();
 
     setTimeout(
       function(){
@@ -97,7 +97,7 @@ describe('Function return null', function () {
             expect(obj).to.eql(initialValue);
             obj.msg = "this value is not written also."
             return null
-          });
+          }).exec();
       },
       1000
     );
@@ -108,7 +108,7 @@ describe('Function return null', function () {
           function( obj ) {
             expect(obj).to.eql(initialValue);
             done();
-          });
+          }).exec();
         },
         1000
       );
@@ -135,7 +135,7 @@ describe('File with extension neither json nor bson ', function () {
         function( obj ) {
           return value_in_xson;
         }
-      );
+      ).exec();
 
     setTimeout(
       function(){
@@ -143,7 +143,7 @@ describe('File with extension neither json nor bson ', function () {
           function( obj ) {
             expect(obj).to.eql( value_in_xson );
             done();
-          });
+          }).exec();
       },
       1000);
     })
@@ -165,7 +165,7 @@ describe('File parameter', function () {
         function( obj, filePath ) {
           return { path: filePath};
         }
-      );
+      ).exec();
 
     var i = 0;
     setTimeout(
@@ -179,7 +179,7 @@ describe('File parameter', function () {
               done();
             }
 
-          });
+          }).exec();
       },
       1000);
     })
@@ -196,7 +196,7 @@ describe('File parameter', function () {
         function( obj, filePath ) {
           return { path: filePath};
         }
-      );
+      ).exec();
 
     var i = 0;
     setTimeout(
@@ -210,7 +210,7 @@ describe('File parameter', function () {
               done();
             }
 
-          });
+          }).exec();
       },
       1000);
     })
@@ -225,7 +225,7 @@ describe('File parameter', function () {
           function( obj, filePath ) {
             return { path: filePath};
           }
-      );
+      ).exec();
     }catch(error){
       expect( error ).to.be.an.instanceof( jf.JsonFiledError );
     }
@@ -240,14 +240,14 @@ describe('Upper case file extension ', function () {
         function( obj, filePath ) {
           return { path: testFile8Path };
         }
-      );
+      ).exec();
 
     setTimeout(
       function(){
         jf.filed( testFile8Path ).io( function( obj, filePath ) {
           expect( obj.path ).to.eql( testFile8Path );
           done();
-        });
+        }).exec();
       },
       1000);
     })
@@ -267,13 +267,13 @@ describe('linked files ', function () {
         function( obj, filePath ) {
           return { msg:  test9msg };
         }
-      );
+      ).exec();
 
     setTimeout(
       function(){
         jf.filed( testFile9Path ).link( function( obj, filePath ) {
           return [ testFile9LinkedPath_1, testFile9LinkedPath_2 ];
-        });
+        }).exec();
       },
       500);
 
@@ -284,7 +284,7 @@ describe('linked files ', function () {
           expect( obj.msg ).to.eql( test9msg );
           count ++;
           if(count == 2) done();
-        });
+        }).exec();
       },
       1000);
     })
@@ -299,13 +299,13 @@ describe('Function that return no object', function () {
         function( obj, filePath ) {
           return { msg:  "hello" };
         }
-      );
+      ).exec();
 
     setTimeout(
       function(){
         jf.filed( testFile10Path ).link( function( obj, filePath ) {
           //return no object
-        });
+        }).exec();
       },
       500);
 
@@ -318,4 +318,11 @@ describe('Function that return no object', function () {
 
   })
 
+});
+
+
+describe('filed( obj ).io(function(){}).io(function(){}).exec', function () {
+    it('should be a function', function () {
+        expect(jf.filed( "filePath" ).io(function(){}).io(function(){}).exec).to.be.a('function');
+    });
 });

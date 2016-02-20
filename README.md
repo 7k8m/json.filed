@@ -1,5 +1,5 @@
 # json.filed
-library to read/write json from/to file
+Processor of json file
 
 ## module
     var jf = require('json.filed')
@@ -42,6 +42,14 @@ jf.filed( file ).link( function( json, filePath ) { your code to process json he
             + if iterator, above filePath is iterated.
         + Nothing newly linked,if return no object.
 
+### chaining
+````
+jf.filed( file )
+.io( function( json, filePath ) { your code to process json here } )
+.link( function( json, filePath )) { your another code to proces json here}
+````
+
+io and link can be chained as above.
 
 ## examples
 
@@ -50,7 +58,7 @@ jf.filed( file ).link( function( json, filePath ) { your code to process json he
 
     jf.filed('./data.json').io( function(json) {
       return {msg: 'hello world.'}; // write 1st greeting to data.json
-    });
+    }).exec();
 
 ### greeting2.js
     var jf = require('json.filed');
@@ -59,7 +67,7 @@ jf.filed( file ).link( function( json, filePath ) { your code to process json he
       console.log(json.msg); // previous wrote greeting, 'hello'
       json.msg = 'good after noon world.'; // update msg
       return json; // return to write json file
-    });
+    }).exec();
 
 ### greeting3.js
     var jf = require('json.filed');
@@ -69,7 +77,7 @@ jf.filed( file ).link( function( json, filePath ) { your code to process json he
       json.msg = 'good night world.'; // update msg
       // not write this time, because I'm sleepy 😴
       // return json;
-    });
+    }).exec();
 
 ### Above scripts are executed as ...
     $ node greeting.js
@@ -86,7 +94,7 @@ jf.filed( file ).link( function( json, filePath ) { your code to process json he
 
     jf.filed(['./hello.json','./😄.json']).io( function(json,filePath) {
         return {msg: filePath }; // write 1st greeting to data.json
-    });
+    }).exec();
 
 ### Above scripts are executed as ...
     $ node greetings.js
@@ -95,6 +103,21 @@ jf.filed( file ).link( function( json, filePath ) { your code to process json he
     $ cat 😄.json
     {"msg":"./😄.json"}
 
+### linked_hello.js
+    var jf = require('json.filed');
+
+    jf.filed('./hello.json').io( function(json,filePath) {
+      return {msg: "hello" }; // write 1st greeting to data.json
+    }).link( function(json,filePath){
+      return 'linked_hello.json'
+    }).exec();
+
+### Above scripts are executed as ...
+    $ node chained_greeting.js
+    $ cat hello.json
+    {"msg":"hello"}
+    $ cat linked_hello.json
+    {"msg":"hello"}
 
 ## binary format (bson) support
 ### greeting.binary.js
@@ -102,4 +125,4 @@ jf.filed( file ).link( function( json, filePath ) { your code to process json he
 
     jf.filed('./data.bson').io( function(bson) {
       return {msg: 'hello world.'}; // write 1st greeting to data.bson
-    });
+    }).exec();

@@ -21,28 +21,80 @@ module.exports = {};
 module.exports.initialValue =
   function() { return initialValue; };
 
-module.exports.filed = function (file) { return new filed (file); }
+module.exports.filed = function (file) { return new filedExecuter (file); }
 
-function filed( file ){
+function createFieldExecuter(file){
+  var executer = new filedExecuter(file);
 
+}
+
+function filedExecuter( file ){
+
+  let thisExecuter = this;
   if(file == null){
     raiseError( 'File is needed.' );
   }
 
-  this.io = function( userProcess ){
-    execute(file, io, userProcess);
-  }
+  this.executeChild = function(p1,p2){};
+  this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess,thisExecuter)},this);
+  this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess,thisExecuter)},this);
 
-  this.link = function( userProcess ){
-    execute(file, link, userProcess);
-  }
+  this.exec = function(){ filedExecute( file, thisExecuter.executeChild ); };
 
 };
 
-function execute( file, filedProcess, userProcess){
+function ioExecuter( userProcess, root ){
+
+  this.executeChild = function( p1,p2 ){};
+  this.internalExec = function ( filePath, jb) {
+    io(filePath, userProcess, jb, this.executeChild );
+  }
+
+  this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess,root)},this);
+  this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess,root)},this);
+
+  this.exec = function(){ root.exec() };
+
+}
+
+function linkExecuter( userProcess, root){
+
+  this.executeChild = function(p1,p2){};
+
+  this.internalExec = function ( filePath, jb) {
+    link(filePath, userProcess, jb, this.executeChild );
+  }
+
+  this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess, root)},this);
+  this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess, root)},this);
+
+  this.exec = function(){ root.exec() };
+
+}
+
+
+function addChildExecuterFunction( executerFactory, parent ){
+
+  var f = function( userProcess ){ //function to create child executer.
+
+    let executer = executerFactory( userProcess );
+    parent.executeChild = function( filePath ){ //switch state of parent also.
+      executer.internalExec( filePath, calcJb( filePath ));
+    }
+
+    return executer;
+
+  }
+
+  return f;//return function added to parent.
+
+}
+
+
+function filedExecute( file, execute ){
   let itr = pathIterator( file );
   for( let filePath of itr ){
-    filedProcess(filePath, userProcess, calcJb(filePath));
+    execute(filePath, calcJb(filePath));
   }
 }
 
@@ -63,7 +115,7 @@ function * singlePath( file ){
   yield file;
 }
 
-function io( filePath, userProcess, jb){
+function io( filePath, userProcess, jb, chainedProcess){
 
   fs.open(
     filePath,
@@ -81,7 +133,7 @@ function io( filePath, userProcess, jb){
 
             fs.close(fd);
             if (err) raiseError('IOError Failed to read file.');
-
+            let originalJson = decode( data, jb);
             apply(
               userProcess,
               decode( data, jb ),
@@ -89,7 +141,9 @@ function io( filePath, userProcess, jb){
               function(){}, // no need to close filePath
               jb,
               filePath,
-              save
+              saveAfterApply,
+              chainedProcess,
+              originalJson
             );
           }
         );
@@ -110,18 +164,20 @@ function io( filePath, userProcess, jb){
               initialValue,
               fd,
               function(){
-                //apply process
-                apply(
-                  userProcess,
-                  initialValue,
-                  fd,
-                  function(){// close descriptor.
-                    fs.close( fd );
-                  },
-                  jb,
-                  filePath,
-                  save
-                );
+                  //apply process
+                  apply(
+                    userProcess,
+                    initialValue,
+                    fd,
+                    function(){// close descriptor.
+                      fs.close( fd );
+                    },
+                    jb,
+                    filePath,
+                    saveAfterApply,
+                    chainedProcess,
+                    initialValue
+                  );
               },
               jb
             );
@@ -134,7 +190,7 @@ function io( filePath, userProcess, jb){
 
 }
 
-function link( filePath, userProcess, jb){
+function link( filePath, userProcess, jb, chainedProcess){
 
   fs.open(
     filePath,
@@ -152,16 +208,17 @@ function link( filePath, userProcess, jb){
 
             fs.close(fd);
             if (err) raiseError('IOError Failed to read file.');
-
+            var json = decode( data, jb);
             apply(
               userProcess,
-              decode( data, jb ),
+              json,
               filePath,
               function(){}, // closed already and no need to close
               jb,
               filePath,
-              fsLink
-
+              fsLink,
+              chainedProcess,
+              json
             );
           }
         );
@@ -172,7 +229,9 @@ function link( filePath, userProcess, jb){
 }
 
 //apply process function to json.
-function apply( process, json, file, closeFile, jb, filePath, postProcess){
+function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess, originalJson){
+
+  if( chainedProcess == undefined) chainedProcess = function(p1,p2){};
 
   var result = process(json,filePath);
 
@@ -183,18 +242,32 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess){
       file,
       closeFile, //executed after saved.
       jb,
-      filePath
+      filePath,
+      chainedProcess,
+      originalJson
     );
 
   }else{
-    closeFile();
+    closeFile(function(){chainedProcess(originalJson,filePath)});
 
   }
 
 }
 
 //file can be either of file path and descriptor
-function save( data, file, closeFile, jb, filePath){
+
+function save( data, file, closeFile, jb){
+  saveCore( data,file, closeFile, jb);
+}
+
+function saveAfterApply( data, file, closeFile, jb, filePath, chainedProcess, originalJson){
+  saveCore(data,file,closeFile,jb,filePath,chainedProcess,originalJson);
+}
+
+function saveCore( data, file, closeFile, jb,
+                    filePath, chainedProcess, originalJson //only passsed in saveAfterApplly
+                  ){
+
   try{
     fs.writeFile(
       file,
@@ -203,7 +276,7 @@ function save( data, file, closeFile, jb, filePath){
       (err)=>{
         closeFile();//file is closed in afterSaved, if needed.
         if (err) raiseError('IOError failed to save json');
-
+        if( chainedProcess ) chainedProcess(filePath);
       }
     );
   }catch(error){
@@ -212,7 +285,7 @@ function save( data, file, closeFile, jb, filePath){
   }
 }
 
-function fsLink( linkPath, file, closeFile, jb, originalFilePath){ //"fs" is to avoid name conflict.
+function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess, originalJson){ //"fs" is to avoid name conflict.
 
   //link runs only after file was closed. closeFile is passed as compatibility of postProcess interface
   //closeFile();
@@ -223,6 +296,7 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath){ //"fs" is to 
       newFilePath,
       function(err){
         if(err) raiseError("Failed to link from " + originalFilePath + " to " + newFilePath,err);
+        if( chainedProcess ) chainedProcess( newFilePath );
       }
     );
   }
