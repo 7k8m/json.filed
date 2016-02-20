@@ -200,10 +200,8 @@ function io( filePath, userProcess, jb, chainedProcess){
                       fs.close(
                         fd,
                         function(err){
+                          if(err) raiseError("io:failsed to close file");
                           afterCloseProcess();
-                          if(err){
-                            raiseError("io:failsed to close file");
-                          }
                         }
                       );
                     },
@@ -240,18 +238,25 @@ function link( filePath, userProcess, jb, chainedProcess){
           encoding(jb),
           (err, data) => {
 
-            fs.close(fd);
             if (err) raiseError('IOError Failed to read file.');
-            var json = decode( data, jb);
-            apply(
-              userProcess,
-              json,
-              filePath,
-              function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
-              jb,
-              filePath,
-              fsLink,
-              chainedProcess
+            fs.close(
+              fd,
+              function(err){
+                if(err) raiseError('link:failed to close file');
+
+                var json = decode( data, jb);
+                apply(
+                  userProcess,
+                  json,
+                  filePath,
+                  function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
+                  jb,
+                  filePath,
+                  fsLink,
+                  chainedProcess
+                );
+
+              }
             );
           }
         );
@@ -285,7 +290,7 @@ function pass( filePath, userProcess, jb, chainedProcess){
               userProcess,
               json,
               filePath,
-              function( afterCloseProcess ){ afterCloseProcess();}, // closed already and no need to close, but need to call chained process.
+              function( afterCloseProcess ){ afterCloseProcess(); }, // closed already and no need to close, but need to call chained process.
               jb,
               filePath,
               passPostProcess,
