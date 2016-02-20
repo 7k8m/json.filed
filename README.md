@@ -60,7 +60,7 @@ jf.filed( file )
 .pass( function( json, filePath )) { your another code to process json here} )
 ````
 
-io and link can be chained as above.
+io,link and pass can be chained as above.
 
 
 ## binary format (bson) support
