@@ -46,7 +46,7 @@ jf.filed( file ).link( function( json, filePath ) { your code to process json he
 ````
 jf.filed( file )
 .io( function( json, filePath ) { your code to process json here } )
-.link( function( json, filePath )) { your another code to proces json here}
+.link( function( json, filePath )) { your another code to proces json here} )
 ````
 
 io and link can be chained as above.
