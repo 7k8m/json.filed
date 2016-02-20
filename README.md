@@ -19,7 +19,7 @@ jf.filed( file )
 
 ### io
 ````
-jf.filed( file ).io( function( json, filePath ) { your code to process json here } )
+.io( function( json, filePath ) { your code to process json here } )
 ````
 
 + `function( json, filePath ) { ... }` is where process json.
@@ -30,7 +30,7 @@ jf.filed( file ).io( function( json, filePath ) { your code to process json here
 
 ### link
 ````
-jf.filed( file ).link( function( json, filePath ) { your code to process json here } )
+.link( function( json, filePath ) { your code to process json here } )
 ````
 
 + `function( json, filePath ) { ... }` is where process json.
