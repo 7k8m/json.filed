@@ -164,8 +164,7 @@ function io( filePath, userProcess, jb, chainedProcess){
                   jb,
                   filePath,
                   saveAfterApply,
-                  chainedProcess,
-                  originalJson
+                  chainedProcess
                 );
               }
             );
@@ -201,15 +200,13 @@ function io( filePath, userProcess, jb, chainedProcess){
                           if(err){
                             raiseError("io:failsed to close file");
                           }
-
                         }
                       );
                     },
                     jb,
                     filePath,
                     saveAfterApply,
-                    chainedProcess,
-                    initialValue
+                    chainedProcess
                   );
               },
               jb
@@ -250,8 +247,7 @@ function link( filePath, userProcess, jb, chainedProcess){
               jb,
               filePath,
               fsLink,
-              chainedProcess,
-              json
+              chainedProcess
             );
           }
         );
@@ -289,8 +285,7 @@ function pass( filePath, userProcess, jb, chainedProcess){
               jb,
               filePath,
               passPostProcess,
-              chainedProcess,
-              json
+              chainedProcess
             );
           }
         );
@@ -302,7 +297,7 @@ function pass( filePath, userProcess, jb, chainedProcess){
 }
 
 //apply process function to json.
-function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess, originalJson){
+function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
 
   if( chainedProcess == undefined) chainedProcess = function(p1,p2){};
 
@@ -316,8 +311,7 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess, chain
       closeFile, //executed after saved.
       jb,
       filePath,
-      chainedProcess,
-      originalJson
+      chainedProcess
     );
 
   }else{
@@ -332,12 +326,12 @@ function save( data, file, closeFile, jb){
   saveCore( data,file, closeFile, jb);
 }
 
-function saveAfterApply( data, file, closeFile, jb, filePath, chainedProcess, originalJson){
-  saveCore(data,file,closeFile,jb,filePath,chainedProcess,originalJson);
+function saveAfterApply( data, file, closeFile, jb, filePath, chainedProcess ){
+  saveCore(data,file,closeFile,jb,filePath,chainedProcess);
 }
 
 function saveCore( data, file, closeFile, jb,
-                    filePath, chainedProcess, originalJson //only passsed in saveAfterApplly
+                    filePath, chainedProcess //only passsed in saveAfterApplly
                   ){
 
   try{
@@ -364,7 +358,7 @@ function saveCore( data, file, closeFile, jb,
   }
 }
 
-function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess, originalJson){ //"fs" is to avoid name conflict.
+function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess ){ //"fs" is to avoid name conflict.
 
   //link runs only after file was closed. closeFile is passed as compatibility of postProcess interface
   //closeFile();
@@ -381,7 +375,7 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess,
   }
 }
 
-function passPostProcess( result, file, closeFile, jb, originalFilePath,chainedProcess, originalJson){
+function passPostProcess( result, file, closeFile, jb, originalFilePath,chainedProcess ){
   if( chainedProcess ) chainedProcess( originalFilePath );
 }
 
