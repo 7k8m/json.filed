@@ -36,9 +36,10 @@ function filedExecuter( file ){
   }
 
   this.executeChild = function(p1,p2){};
-  this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess,thisExecuter)},this);
-  this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess,thisExecuter)},this);
-  this.pass = addChildExecuterFunction(function(userProcess){ return new passExecuter(userProcess, thisExecuter) },this);
+
+  this.io = addChildExecuterFunction(executerFactory(ioExecuter,thisExecuter),this);
+  this.link = addChildExecuterFunction(executerFactory(linkExecuter,thisExecuter),this);
+  this.pass = addChildExecuterFunction(executerFactory(passExecuter,thisExecuter),this);
 
   this.exec = function(){ filedExecute( file, thisExecuter.executeChild ); };
 
@@ -51,9 +52,9 @@ function ioExecuter( userProcess, root ){
     io(filePath, userProcess, jb, this.executeChild );
   }
 
-  this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess,root)},this);
-  this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess,root)},this);
-  this.pass = addChildExecuterFunction(function(userProcess){ return new passExecuter( userProcess,root) },this);
+  this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
+  this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
+  this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
 
   this.exec = function(){ root.exec() };
 
@@ -67,9 +68,9 @@ function linkExecuter( userProcess, root){
     link(filePath, userProcess, jb, this.executeChild );
   }
 
-  this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess, root)},this);
-  this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess, root)},this);
-  this.pass = addChildExecuterFunction(function(userProcess){ return new passExecuter( userProcess, root)},this);
+  this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
+  this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
+  this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
 
   this.exec = function(){ root.exec() };
 
@@ -82,14 +83,17 @@ function passExecuter( userProcess, root){
     pass(filePath, userProcess, jb, this.executeChild );
   }
 
-  this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess, root)},this);
-  this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess, root) },this);
-  this.pass = addChildExecuterFunction(function(userProcess){ return new passExecuter(userProcess, root) },this);
+  this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
+  this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
+  this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
 
   this.exec = function(){ root.exec() };
 
 }
 
+function executerFactory(classFunction,root){
+  return function(userProcess){ return new classFunction(userProcess,root) };
+}
 
 function addChildExecuterFunction( executerFactory, parent ){
 
