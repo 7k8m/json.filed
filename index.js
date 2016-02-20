@@ -38,6 +38,7 @@ function filedExecuter( file ){
   this.executeChild = function(p1,p2){};
   this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess,thisExecuter)},this);
   this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess,thisExecuter)},this);
+  this.pass = addChildExecuterFunction(function(userProcess){ return new passExecuter(userProcess, thisExecuter) },this);
 
   this.exec = function(){ filedExecute( file, thisExecuter.executeChild ); };
 
@@ -52,6 +53,7 @@ function ioExecuter( userProcess, root ){
 
   this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess,root)},this);
   this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess,root)},this);
+  this.pass = addChildExecuterFunction(function(userProcess){ return new passExecuter( userProcess,root) },this);
 
   this.exec = function(){ root.exec() };
 
@@ -67,6 +69,22 @@ function linkExecuter( userProcess, root){
 
   this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess, root)},this);
   this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess, root)},this);
+  this.pass = addChildExecuterFunction(function(userProcess){ return new passExecuter( userProcess, root)},this);
+
+  this.exec = function(){ root.exec() };
+
+}
+
+function passExecuter( userProcess, root){
+  this.executeChild = function(p1,p2){};
+
+  this.internalExec = function( filePath, jb) {
+    pass(filePath, userProcess, jb, this.executeChild );
+  }
+
+  this.io = addChildExecuterFunction(function(userProcess){ return new ioExecuter(userProcess, root)},this);
+  this.link = addChildExecuterFunction(function(userProcess){ return new linkExecuter(userProcess, root) },this);
+  this.pass = addChildExecuterFunction(function(userProcess){ return new passExecuter(userProccess, root) },this);
 
   this.exec = function(){ root.exec() };
 
@@ -228,6 +246,46 @@ function link( filePath, userProcess, jb, chainedProcess){
 
 }
 
+function pass( filePath, userProcess, jb, chainedProcess){
+
+  fs.open(
+    filePath,
+    'r+',
+    (err,fd) => {
+
+      if( ! err ){
+        //pass only when file exists.
+
+        //read from file and process
+        fs.readFile(
+          fd,
+          encoding(jb),
+          (err, data) => {
+
+            fs.close(fd);
+
+            if (err) raiseError('IOError Failed to read file.');
+            var json = decode( data, jb);
+            apply(
+              userProcess,
+              json,
+              filePath,
+              function(){}, // closed already and no need to close
+              jb,
+              filePath,
+              passPostProcess,
+              chainedProcess,
+              json
+            );
+          }
+        );
+      }
+
+    }
+  );
+
+}
+
 //apply process function to json.
 function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess, originalJson){
 
@@ -300,7 +358,10 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess,
       }
     );
   }
+}
 
+function passPostProcess( result, file, closeFile, jb, originalFilePath,chainedProcess, originalJson){
+  if( chainedProcess ) chainedProcess( originalFilePath );
 }
 
 function encoding( jb ){

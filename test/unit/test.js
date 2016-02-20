@@ -320,6 +320,27 @@ describe('Function that return no object', function () {
 
 });
 
+const testFile11Path = './' + Math.random() + '.json';
+const test11msg = { msg: "received by pass"};
+describe('Pass ', function () {
+  it('should receives former process', function (done) {
+    jf.filed( testFile11Path ).io(
+        function( obj, filePath ) {
+          return test11msg;
+        }
+      ).exec();
+
+    setTimeout(
+      function(){
+        jf.filed( testFile11Path ).pass( function( obj, filePath ) {
+            expect(obj).to.eql( test11msg );
+            done();
+        }).exec();
+      },
+      500);
+    });
+
+});
 
 describe('filed( obj ).io(function(){}).io(function(){}).exec', function () {
     it('should be a function', function () {
