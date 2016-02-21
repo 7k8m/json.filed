@@ -404,7 +404,7 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath,chainedProce
       originalFilePath,
       newFilePath,
       function(err){
-        if(err) raiseError("Failed to link from " + originalFilePath + " to " + newFilePath,err);
+        if(err) raiseError("Failed to copy from " + originalFilePath + " to " + newFilePath,err);
         if( chainedProcess ) chainedProcess( newFilePath );
       }
     );
