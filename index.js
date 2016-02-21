@@ -192,7 +192,6 @@ function pathIterator( file ){
 
   }else{
     raiseError( null, 'Failed to create path Iterator' );
-
   }
 }
 
@@ -342,9 +341,18 @@ function process(
 //apply process function to json.
 function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
 
-  if( chainedProcess == undefined) chainedProcess = function(p1,p2){};
+  let guardedUserProcess =
+    function( json, filePath){
+      try{
+        return process( json,filePath);
+      }catch(err){
+        raiseError( null, 'User process error', err);
+      }
+    };
 
-  var result = process(json,filePath);
+  if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
+
+  var result = guardedUserProcess(json,filePath);
 
   if(result != undefined && result != null){
     //if result returned, executePostProcess
@@ -511,8 +519,7 @@ function JsonFiledError(msg,innerError){
 util.inherits(JsonFiledError,Error);
 
 function raiseError(emitter, msg, innerError){
-  if( emitter == null)
-      emitter = defaultEmitter;
+  if( emitter == null) emitter = defaultEmitter;
    emitter.emit('error', new JsonFiledError( msg, innerError));
 }
 
@@ -521,7 +528,7 @@ function raiseUnknownError(emitter){
 }
 
 
-function defaultErrorListener( error ){
+var defaultErrorListener = function ( error ){
   console.error( error );
   throw error; //defaut Listener does not adohere keep running.
 }
@@ -538,13 +545,25 @@ function addErrorListener(emitter, errListener){
 
 }
 
-function DefaultEmitter(){};
-util.inherits(DefaultEmitter,EventEmitter);
-
+function DefaultEmitter () {};
+util.inherits( DefaultEmitter, EventEmitter);
 let defaultEmitter = new DefaultEmitter();
-defaultEmitter.on(
-  "error",
-  defaultErrorListener
-);
+
+function replaceErrorListenerOfDefaultEmitter(errorListener){
+  defaultEmitter.removeAllListeners('error');
+  defaultEmitter.on(
+    'error',
+    errorListener
+  );
+};
+
+//Initialization of module.
+replaceErrorListenerOfDefaultEmitter( defaultErrorListener );
+
+//User can replace error listener.
+module.exports.replaceErrorListenerOfDefaultEmitter =
+  function( userErrorListener ){
+    replaceErrorListenerOfDefaultEmitter( userErrorListener );
+  };
 
 module.exports.JsonFiledError = JsonFiledError;
