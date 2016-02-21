@@ -36,6 +36,7 @@ function filedExecuter( file ){
   this.copy = addChildExecuterFunction(executerFactory(copyExecuter,thisExecuter),this);
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,thisExecuter),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,thisExecuter),this);
+  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,thisExecuter),this);
 
   this.exec = function(){ filedExecute( file, thisExecuter.executeChild ); };
 
@@ -52,6 +53,7 @@ function ioExecuter( userProcess, root ){
   this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
+  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
   this.exec = function(){ root.exec() };
 
@@ -69,6 +71,7 @@ function copyExecuter( userProcess, root){
   this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
+  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
   this.exec = function(){ root.exec() };
 
@@ -86,6 +89,7 @@ function linkExecuter( userProcess, root){
   this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
+  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
   this.exec = function(){ root.exec() };
 
@@ -102,22 +106,24 @@ function passExecuter( userProcess, root){
   this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
+  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
   this.exec = function(){ root.exec() };
 
 }
 
-function stopIfExecuter( userProcess, root){
+function filterExecuter( userProcess, root){
   this.executeChild = function(p1,p2){};
 
   this.internalExec = function( filePath, jb) {
-    stopIf(filePath, userProcess, jb, this.executeChild );
+    filter(filePath, userProcess, jb, this.executeChild );
   }
 
   this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
   this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
+  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
   this.exec = function(){ root.exec() };
 
@@ -236,6 +242,20 @@ function copy( filePath, userProces, jb, chainedProcess ){
 
 function pass( filePath, userProcess, jb, chainedProcess){
   process(filePath, userProcess, jb, chainedProcess, passPostProcess,
+    raiseUnknownError //pass dows not create new file when not existed
+  );
+}
+
+function filter( filePath, userProcess, jb, chainedProcess){
+  process(filePath,
+    function(obj,filePath){
+      if( userProcess( obj, filePath) ) return true;
+      else return false;
+    },
+    userProcess,
+    jb,
+    chainedProcess,
+    filterPostProcess,
     raiseUnknownError //pass dows not create new file when not existed
   );
 }
@@ -406,6 +426,10 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess 
 
 function passPostProcess( result, file, closeFile, jb, originalFilePath,chainedProcess ){
   if( chainedProcess ) chainedProcess( originalFilePath );
+}
+
+function fileterPostProcess( result, file, closeFile, jb, originalFilePath,chainedProcess ){
+  if( result && chainedProcess ) chainedProcess( originalFilePath );
 }
 
 function encoding( jb ){
