@@ -43,7 +43,7 @@ function filedExecuter( file ){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,thisExecuter),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,thisExecuter),this);
 
-  this.exec = function( eh ){ filedExecute( file, thisExecuter.executeChild, eh ); };
+  this.exec = function(){ filedExecute( file, thisExecuter.executeChild ); };
 
 };
 
@@ -61,7 +61,7 @@ function ioExecuter( userProcess, root ){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
-  this.exec = function( eh ){ root.exec( eh ) };
+  this.exec = function(){ root.exec() };
 
 }
 
@@ -80,7 +80,7 @@ function copyExecuter( userProcess, root){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
-  this.exec = function( eh ){ root.exec( eh ) };
+  this.exec = function(){ root.exec() };
 
 }
 
@@ -99,7 +99,7 @@ function linkExecuter( userProcess, root){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
-  this.exec = function( eh ){ root.exec( eh ) };
+  this.exec = function(){ root.exec() };
 
 }
 
@@ -117,7 +117,7 @@ function passExecuter( userProcess, root){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
-  this.exec = function( eh ){ root.exec( eh ) };
+  this.exec = function(){ root.exec() };
 
 }
 
@@ -135,7 +135,7 @@ function filterExecuter( userProcess, root){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
-  this.exec = function( eh ){ root.exec( eh ) };
+  this.exec = function(){ root.exec() };
 
 }
 
