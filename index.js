@@ -107,6 +107,22 @@ function passExecuter( userProcess, root){
 
 }
 
+function stopIfExecuter( userProcess, root){
+  this.executeChild = function(p1,p2){};
+
+  this.internalExec = function( filePath, jb) {
+    stopIf(filePath, userProcess, jb, this.executeChild );
+  }
+
+  this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
+  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
+  this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
+  this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
+
+  this.exec = function(){ root.exec() };
+
+}
+
 function executerFactory(classFunction,root){
   return function(userProcess){ return new classFunction(userProcess,root) };
 }
@@ -239,14 +255,18 @@ function io( filePath, userProcess, jb, chainedProcess){
 }
 
 function link( filePath, userProces, jb, chainedProcess ){
-  processfs(filePath, userProces, jb, chainedProcess, fsLink);
+  process(filePath, userProces, jb, chainedProcess, fsLink);
 }
 
 function copy( filePath, userProces, jb, chainedProcess ){
-  processfs(filePath, userProces, jb, chainedProcess, fsCopy);
+  process(filePath, userProces, jb, chainedProcess, fsCopy);
 }
 
-function processfs( filePath, userProcess, jb, chainedProcess, fsFunction){
+function pass( filePath, userProcess, jb, chainedProcess){
+  process(filePath, userProcess, jb, chainedProcess, passPostProcess);
+}
+
+function process( filePath, userProcess, jb, chainedProcess, jfProcess){
 
   fs.open(
     filePath,
@@ -262,11 +282,11 @@ function processfs( filePath, userProcess, jb, chainedProcess, fsFunction){
           encoding(jb),
           (err, data) => {
 
-            if (err) raiseError('IOError Failed to read file.');
+            if (err) raiseError('IOError Failed to read file.',err);
             fs.close(
               fd,
               function(err){
-                if(err) raiseError('link:failed to close file');
+                if(err) raiseError('IOError Failed to close file',err);
 
                 var json = decode( data, jb);
                 apply(
@@ -276,7 +296,7 @@ function processfs( filePath, userProcess, jb, chainedProcess, fsFunction){
                   function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
                   jb,
                   filePath,
-                  fsFunction,
+                  jfProcess,
                   chainedProcess
                 );
 
@@ -287,47 +307,8 @@ function processfs( filePath, userProcess, jb, chainedProcess, fsFunction){
       }
     }
   );
-
 }
 
-function pass( filePath, userProcess, jb, chainedProcess){
-
-  fs.open(
-    filePath,
-    'r+',
-    (err,fd) => {
-
-      if( ! err ){
-        //pass only when file exists.
-
-        //read from file and process
-        fs.readFile(
-          fd,
-          encoding(jb),
-          (err, data) => {
-
-            fs.close(fd);
-
-            if (err) raiseError('IOError Failed to read file.');
-            var json = decode( data, jb);
-            apply(
-              userProcess,
-              json,
-              filePath,
-              function( afterCloseProcess ){ afterCloseProcess(); }, // closed already and no need to close, but need to call chained process.
-              jb,
-              filePath,
-              passPostProcess,
-              chainedProcess
-            );
-          }
-        );
-      }
-
-    }
-  );
-
-}
 
 //apply process function to json.
 function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
