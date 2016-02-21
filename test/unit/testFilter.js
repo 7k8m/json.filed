@@ -5,13 +5,20 @@ var jf = require('../../'),
     fs = require('fs');
 
 let pathToFind = './' + Math.random() + '.json';
+let pathToNotFind = './' + Math.random() + '.json';
 
 function * testPath(){
   for(var i = 0; i < 100; i ++){
-    if( i != 21 )
-      yield './' + Math.random() + '.json';
-    else {
+    if( i == 30 ){
       yield pathToFind;
+
+    }else if( i == 49){
+      yield pathToNotFind;
+
+    }
+    else
+    {
+      yield './' + Math.random() + '.json';
     }
   }
 }
@@ -28,7 +35,10 @@ describe('Filter functions ', function () {
       }
     ).filter(
       function(obj, filePath){
-        return filePath == pathToFind;
+        if (filePath == pathToFind)
+          return true;
+        else if(filePath == pathToNotFind)
+          return false;
       }
     ).pass(
       function(obj, filePath){
