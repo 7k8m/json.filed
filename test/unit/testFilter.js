@@ -7,7 +7,7 @@ var jf = require('../../'),
 let pathToFind = './' + Math.random() + '.json';
 
 function * testPath(){
-  for(i = 0; i < 100; i ++){
+  for(var i = 0; i < 100; i ++){
     if( i != 21 )
       yield './' + Math.random() + '.json';
     else {
@@ -21,7 +21,7 @@ var testValue = { msg: Math.random().toString() };
 describe('Filter functions ', function () {
   it('should only pass true returned JSON.', function (done) {
 
-    jf.filed( testPath)
+    jf.filed( testPath() )
     .io(
       function( obj, filePath) {
         return testValue;
@@ -34,7 +34,7 @@ describe('Filter functions ', function () {
       function(obj, filePath){
         expect(filePath).to.eql(pathToFind);
       }
-    )
+    ).exec();
 
     setTimeout(
       function(){
