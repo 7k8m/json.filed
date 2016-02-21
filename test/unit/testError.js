@@ -24,28 +24,30 @@ describe('Error ', function () {
     jf.filed( testPath )
     .io(
       function( obj, filePath) {
-        throw {msg:"intended error"};
+        //throw {msg:"intended error"};
         return testValue;
       },
       function(err){
-        console.error(err);
+        //console.error(err);
         done();
       }
     ).filter(
       function(obj, filePath){
-        if (filePath == pathToFind)
-          return true;
-        else if(filePath == pathToNotFind)
-          return false;
+        throw {msg:"intended error"};
+
+        return true;
       },
       function(err){
+        done();
         console.error(err);
       }
     ).pass(
       function(obj, filePath){
-        expect(filePath).to.eql(pathToFind);
+        //throw {msg:"intended error"};
+        expect(filePath).to.eql(testPath);
       },
       function(err){
+        done();
         console.error(err);
       }
     ).exec();

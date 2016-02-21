@@ -274,14 +274,11 @@ function pass( filePath, userProcess, jb, chainedProcess){
 
 function filter( filePath, userProcess, jb, chainedProcess){
   process(filePath,
-    function(obj,filePath){
-      if( userProcess( obj, filePath) ) return true;
-      else return false;
-    },
+    filternize(userProcess),
     jb,
     chainedProcess,
     filterPostProcess,
-    raiseUnknownError //pass dows not create new file when not existed
+    raiseUnknownError //pass does not create new file when not existed
   );
 }
 
@@ -339,22 +336,58 @@ function process(
   );
 }
 
+function filternize( userProcess ){
+  // return true/false according to result of user process.
+  let result =
+    wrapUserProcess(
+      userProcess,
+      function( process ){
+        return function(obj,filePath){
+            if( process ( obj, filePath) ) return true;
+            else return false;
+        };
+      }
+    );
+  return result;
+
+}
+
+function wrapUserProcess( userProcess, functionWrapper ){
+
+  //To keep _plannedExecuter hack working, this function is needed to use when wrapping userProcess.
+  let wrapped = functionWrapper( userProcess );
+  wrapped._plannedExecuter = userProcess._plannedExecuter;//hack to emit error from userProcess by executer.
+
+  return wrapped;
+
+}
+
+function guardProcess(userProcess){
+
+  let guarded =
+    function( json, filePath){
+      try{
+        return userProcess( json,filePath);
+      }catch(err){
+        //walkaround for unclear this/caller problem in javascript.
+        //I just wanted to use something like "this".
+        raiseError( userProcess._plannedExecuter, 'User process error', err);
+
+      }
+    };
+
+  return guarded;
+
+}
 
 //apply process function to json.
 function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
 
-  let guardedUserProcess =
-    function( json, filePath){
-      try{
-        return process( json,filePath);
-      }catch(err){
-        raiseError( process._plannedExecuter, 'User process error', err);
-      }
-    };
+  let guardedProcess = guardProcess(process);
 
   if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
 
-  var result = guardedUserProcess(json,filePath);
+  var result = guardedProcess(json,filePath);
 
   if(result != undefined && result != null){
     //if result returned, executePostProcess
