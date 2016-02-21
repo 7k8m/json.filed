@@ -564,8 +564,10 @@ function JsonFiledError(msg,innerError){
 util.inherits(JsonFiledError,Error);
 
 function raiseError(emitter, msg, innerError){
-  if( emitter == null) emitter = defaultEmitter;
-   emitter.emit('error', new JsonFiledError( msg, innerError));
+  if( emitter == null){
+    emitter = defaultEmitter;
+  }
+  emitter.emit('error', new JsonFiledError( msg, innerError));
 }
 
 function raiseUnknownError(emitter){
