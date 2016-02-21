@@ -73,9 +73,10 @@ jf.filed( file )
 .io( function( json, filePath ) { your code to process json here } )
 .link( function( json, filePath )) { your another code to proces json here} )
 .pass( function( json, filePath )) { your another code to process json here} )
+.copy( function( json, filePath )) { your another code to process json here} )
 ````
 
-io,link and pass can be chained as above.
+io,link and pass and copy can be chained as above.
 
 
 ## binary format (bson) support
