@@ -38,6 +38,7 @@ function filedExecuter( file ){
   this.executeChild = function(p1,p2){};
 
   this.io = addChildExecuterFunction(executerFactory(ioExecuter,thisExecuter),this);
+  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,thisExecuter),this);
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,thisExecuter),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,thisExecuter),this);
 
@@ -53,6 +54,24 @@ function ioExecuter( userProcess, root ){
   }
 
   this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
+  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
+  this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
+  this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
+
+  this.exec = function(){ root.exec() };
+
+}
+
+function copyExecuter( userProcess, root){
+
+  this.executeChild = function(p1,p2){};
+
+  this.internalExec = function ( filePath, jb) {
+    copy(filePath, userProcess, jb, this.executeChild );
+  }
+
+  this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
+  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
 
@@ -69,6 +88,7 @@ function linkExecuter( userProcess, root){
   }
 
   this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
+  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
 
@@ -84,6 +104,7 @@ function passExecuter( userProcess, root){
   }
 
   this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
+  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);  
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
 
@@ -222,7 +243,15 @@ function io( filePath, userProcess, jb, chainedProcess){
 
 }
 
-function link( filePath, userProcess, jb, chainedProcess){
+function link( filePath, userProces, jb, chainedProcess ){
+  processfs(filePath, userProces, jb, chainedProcess, fsLink);
+}
+
+function copy( filePath, userProces, jb, chainedProcess ){
+  processfs(filePath, userProces, jb, chainedProcess, fsCopy);
+}
+
+function processfs( filePath, userProcess, jb, chainedProcess, fsFunction){
 
   fs.open(
     filePath,
@@ -252,7 +281,7 @@ function link( filePath, userProcess, jb, chainedProcess){
                   function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
                   jb,
                   filePath,
-                  fsLink,
+                  fsFunction,
                   chainedProcess
                 );
 
@@ -365,6 +394,36 @@ function saveCore( data, file, closeFile, jb,
     );
     throw raiseError("failed in save", error);
   }
+}
+
+function fsCopy( copied2Path, file, closeFile, jb, originalFilePath,chainedProcess ){ //"fs" is to avoid name conflict.
+
+  let itr = pathIterator( copied2Path );
+  for(let newFilePath of itr ){
+    fsPipe(
+      originalFilePath,
+      newFilePath,
+      function(err){
+        if(err) raiseError("Failed to link from " + originalFilePath + " to " + newFilePath,err);
+        if( chainedProcess ) chainedProcess( newFilePath );
+      }
+    );
+  }
+}
+
+function fsPipe( fromPath, toPath, callback){
+
+  let readStream = fs.createReadStream(fromPath);
+  let writeStream = fs.createWriteStream(toPath);
+
+  //readStream.on('end',()=>{} ); // rely on end feature
+  writeStream.on('finish',() => { callback( false );} );
+
+  readStream.on('error',(err) => { callback(err) } );
+  writeStream.on('error',(err) => { callback(err) } );
+
+  readStream.pipe(writeStream);
+
 }
 
 function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess ){ //"fs" is to avoid name conflict.

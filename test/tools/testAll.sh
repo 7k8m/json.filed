@@ -5,4 +5,5 @@ mocha test/unit/testChain_more.js
 mocha test/unit/testChain_more_2.js
 mocha test/unit/testChainWithPass.js
 mocha test/unit/testNested.js
+mocha test/unit/testCopy.js
 sh test/tools/rmTestJsonFile.sh
