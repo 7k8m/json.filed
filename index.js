@@ -8,8 +8,12 @@ See the accompanying LICENSE file for terms.
 
 const fs = require('fs');
 const path = require('path');
+
 const bson = require('bson');
 const BSON = new bson.BSONPure.BSON();
+
+const EventEmitter = require('events');
+const util = require('util');
 
 const initialValue = {};
 
@@ -22,6 +26,7 @@ module.exports.initialValue =
   function() { return initialValue; };
 
 module.exports.filed = function (file) { return new filedExecuter (file); }
+
 
 function filedExecuter( file ){
 
@@ -38,9 +43,10 @@ function filedExecuter( file ){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,thisExecuter),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,thisExecuter),this);
 
-  this.exec = function(){ filedExecute( file, thisExecuter.executeChild ); };
+  this.exec = function( eh ){ filedExecute( file, thisExecuter.executeChild, eh ); };
 
 };
+
 
 function ioExecuter( userProcess, root ){
 
@@ -55,9 +61,10 @@ function ioExecuter( userProcess, root ){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
-  this.exec = function(){ root.exec() };
+  this.exec = function( eh ){ root.exec( eh ) };
 
 }
+
 
 function copyExecuter( userProcess, root){
 
@@ -73,9 +80,10 @@ function copyExecuter( userProcess, root){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
-  this.exec = function(){ root.exec() };
+  this.exec = function( eh ){ root.exec( eh ) };
 
 }
+
 
 function linkExecuter( userProcess, root){
 
@@ -91,9 +99,10 @@ function linkExecuter( userProcess, root){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
-  this.exec = function(){ root.exec() };
+  this.exec = function( eh ){ root.exec( eh ) };
 
 }
+
 
 function passExecuter( userProcess, root){
   this.executeChild = function(p1,p2){};
@@ -108,9 +117,10 @@ function passExecuter( userProcess, root){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
-  this.exec = function(){ root.exec() };
+  this.exec = function( eh ){ root.exec( eh ) };
 
 }
+
 
 function filterExecuter( userProcess, root){
   this.executeChild = function(p1,p2){};
@@ -125,9 +135,17 @@ function filterExecuter( userProcess, root){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
 
-  this.exec = function(){ root.exec() };
+  this.exec = function( eh ){ root.exec( eh ) };
 
 }
+
+util.inherits( filedExecuter, EventEmitter);
+util.inherits( ioExecuter, EventEmitter);
+util.inherits( copyExecuter, EventEmitter);
+util.inherits( linkExecuter, EventEmitter);
+util.inherits( filterExecuter, EventEmitter);
+util.inherits( passExecuter, EventEmitter);
+
 
 function executerFactory(classFunction,root){
   return function(userProcess){ return new classFunction(userProcess,root) };
@@ -135,12 +153,18 @@ function executerFactory(classFunction,root){
 
 function addChildExecuterFunction( executerFactory, parent ){
 
-  var f = function( userProcess ){ //function to create child executer.
+  var f = function( userProcess, errListener ){ //function to create child executer.
 
     let executer = executerFactory( userProcess );
     parent.executeChild = function( filePath ){ //switch state of parent also.
       executer.internalExec( filePath, calcJb( filePath ));
     }
+
+    if(errListener == undefined || errListener == null){
+      errListener = defaultErrorListener;
+    }
+
+    executer.on('error', errListener);
 
     return executer;
 
@@ -151,10 +175,10 @@ function addChildExecuterFunction( executerFactory, parent ){
 }
 
 
-function filedExecute( file, execute ){
+function filedExecute( file, execute, eventHandler ){
   let itr = pathIterator( file );
   for( let filePath of itr ){
-    execute(filePath, calcJb(filePath));
+    execute(filePath, calcJb(filePath), eventHandler);
   }
 }
 
@@ -483,12 +507,19 @@ function JsonFiledError(msg,innerError){
   this.innerError = innerError;
 };
 
+util.inherits(JsonFiledError,Error);
+
 function raiseError(msg,innerError){
-  throw new JsonFiledError(msg,innerError);
+  this.emit('error', JsonFiledError( msg, innerError) );
 }
 
 function raiseUnknownError(){
   raiseError("Unknown error.",null);
+}
+
+function defaultErrorListener( error ){
+  console.error( error );
+  throw error; //defaut Listener does not adohere keep running.
 }
 
 module.exports.JsonFiledError = JsonFiledError;
