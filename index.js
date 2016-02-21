@@ -217,7 +217,7 @@ function io( filePath, userProcess, jb, chainedProcess){
         'w+',
         (err,fd) => {
 
-          if(err) raiseError(null, 'IOError Failed to create file.') ;
+          if(err) raiseError( userProcess._plannedExecuter, 'IOError Failed to create file.') ;
 
           //save to file and apply process.
           save(
@@ -233,7 +233,7 @@ function io( filePath, userProcess, jb, chainedProcess){
                     fs.close(
                       fd,
                       function(err){
-                        if(err) raiseError(null, "io:failsed to close file");
+                        if(err) raiseError( userProcess._plannedExecuter, "io:failsed to close file");
                         afterCloseProcess();
                       }
                     );
@@ -305,11 +305,11 @@ function process(
           encoding(jb),
           (err, data) => {
 
-            if (err) raiseError(null, 'IOError Failed to read file.',err);
+            if (err) raiseError( userProcess._plannedExecuter, 'IOError Failed to read file.',err);
             fs.close(
               fd,
               function(err){
-                if(err) raiseError(null, 'IOError Failed to close file',err);
+                if(err) raiseError( userProcess._plannedExecuter, 'IOError Failed to close file',err);
 
                 var json = decode( data, jb);
                 apply(
@@ -353,6 +353,32 @@ function filternize( userProcess ){
 
 }
 
+
+function guardProcess( userProcess ){
+
+  let guarded =
+    wrapUserProcess(
+      userProcess,
+      function( userProcess ){
+        return function( json, filePath){
+          try{
+            return userProcess( json, filePath);
+
+          }catch(err){
+            //walkaround for unclear this/caller problem in javascript.
+            //I just wanted to use something like "this".
+            raiseError( userProcess._plannedExecuter, 'User process error', err);
+
+          }
+        };
+      }
+    );
+
+  return guarded;
+
+}
+
+
 function wrapUserProcess( userProcess, functionWrapper ){
 
   //To keep _plannedExecuter hack working, this function is needed to use when wrapping userProcess.
@@ -363,23 +389,6 @@ function wrapUserProcess( userProcess, functionWrapper ){
 
 }
 
-function guardProcess(userProcess){
-
-  let guarded =
-    function( json, filePath){
-      try{
-        return userProcess( json,filePath);
-      }catch(err){
-        //walkaround for unclear this/caller problem in javascript.
-        //I just wanted to use something like "this".
-        raiseError( userProcess._plannedExecuter, 'User process error', err);
-
-      }
-    };
-
-  return guarded;
-
-}
 
 //apply process function to json.
 function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
