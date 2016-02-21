@@ -28,6 +28,21 @@ jf.filed( file )
     + `return json` from function, written to the file of `filePath` parameter.
         + Nothing written, if return no object.
 
+### copy
+````
+.copy( function( json, filePath ) { your code to process json here } )
+````
+
++ `function( json, filePath ) { ... }` is where process json.
+    + json from file is passed to function as a `json` parameter
+    + `filePath` is where json from.
+    + `return newPath` from function, file of incoming `filePath` copied to newPath
+        + newPath is string or iterator
+            + if string, filePath.
+            + if iterator, above filePath is iterated.
+        + Nothing copied,if return no object.
+
+
 ### link
 ````
 .link( function( json, filePath ) { your code to process json here } )
