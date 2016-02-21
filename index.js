@@ -149,7 +149,7 @@ util.inherits( passExecuter, EventEmitter);
 
 
 function executerFactory(classFunction,root){
-  return function(userProcess){ return new classFunction(userProcess,root) };
+  return function(userProcess){ return new classFunction( userProcess, root) };
 }
 
 function addChildExecuterFunction( executerFactory, parent ){
@@ -157,6 +157,8 @@ function addChildExecuterFunction( executerFactory, parent ){
   var f = function( userProcess, errListener ){ //function to create child executer.
 
     let executer = executerFactory( userProcess );
+    userProcess._plannedExecuter = executer; //hack to emit error from userProcess by executer.
+
     parent.executeChild = function( filePath ){ //switch state of parent also.
       try{
         executer.internalExec( filePath, calcJb( filePath ));
@@ -346,7 +348,7 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess, chain
       try{
         return process( json,filePath);
       }catch(err){
-        raiseError( null, 'User process error', err);
+        raiseError( process._plannedExecuter, 'User process error', err);
       }
     };
 

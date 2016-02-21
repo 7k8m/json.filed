@@ -10,12 +10,14 @@ var testValue = { msg: Math.random().toString() };
 describe('Error ', function () {
   it('should be handled in error listener', function (done) {
 
+    /*
     jf.replaceErrorListenerOfDefaultEmitter(
       function(err){
         console.error(err);
         done();
       }
     );
+    */
 
     jf.filed( testPath )
     .io(
@@ -25,7 +27,7 @@ describe('Error ', function () {
       },
       function(err){
         console.error(err);
-        //done();
+        done();
       }
     ).filter(
       function(obj, filePath){
