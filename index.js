@@ -171,84 +171,52 @@ function * singlePath( file ){
 
 function io( filePath, userProcess, jb, chainedProcess){
 
-  fs.open(
+  process(
     filePath,
-    'r+',
-    (err,fd) => {
+    userProcess,
+    jb,
+    chainedProcess,
+    saveAfterApply,
+    function(){
+      //file to read does not exists.
+      //create file with initial value and process json.
+      fs.open(
+        filePath,
+        'w+',
+        (err,fd) => {
 
-      if( ! err ){
-        //file to read exists.
+          if(err) raiseError('IOError Failed to create file.') ;
 
-        //read from file and process
-        fs.readFile(
-          fd,
-          encoding(jb),
-          (err, data) => {
-            if (err) raiseError('IOError Failed to read file.');
-
-            fs.close(fd,
-              function(err){
-
-                if(err) raiseError('IOError failed to close file.');
-
-                let originalJson = decode( data, jb);
+          //save to file and apply process.
+          save(
+            initialValue,
+            fd,
+            function(){
+                //apply process
                 apply(
                   userProcess,
-                  decode( data, jb ),
-                  filePath,
-                  function( afterCloseProcess ){ afterCloseProcess() }, // no need to close filePath, but need to call chainedProcess.
+                  initialValue,
+                  fd,
+                  function(afterCloseProcess){// close descriptor.
+                    fs.close(
+                      fd,
+                      function(err){
+                        if(err) raiseError("io:failsed to close file");
+                        afterCloseProcess();
+                      }
+                    );
+                  },
                   jb,
                   filePath,
                   saveAfterApply,
                   chainedProcess
                 );
-              }
-            );
-          }
-        );
+            },
+            jb
+          );
 
-      }else{
-        //file to read does not exists.
-
-        //create file with initial value and process json.
-        fs.open(
-          filePath,
-          'w+',
-          (err,fd) => {
-
-            if(err) raiseError('IOError Failed to create file.') ;
-
-            //save to file and apply process.
-            save(
-              initialValue,
-              fd,
-              function(){
-                  //apply process
-                  apply(
-                    userProcess,
-                    initialValue,
-                    fd,
-                    function(afterCloseProcess){// close descriptor.
-                      fs.close(
-                        fd,
-                        function(err){
-                          if(err) raiseError("io:failsed to close file");
-                          afterCloseProcess();
-                        }
-                      );
-                    },
-                    jb,
-                    filePath,
-                    saveAfterApply,
-                    chainedProcess
-                  );
-              },
-              jb
-            );
-
-          }
-        );
-      }
+        }
+      );
     }
   );
 
@@ -266,7 +234,14 @@ function pass( filePath, userProcess, jb, chainedProcess){
   process(filePath, userProcess, jb, chainedProcess, passPostProcess);
 }
 
-function process( filePath, userProcess, jb, chainedProcess, jfProcess){
+function process(
+  filePath,
+  userProcess,
+  jb,
+  chainedProcess,
+  jfProcess,
+  fileCreationProcess
+){
 
   fs.open(
     filePath,
@@ -274,7 +249,7 @@ function process( filePath, userProcess, jb, chainedProcess, jfProcess){
     (err,fd) => {
 
       if( ! err ){
-        //link only when file exists.
+        //file exists.
 
         //read from file and process
         fs.readFile(
@@ -304,6 +279,10 @@ function process( filePath, userProcess, jb, chainedProcess, jfProcess){
             );
           }
         );
+      }else{
+        //file not exists.
+        fileCreationProcess();
+
       }
     }
   );
