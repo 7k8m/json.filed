@@ -104,7 +104,7 @@ function passExecuter( userProcess, root){
   }
 
   this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
-  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);  
+  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
   this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
 
