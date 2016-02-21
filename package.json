@@ -1,7 +1,7 @@
 {
   "name": "json.filed",
-  "version": "0.0.0",
-  "description": "Save/load a json to/from a file",
+  "version": "0.0.1",
+  "description": "Processor of json file",
   "main": "index.js",
   "files": ["index.js"],
   "keywords": [
