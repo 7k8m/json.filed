@@ -397,7 +397,7 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess, chain
 
   if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
 
-  var result = guardedProcess(json,filePath);
+  var result = guardedProcess(json,filePath,guardedProcess._plannedExecuter);
 
   if(result != undefined && result != null){
     //if result returned, executePostProcess
