@@ -223,15 +223,21 @@ function io( filePath, userProcess, jb, chainedProcess){
 }
 
 function link( filePath, userProces, jb, chainedProcess ){
-  process(filePath, userProces, jb, chainedProcess, fsLink);
+  process(filePath, userProces, jb, chainedProcess, fsLink,
+    raiseUnknownError // link does not create new file when not existed
+  );
 }
 
 function copy( filePath, userProces, jb, chainedProcess ){
-  process(filePath, userProces, jb, chainedProcess, fsCopy);
+  process(filePath, userProces, jb, chainedProcess, fsCopy,
+    raiseUnknownError //copy does not create new file when not existed
+  );
 }
 
 function pass( filePath, userProcess, jb, chainedProcess){
-  process(filePath, userProcess, jb, chainedProcess, passPostProcess);
+  process(filePath, userProcess, jb, chainedProcess, passPostProcess,
+    raiseUnknownError //pass dows not create new file when not existed
+  );
 }
 
 function process(
@@ -240,7 +246,7 @@ function process(
   jb,
   chainedProcess,
   jfProcess,
-  fileCreationProcess
+  fileCreationProcess // process to create file when not existed
 ){
 
   fs.open(
@@ -456,6 +462,10 @@ function JsonFiledError(msg,innerError){
 
 function raiseError(msg,innerError){
   throw new JsonFiledError(msg,innerError);
+}
+
+function raiseUnknownError(){
+  raiseError("Unknown error.",null);
 }
 
 module.exports.JsonFiledError = JsonFiledError;
