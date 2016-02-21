@@ -38,6 +38,10 @@ describe('Chained IO function', function () {
 
           return [testFilePath2];
         }
+      ).filter(
+        function( obj,filePath){
+          return filePath == testFilePath2;
+        }
       ).pass(
         function( obj, filePath){
           expect( filePath ).to.eql( testFilePath2 );

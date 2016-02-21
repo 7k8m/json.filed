@@ -57,6 +57,16 @@ jf.filed( file )
             + if iterator, above filePath is iterated.
         + Nothing newly linked,if return no object.
 
+### filter
+````
+.filter( function( json, filePath ) { your code to process json here } )
+````
+
++ `function( json, filePath ) { ... }` is where process json.
+    + json from file is passed to function as a `json` parameter
+    + `filePath` is where json from.
+    + function return `true` and chained process executed, otherwise chained process not executed for that `json`.
+
 ### pass
 ````
 .pass( function( json, filePath ) { your code to process json here } )
@@ -67,16 +77,18 @@ jf.filed( file )
     + `filePath` is where json from.
     + result of process does not affect execution of pass, and pass just continues next.
 
+
 ## chaining
 ````
 jf.filed( file )
 .io( function( json, filePath ) { your code to process json here } )
 .copy( function( json, filePath )) { your another code to process json here} )
 .link( function( json, filePath )) { your another code to proces json here} )
+.filter( function( json, filePath )) { your another code to proces json here} )
 .pass( function( json, filePath )) { your another code to process json here} )
 ````
 
-io,link and pass and copy can be chained as above.
+io,copy and link and filter and pass can be chained as above.
 
 
 ## binary format (bson) support

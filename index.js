@@ -252,7 +252,6 @@ function filter( filePath, userProcess, jb, chainedProcess){
       if( userProcess( obj, filePath) ) return true;
       else return false;
     },
-    userProcess,
     jb,
     chainedProcess,
     filterPostProcess,
@@ -428,7 +427,7 @@ function passPostProcess( result, file, closeFile, jb, originalFilePath,chainedP
   if( chainedProcess ) chainedProcess( originalFilePath );
 }
 
-function fileterPostProcess( result, file, closeFile, jb, originalFilePath,chainedProcess ){
+function filterPostProcess( result, file, closeFile, jb, originalFilePath,chainedProcess ){
   if( result && chainedProcess ) chainedProcess( originalFilePath );
 }
 
