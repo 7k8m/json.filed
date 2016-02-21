@@ -25,14 +25,15 @@ module.exports = {};
 module.exports.initialValue =
   function() { return initialValue; };
 
-module.exports.filed = function (file) { return new filedExecuter (file); }
-
+module.exports.filed =
+  function (file, errListener) {
+     return addErrorListener( new filedExecuter (file), errListener );
+   }
 
 function filedExecuter( file ){
-
   let thisExecuter = this;
   if(file == null){
-    raiseError( 'File is needed.' );
+    raiseError( this, 'File is needed.' );
   }
 
   this.executeChild = function(p1,p2){};
@@ -157,14 +158,14 @@ function addChildExecuterFunction( executerFactory, parent ){
 
     let executer = executerFactory( userProcess );
     parent.executeChild = function( filePath ){ //switch state of parent also.
-      executer.internalExec( filePath, calcJb( filePath ));
+      try{
+        executer.internalExec( filePath, calcJb( filePath ));
+      }catch(err){
+        raiseError(executer,err.toString(),err);
+      }
     }
 
-    if(errListener == undefined || errListener == null){
-      errListener = defaultErrorListener;
-    }
-
-    executer.on('error', errListener);
+    addErrorListener( executer, errListener);
 
     return executer;
 
@@ -175,10 +176,10 @@ function addChildExecuterFunction( executerFactory, parent ){
 }
 
 
-function filedExecute( file, execute, eventHandler ){
+function filedExecute( file, execute ){
   let itr = pathIterator( file );
   for( let filePath of itr ){
-    execute(filePath, calcJb(filePath), eventHandler);
+    execute(filePath, calcJb(filePath) );
   }
 }
 
@@ -190,7 +191,7 @@ function pathIterator( file ){
     return file;
 
   }else{
-    raiseError( 'Failed to create path Iterator' );
+    raiseError( null, 'Failed to create path Iterator' );
 
   }
 }
@@ -215,7 +216,7 @@ function io( filePath, userProcess, jb, chainedProcess){
         'w+',
         (err,fd) => {
 
-          if(err) raiseError('IOError Failed to create file.') ;
+          if(err) raiseError(null, 'IOError Failed to create file.') ;
 
           //save to file and apply process.
           save(
@@ -231,7 +232,7 @@ function io( filePath, userProcess, jb, chainedProcess){
                     fs.close(
                       fd,
                       function(err){
-                        if(err) raiseError("io:failsed to close file");
+                        if(err) raiseError(null, "io:failsed to close file");
                         afterCloseProcess();
                       }
                     );
@@ -306,11 +307,11 @@ function process(
           encoding(jb),
           (err, data) => {
 
-            if (err) raiseError('IOError Failed to read file.',err);
+            if (err) raiseError(null, 'IOError Failed to read file.',err);
             fs.close(
               fd,
               function(err){
-                if(err) raiseError('IOError Failed to close file',err);
+                if(err) raiseError(null, 'IOError Failed to close file',err);
 
                 var json = decode( data, jb);
                 apply(
@@ -387,7 +388,7 @@ function saveCore( data, file, closeFile, jb,
             if( chainedProcess ) chainedProcess(filePath);
           }
         );//file is closed in afterSaved, if needed.
-        if (err) raiseError('IOError failed to save json');
+        if (err) raiseError(null, 'IOError failed to save json');
       }
     );
   }catch(error){
@@ -396,7 +397,7 @@ function saveCore( data, file, closeFile, jb,
         if( chainedProcess ) chainedProcess(filePath);
       }
     );
-    throw raiseError("failed in save", error);
+    raiseError(null, "failed in save", error);
   }
 }
 
@@ -408,7 +409,7 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath,chainedProce
       originalFilePath,
       newFilePath,
       function(err){
-        if(err) raiseError("Failed to copy from " + originalFilePath + " to " + newFilePath,err);
+        if(err) raiseError(null, "Failed to copy from " + originalFilePath + " to " + newFilePath,err);
         if( chainedProcess ) chainedProcess( newFilePath );
       }
     );
@@ -440,7 +441,7 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess 
       originalFilePath,
       newFilePath,
       function(err){
-        if(err) raiseError("Failed to link from " + originalFilePath + " to " + newFilePath,err);
+        if(err) raiseError(null, "Failed to link from " + originalFilePath + " to " + newFilePath,err);
         if( chainedProcess ) chainedProcess( newFilePath );
       }
     );
@@ -458,7 +459,7 @@ function filterPostProcess( result, file, closeFile, jb, originalFilePath,chaine
 function encoding( jb ){
   if( jb == JB_BSON ) return null;
   else if( jb == JB_JSON ) return 'utf8';
-  else raiseError('encoding: jb must be JSON or BSON');
+  else raiseError(null, 'encoding: jb must be JSON or BSON');
 }
 
 function decode( obj, jb ){
@@ -472,7 +473,7 @@ function decode( obj, jb ){
     );
   }
   else if ( jb == JB_JSON ) return JSON.parse(obj);
-  else raiseError('decode: jb must be JSON or BSON');
+  else raiseError(null, 'decode: jb must be JSON or BSON');
 }
 
 function encode( obj, jb ){
@@ -485,7 +486,7 @@ function encode( obj, jb ){
     );
   }
   else if( jb == JB_JSON ) return JSON.stringify( obj );
-  else raiseError('encode: jb must be JSON or BSON');
+  else raiseError(null, 'encode: jb must be JSON or BSON');
 }
 
 function calcJb( filePath ){
@@ -509,17 +510,41 @@ function JsonFiledError(msg,innerError){
 
 util.inherits(JsonFiledError,Error);
 
-function raiseError(msg,innerError){
-  this.emit('error', JsonFiledError( msg, innerError) );
+function raiseError(emitter, msg, innerError){
+  if( emitter == null)
+      emitter = defaultEmitter;
+   emitter.emit('error', new JsonFiledError( msg, innerError));
 }
 
-function raiseUnknownError(){
-  raiseError("Unknown error.",null);
+function raiseUnknownError(emitter){
+  raiseError(emitter,"Unknown error.",null);
 }
+
 
 function defaultErrorListener( error ){
   console.error( error );
   throw error; //defaut Listener does not adohere keep running.
 }
+
+function addErrorListener(emitter, errListener){
+
+  emitter.on(
+    'error',
+    errListener == undefined || errListener == null ?
+    defaultErrorListener :
+    errListener
+  );
+  return emitter;
+
+}
+
+function DefaultEmitter(){};
+util.inherits(DefaultEmitter,EventEmitter);
+
+let defaultEmitter = new DefaultEmitter();
+defaultEmitter.on(
+  "error",
+  defaultErrorListener
+);
 
 module.exports.JsonFiledError = JsonFiledError;
