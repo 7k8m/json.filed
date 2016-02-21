@@ -23,11 +23,6 @@ module.exports.initialValue =
 
 module.exports.filed = function (file) { return new filedExecuter (file); }
 
-function createFieldExecuter(file){
-  var executer = new filedExecuter(file);
-
-}
-
 function filedExecuter( file ){
 
   let thisExecuter = this;
