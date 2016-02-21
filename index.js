@@ -441,7 +441,7 @@ function saveCore( data, file, closeFile, jb,
             if( chainedProcess ) chainedProcess(filePath);
           }
         );//file is closed in afterSaved, if needed.
-        if (err) raiseError(null, 'IOError failed to save json');
+        if (err) raiseError( null, 'IOError failed to save json');
       }
     );
   }catch(error){
@@ -450,7 +450,7 @@ function saveCore( data, file, closeFile, jb,
         if( chainedProcess ) chainedProcess(filePath);
       }
     );
-    raiseError(null, "failed in save", error);
+    raiseError( null, "failed in save", error);
   }
 }
 
@@ -462,7 +462,7 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath,chainedProce
       originalFilePath,
       newFilePath,
       function(err){
-        if(err) raiseError(null, "Failed to copy from " + originalFilePath + " to " + newFilePath,err);
+        if(err) raiseError( null, "Failed to copy from " + originalFilePath + " to " + newFilePath,err);
         if( chainedProcess ) chainedProcess( newFilePath );
       }
     );
@@ -494,7 +494,7 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess 
       originalFilePath,
       newFilePath,
       function(err){
-        if(err) raiseError(null, "Failed to link from " + originalFilePath + " to " + newFilePath,err);
+        if(err) raiseError( null, "Failed to link from " + originalFilePath + " to " + newFilePath,err);
         if( chainedProcess ) chainedProcess( newFilePath );
       }
     );
@@ -526,7 +526,7 @@ function decode( obj, jb ){
     );
   }
   else if ( jb == JB_JSON ) return JSON.parse(obj);
-  else raiseError(null, 'decode: jb must be JSON or BSON');
+  else raiseError( null, 'decode: jb must be JSON or BSON');
 }
 
 function encode( obj, jb ){
@@ -539,7 +539,7 @@ function encode( obj, jb ){
     );
   }
   else if( jb == JB_JSON ) return JSON.stringify( obj );
-  else raiseError(null, 'encode: jb must be JSON or BSON');
+  else raiseError( null, 'encode: jb must be JSON or BSON');
 }
 
 function calcJb( filePath ){
@@ -567,11 +567,11 @@ function raiseError(emitter, msg, innerError){
   if( emitter == null){
     emitter = defaultEmitter;
   }
-  emitter.emit('error', new JsonFiledError( msg, innerError));
+  emitter.emit( 'error', new JsonFiledError( msg, innerError));
 }
 
 function raiseUnknownError(emitter){
-  raiseError(emitter,"Unknown error.",null);
+  raiseError( emitter, "Unknown error.", null);
 }
 
 
@@ -596,7 +596,7 @@ function DefaultEmitter () {};
 util.inherits( DefaultEmitter, EventEmitter);
 let defaultEmitter = new DefaultEmitter();
 
-defaultEmitter.on('error',defaultErrorListener);
+defaultEmitter.on( 'error', defaultErrorListener);
 
 module.exports.defaultEmitter = defaultEmitter;
 
