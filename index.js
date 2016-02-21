@@ -336,6 +336,7 @@ function process(
   );
 }
 
+//(*->*) -> (*->boolean) and a littile bit more.
 function filternize( userProcess ){
   // return true/false according to result of user process.
   let result =
