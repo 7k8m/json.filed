@@ -551,21 +551,8 @@ function DefaultEmitter () {};
 util.inherits( DefaultEmitter, EventEmitter);
 let defaultEmitter = new DefaultEmitter();
 
-function replaceErrorListenerOfDefaultEmitter(errorListener){
-  defaultEmitter.removeAllListeners('error');
-  defaultEmitter.on(
-    'error',
-    errorListener
-  );
-};
+defaultEmitter.on('error',defaultErrorListener);
 
-//Initialization of module.
-replaceErrorListenerOfDefaultEmitter( defaultErrorListener );
-
-//User can replace error listener.
-module.exports.replaceErrorListenerOfDefaultEmitter =
-  function( userErrorListener ){
-    replaceErrorListenerOfDefaultEmitter( userErrorListener );
-  };
+module.exports.defaultEmitter = defaultEmitter;
 
 module.exports.JsonFiledError = JsonFiledError;

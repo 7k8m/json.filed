@@ -11,7 +11,9 @@ describe('Error ', function () {
   it('should be handled in error listener', function (done) {
 
     /*
-    jf.replaceErrorListenerOfDefaultEmitter(
+    jf.defaultEmitter.removeAllListeners('error');
+    jf.defaultEmitter.on(
+      'error',
       function(err){
         console.error(err);
         done();
