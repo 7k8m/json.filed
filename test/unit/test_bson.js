@@ -132,18 +132,20 @@ const hello = 'hello';
 
 describe('Serialized function ', function () {
   it('can be executed.', function (done) {
-    jf.filed( serializedFunctionFilePath ).io(
+    jf.filed( serializedFunctionFilePath )
+    .io(
         function( obj, filePath ) {
           return { say: function( greeting ){ return greeting; } };
         }
-      );
+      ).exec();
 
     setTimeout(
       function(){
-        jf.filed( serializedFunctionFilePath ).io( function( obj ) {
+        jf.filed( serializedFunctionFilePath )
+        .io( function( obj ) {
           expect( obj.say( hello ) ).to.eql( hello );
           done();
-        });
+        }).exec();
       },
       1000);
     })
