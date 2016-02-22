@@ -4,7 +4,7 @@ Processor of json file
 ## module
     var jf = require('json.filed')
 
-## functions
+## executers
 ### filed
 ````
 jf.filed( file )
@@ -90,5 +90,36 @@ jf.filed( file )
 
 io,copy and link and filter and pass can be chained as above.
 
+## Error handling
+### Error listener of executer
+Error captured in each executer can be handled in error listener of executer
+````
+jf.filed(
+  file,
+  function( err ) { your code to handle error here } )
+.io(
+  function( j, f ) { ... },
+  function( err ) { your code to handle error here } )
+````
+
+Each executer is emitter and you can send error to them.
+````
+.pass(
+  function( j, f, executer) {
+    executer.emit('error', {msg: "some of error" } )
+  },
+  function( err ) { your code to handle error here } )
+````
+
+### DefaultEmitter
+Error captured not in each executer can be handled in error listener of defaultEmitter
+````
+var jf = require( '../../' )
+jf.defaultEmitter.removeAllListeners( 'error' );
+jf.defaultEmitter.on(
+  'error',
+  function( err ){ your code to handle error here }
+);
+````
 
 ## binary format (bson) support
