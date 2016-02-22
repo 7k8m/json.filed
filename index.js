@@ -420,7 +420,8 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess, chain
       closeFile, //executed after saved.
       jb,
       filePath,
-      chainedProcess
+      chainedProcess,
+      guardedProcess._plannedExecuter
     );
 
   }else{
@@ -431,16 +432,17 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess, chain
 
 //file can be either of file path and descriptor
 
-function save( data, file, closeFile, jb){
-  saveCore( data,file, closeFile, jb);
+function save( data, file, closeFile, jb, executer){
+  saveCore( data,file, closeFile, jb, null, null, executer);
 }
 
-function saveAfterApply( data, file, closeFile, jb, filePath, chainedProcess ){
+function saveAfterApply( data, file, closeFile, jb, filePath, chainedProcess, executer){
   saveCore(data,file,closeFile,jb,filePath,chainedProcess);
 }
 
 function saveCore( data, file, closeFile, jb,
-                    filePath, chainedProcess //only passsed in saveAfterApplly
+                    filePath, chainedProcess, //only passsed in saveAfterApplly
+                    executer
                   ){
 
   try{
@@ -454,7 +456,7 @@ function saveCore( data, file, closeFile, jb,
             if( chainedProcess ) chainedProcess(filePath);
           }
         );//file is closed in afterSaved, if needed.
-        if (err) raiseError( null, 'IOError failed to save json');
+        if (err) raiseError( executer, 'IOError failed to save json');
       }
     );
   }catch(error){
@@ -463,11 +465,11 @@ function saveCore( data, file, closeFile, jb,
         if( chainedProcess ) chainedProcess(filePath);
       }
     );
-    raiseError( null, "failed in save", error);
+    raiseError( executer, "failed in save", error);
   }
 }
 
-function fsCopy( copied2Path, file, closeFile, jb, originalFilePath,chainedProcess ){ //"fs" is to avoid name conflict.
+function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, chainedProcess, executer ){ //"fs" is to avoid name conflict.
 
   let itr = pathIterator( copied2Path );
   for(let newFilePath of itr ){
@@ -475,7 +477,7 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath,chainedProce
       originalFilePath,
       newFilePath,
       function(err){
-        if(err) raiseError( null, "Failed to copy from " + originalFilePath + " to " + newFilePath,err);
+        if(err) raiseError( executer, "Failed to copy from " + originalFilePath + " to " + newFilePath,err);
         if( chainedProcess ) chainedProcess( newFilePath );
       }
     );
@@ -497,7 +499,7 @@ function fsPipe( fromPath, toPath, callback){
 
 }
 
-function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess ){ //"fs" is to avoid name conflict.
+function fsLink( linkPath, file, closeFile, jb, originalFilePath, chainedProcess, executer){ //"fs" is to avoid name conflict.
 
   //link runs only after file was closed. closeFile is passed as compatibility of postProcess interface
   //closeFile();
@@ -507,18 +509,18 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath,chainedProcess 
       originalFilePath,
       newFilePath,
       function(err){
-        if(err) raiseError( null, "Failed to link from " + originalFilePath + " to " + newFilePath,err);
+        if(err) raiseError( executer, "Failed to link from " + originalFilePath + " to " + newFilePath,err);
         if( chainedProcess ) chainedProcess( newFilePath );
       }
     );
   }
 }
 
-function passPostProcess( result, file, closeFile, jb, originalFilePath,chainedProcess ){
+function passPostProcess( result, file, closeFile, jb, originalFilePath, chainedProcess ){
   if( chainedProcess ) chainedProcess( originalFilePath );
 }
 
-function filterPostProcess( result, file, closeFile, jb, originalFilePath,chainedProcess ){
+function filterPostProcess( result, file, closeFile, jb, originalFilePath, chainedProcess ){
   if( result && chainedProcess ) chainedProcess( originalFilePath );
 }
 
@@ -533,8 +535,8 @@ function decode( obj, jb ){
     return BSON.deserialize(
       obj,
       {
-        evalFunctions:true,
-        cacheFunctions:true
+        evalFunctions: true,
+        cacheFunctions: true
       }//experimental
     );
   }
