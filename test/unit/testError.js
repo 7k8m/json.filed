@@ -7,56 +7,41 @@ var jf = require('../../'),
 let testPath = './' + Math.random() + '.json';
 var testValue = { msg: Math.random().toString() };
 
+let errorObj = { msg: 'intended error' }
+
 describe('Error ', function () {
   it('should be handled in error listener', function (done) {
 
-    /*
     jf.defaultEmitter.removeAllListeners('error');
     jf.defaultEmitter.on(
       'error',
       function(err){
-        console.error(err);
-        done();
+        expect(err.innerError).to.eql(errorObj);
       }
     );
-    */
 
     jf.filed( testPath )
     .io(
       function( obj, filePath) {
-        //throw {msg:"intended error"};
-        return testValue;
+        throw errorObj;//handled by listener of executer
       },
       function(err){
-        //console.error(err);
-        done();
+        expect(err.innerError).to.eql(errorObj);
       }
     ).filter(
       function(obj, filePath){
-        throw {msg:"intended error"};
-
-        return true;
-      },
-      function(err){
-        done();
-        console.error(err);
+        throw errorObj; //handled by defaultEmitter
       }
     ).pass(
-      function(obj, filePath){
-        //throw {msg:"intended error"};
-        expect(filePath).to.eql(testPath);
+      function(obj, filePath, executer){
+        executer.emit( 'error', errorObj ); //user can explicitly make executer to emit error 
       },
       function(err){
+        expect( err ).to.eql(errorObj);
         done();
-        console.error(err);
       }
     ).exec();
 
-    setTimeout(
-      function(){
-        done();
-      },
-      1000);
   });
 
 });

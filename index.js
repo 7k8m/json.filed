@@ -161,13 +161,19 @@ function addChildExecuterFunction( executerFactory, parent ){
 
     parent.executeChild = function( filePath ){ //switch state of parent also.
       try{
-        executer.internalExec( filePath, calcJb( filePath ));
+        executer.internalExec(
+          filePath,
+          calcJb( filePath )
+        );
+
       }catch(err){
         raiseError(executer,err.toString(),err);
       }
     }
 
-    addErrorListener( executer, errListener);
+    if( errListener != null ){
+      addErrorListener( executer, errListener);
+    }
 
     return executer;
 
@@ -360,14 +366,21 @@ function guardProcess( userProcess ){
     wrapUserProcess(
       userProcess,
       function( userProcess ){
-        return function( json, filePath){
+        return function( json, filePath, errListener){
           try{
-            return userProcess( json, filePath);
+            return userProcess( json, filePath, errListener);
 
           }catch(err){
+
             //walkaround for unclear this/caller problem in javascript.
             //I just wanted to use something like "this".
-            raiseError( userProcess._plannedExecuter, 'User process error', err);
+            raiseError(
+              userProcess._plannedExecuter.listenerCount('error') > 0 ?
+              userProcess._plannedExecuter :
+              defaultEmitter ,
+              'User process error',
+              err
+            );
 
           }
         };
@@ -397,7 +410,7 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess, chain
 
   if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
 
-  var result = guardedProcess(json,filePath,guardedProcess._plannedExecuter);
+  var result = guardedProcess(json, filePath, guardedProcess._plannedExecuter);
 
   if(result != undefined && result != null){
     //if result returned, executePostProcess
@@ -564,7 +577,7 @@ function JsonFiledError(msg,innerError){
 util.inherits(JsonFiledError,Error);
 
 function raiseError(emitter, msg, innerError){
-  if( emitter == null){
+  if( emitter == null || emitter == undefined){
     emitter = defaultEmitter;
   }
   emitter.emit( 'error', new JsonFiledError( msg, innerError));
