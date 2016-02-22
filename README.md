@@ -99,7 +99,7 @@ jf.filed(
   function( err ) { your code to handle error here } )
 .io(
   function( j, f ) { ... },
-  function( err ) { your code to handle error here } )
+  function( err ) { your code to handle error here } ).exec();
 ````
 
 Each executer is emitter and you can send error to them.
@@ -108,7 +108,7 @@ Each executer is emitter and you can send error to them.
   function( j, f, executer) {
     executer.emit('error', {msg: "some of error" } )
   },
-  function( err ) { your code to handle error here } )
+  function( err ) { your code to handle error here } ).exec();
 ````
 
 ### DefaultEmitter
@@ -119,7 +119,7 @@ jf.defaultEmitter.removeAllListeners( 'error' );
 jf.defaultEmitter.on(
   'error',
   function( err ){ your code to handle error here }
-);
+).exec();
 ````
 
 ## Binary format (bson) support
