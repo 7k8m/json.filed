@@ -3,14 +3,16 @@
 ## greeting.js
     var jf = require('json.filed');
 
-    jf.filed('./data.json').io( function(json) {
+    jf.filed('./data.json')
+    .io( function(json) {
       return {msg: 'hello world.'}; // write 1st greeting to data.json
     }).exec();
 
 ## greeting2.js
     var jf = require('json.filed');
 
-    jf.filed('./data.json').io( function(json) {
+    jf.filed('./data.json')
+    .io( function(json) {
       console.log(json.msg); // previous wrote greeting, 'hello'
       json.msg = 'good after noon world.'; // update msg
       return json; // return to write json file
@@ -19,7 +21,8 @@
 ## greeting3.js
     var jf = require('json.filed');
 
-    jf.filed('./data.json').io( function(json) {
+    jf.filed('./data.json')
+    .io( function(json) {
       console.log(json.msg);// previous wrote greeting, 'good afternoon'
       json.msg = 'good night world.'; // update msg
       // not write this time, because I'm sleepy 😴
@@ -39,7 +42,8 @@
 ## greetings.js
     var jf = require('json.filed');
 
-    jf.filed(['./hello.json','./😄.json']).io( function(json,filePath) {
+    jf.filed(['./hello.json','./😄.json'])
+    .io( function(json,filePath) {
         return {msg: filePath }; // write 1st greeting to data.json
     }).exec();
 
@@ -53,9 +57,10 @@
 ## linked_hello.js
     var jf = require('json.filed');
 
-    jf.filed('./hello.json').io( function(json,filePath) {
-      return {msg: "hello" }; // write 1st greeting to data.json
-    }).link( function(json,filePath){
+    jf.filed('./hello.json')
+    .io( function(json,filePath) {
+      return {msg: "hello" }; }) // write 1st greeting to data.json
+    .link( function(json,filePath){
       return 'linked_hello.json'
     }).exec();
 
@@ -69,6 +74,7 @@
 ## greeting.binary.js
     var jf = require('json.filed');
 
-    jf.filed('./data.bson').io( function(bson) {
+    jf.filed('./data.bson')
+    .io( function(bson) {
       return {msg: 'hello world.'}; // write 1st greeting to data.bson
     }).exec();
