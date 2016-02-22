@@ -490,7 +490,7 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, chainedProc
 function fsPipe( fromPath, toPath, callback){
 
   let readStream = fs.createReadStream(fromPath);
-  let writeStream = fs.createWriteStream(toPath);
+  let writeStream = fs.createWriteStream(toPath,{flags: 'wx'}); //to escape copy between same files.
 
   //readStream.on('end',()=>{} ); // rely on end feature
   writeStream.on('finish',() => { callback( false );} );

@@ -36,3 +36,26 @@ describe('Copy from deleted file path', function () {
   });
 
 });
+
+
+describe('Copy to same file path', function () {
+  it('should be handled as error of the copy executer.', function (done) {
+
+    jf.filed( testPath1 )
+    .io(
+      function( obj, filePath) {
+        return { msg: 'copied to same file Path' };
+      }
+    ).copy(
+      function(obj, filePath, executer){
+        return testPath1; // copy to same file path.
+      },
+      function(err){
+        console.log( err );
+        done();
+      }
+    ).exec();
+
+  });
+
+});
