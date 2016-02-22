@@ -51,3 +51,51 @@ describe('Error ', function () {
   });
 
 });
+
+
+let testPath2 = './' + Math.random() + '.json';
+describe('Error of link executer', function () {
+  it('should be handled in error listener', function (done) {
+
+    jf.filed( testPath2 )
+    .io(
+      function( obj, filePath) {
+        return { msg: 'Test value.' };
+      }
+    ).link(
+      function(obj, filePath, executer){
+        executer.emit('error', errorObj );
+      },
+      function( err ){
+        expect( err ).to.eql( errorObj );
+        done();
+      }
+    ).exec();
+
+  });
+
+});
+
+let testPath3 = './' + Math.random() + '.json';
+
+describe('Error of copy executer', function () {
+  it('should be handled in error listener', function (done) {
+
+    jf.filed( testPath3 )
+    .io(
+      function( obj, filePath) {
+        return { msg: 'Test value.' };
+      }
+    ).copy(
+      function(obj, filePath, executer){
+        executer.emit('error', errorObj );
+      },
+      function( err ){
+        expect( err ).to.eql( errorObj );
+        done();
+      }
+    ).exec();
+
+  });
+
+});
