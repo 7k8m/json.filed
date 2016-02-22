@@ -114,8 +114,8 @@ Each executer is emitter and you can send error to them.
 ### DefaultEmitter
 Error captured not in each executer is emitted by defaultEmitter and can be handled by error listener of defaultEmitter
 ````
-var jf = require( '../../' )
-jf.defaultEmitter.removeAllListeners( 'error' );
+var jf = require( 'json.filed' )
+jf.defaultEmitter.removeAllListeners( 'error' ); //default error listener of defaultEmitter kills process. Remove them to keep running.
 jf.defaultEmitter.on(
   'error',
   function( err ){ your code to handle error here }
