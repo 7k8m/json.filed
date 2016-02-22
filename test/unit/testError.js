@@ -20,6 +20,12 @@ describe('Error ', function () {
       }
     );
 
+    jf.filed(null,
+      function(err){
+        expect(err.msg).to.eql('Failed to create path Iterator');
+      }
+    ).exec();
+
     jf.filed( testPath )
     .io(
       function( obj, filePath) {
@@ -34,7 +40,7 @@ describe('Error ', function () {
       }
     ).pass(
       function(obj, filePath, executer){
-        executer.emit( 'error', errorObj ); //user can explicitly make executer to emit error 
+        executer.emit( 'error', errorObj ); //user can explicitly make executer to emit error
       },
       function(err){
         expect( err ).to.eql(errorObj);

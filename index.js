@@ -31,10 +31,8 @@ module.exports.filed =
    }
 
 function filedExecuter( file ){
+
   let thisExecuter = this;
-  if(file == null){
-    raiseError( this, 'File is needed.' );
-  }
 
   this.executeChild = function(p1,p2){};
 
@@ -44,7 +42,7 @@ function filedExecuter( file ){
   this.pass = addChildExecuterFunction(executerFactory(passExecuter,thisExecuter),this);
   this.filter = addChildExecuterFunction(executerFactory(filterExecuter,thisExecuter),this);
 
-  this.exec = function(){ filedExecute( file, thisExecuter.executeChild ); };
+  this.exec = function(){ filedExecute( file, thisExecuter.executeChild, thisExecuter); };
 
 };
 
@@ -184,23 +182,28 @@ function addChildExecuterFunction( executerFactory, parent ){
 }
 
 
-function filedExecute( file, execute ){
-  let itr = pathIterator( file );
+function filedExecute( file, execute, filedExecuter){
+  let itr = pathIterator( file, filedExecuter);
   for( let filePath of itr ){
     execute(filePath, calcJb(filePath) );
   }
 }
 
-function pathIterator( file ){
-  if ( typeof file == 'string' ){
-    return singlePath(file);
-
-  } else if ( file[ Symbol.iterator ] ) {
-    return file;
-
-  }else{
-    raiseError( null, 'Failed to create path Iterator' );
+function pathIterator( file, filedExecuter){
+  try{
+    if ( typeof file == 'string' ){
+      return singlePath(file);
+    } else if ( file[ Symbol.iterator ] ) {
+      return file;
+    } else {
+      throw new Error();
+    }
+  } catch ( error ) {
+    raiseError( filedExecuter, 'Failed to create path Iterator' );
   }
+
+  return [];
+
 }
 
 function * singlePath( file ){

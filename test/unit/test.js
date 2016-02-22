@@ -119,7 +119,7 @@ describe('Function return null', function () {
 describe('Null file Path', function () {
   it('should cause JsonFiledError', function (done) {
     try{
-      jf.filed( null );
+      jf.filed( null ).exec();
     }catch(e){
       expect(e).to.be.an.instanceof( jf.JsonFiledError );
       done();
