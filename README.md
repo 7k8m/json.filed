@@ -1,10 +1,10 @@
 # json.filed
 Processor of json file
 
-## module
+## Module
     var jf = require('json.filed')
 
-## executers
+## Executers
 ### filed
 ````
 jf.filed( file )
@@ -78,7 +78,7 @@ jf.filed( file )
     + result of process does not affect execution of pass, and pass just continues next.
 
 
-## chaining
+## Chaining
 ````
 jf.filed( file )
 .io( function( json, filePath ) { your code to process json here } )
@@ -112,7 +112,7 @@ Each executer is emitter and you can send error to them.
 ````
 
 ### DefaultEmitter
-Error captured not in each executer can be handled in error listener of defaultEmitter
+Error captured not in each executer is emitted by defaultEmitter and can be handled by error listener of defaultEmitter
 ````
 var jf = require( '../../' )
 jf.defaultEmitter.removeAllListeners( 'error' );
@@ -122,4 +122,4 @@ jf.defaultEmitter.on(
 );
 ````
 
-## binary format (bson) support
+## Binary format (bson) support
