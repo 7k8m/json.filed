@@ -480,7 +480,7 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, chainedProc
 
 function fsPipe( fromPath, toPath, callback){
 
-  return new Promise(
+  return new Promise( //Use Promise as experiment.
     function(resolver, rejecter){
 
       let readStream = fs.createReadStream(fromPath);
