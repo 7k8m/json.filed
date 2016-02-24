@@ -30,123 +30,106 @@ module.exports.filed =
      return addErrorListener( new filedExecuter (file), errListener );
    }
 
+
+function executer( root ){
+ this.executeChild = function( p1,p2 ){};
+
+ this.io = addChildExecuterFunction(createExecuterFactory(ioExecuter,root),this);
+ this.copy = addChildExecuterFunction(createExecuterFactory(copyExecuter,root),this);
+ this.link = addChildExecuterFunction(createExecuterFactory(linkExecuter,root),this);
+ this.pass = addChildExecuterFunction(createExecuterFactory(passExecuter,root),this);
+ this.filter = addChildExecuterFunction(createExecuterFactory(filterExecuter,root),this);
+
+}
+
+
 function filedExecuter( file ){
 
+  executer.call( this, this)
   let thisExecuter = this;
-
-  this.executeChild = function(p1,p2){};
-
-  this.io = addChildExecuterFunction(executerFactory(ioExecuter,thisExecuter),this);
-  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,thisExecuter),this);
-  this.link = addChildExecuterFunction(executerFactory(linkExecuter,thisExecuter),this);
-  this.pass = addChildExecuterFunction(executerFactory(passExecuter,thisExecuter),this);
-  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,thisExecuter),this);
-
   this.exec = function(){ filedExecute( file, thisExecuter.executeChild, thisExecuter); };
 
 };
 
 
-function ioExecuter( userProcess, root ){
+function childExecuter( userProcess, root){
 
-  this.executeChild = function( p1,p2 ){};
-  this.internalExec = function ( filePath, jb) {
-    io(filePath, userProcess, jb, this.executeChild );
+  executer.call( this, root );
+
+  this.generalInternalExec = function ( filePath, jb , executerFunction) {
+    executerFunction ( filePath, userProcess, jb, this.executeChild );
   }
 
-  this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
-  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
-  this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
-  this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
-  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
-
-  this.exec = function(){ root.exec() };
+  this.exec = function(){
+    root.exec()
+  };
 
 }
 
 
-function copyExecuter( userProcess, root){
+function ioExecuter( userProcess, root) {
+  childExecuter.call( this, userProcess, root);
 
-  this.executeChild = function(p1,p2){};
-
-  this.internalExec = function ( filePath, jb) {
-    copy(filePath, userProcess, jb, this.executeChild );
+  this.internalExec = function(filePath, jb){
+    this.generalInternalExec( filePath, jb, io);
   }
 
-  this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
-  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
-  this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
-  this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
-  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
-
-  this.exec = function(){ root.exec() };
-
-}
+};
 
 
-function linkExecuter( userProcess, root){
+function copyExecuter( userProcess, root) {
+  childExecuter.call( this, userProcess, root);
 
-  this.executeChild = function(p1,p2){};
-
-  this.internalExec = function ( filePath, jb) {
-    link(filePath, userProcess, jb, this.executeChild );
+  this.internalExec = function( filePath, jb){
+    this.generalInternalExec( filePath, jb, copy);
   }
 
-  this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
-  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
-  this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
-  this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
-  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
-
-  this.exec = function(){ root.exec() };
-
-}
+};
 
 
-function passExecuter( userProcess, root){
-  this.executeChild = function(p1,p2){};
+function linkExecuter( userProcess, root) {
+  childExecuter.call( this, userProcess, root);
 
-  this.internalExec = function( filePath, jb) {
-    pass(filePath, userProcess, jb, this.executeChild );
+  this.internalExec = function( filePath, jb){
+    this.generalInternalExec( filePath, jb, link);
   }
 
-  this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
-  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
-  this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
-  this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
-  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
-
-  this.exec = function(){ root.exec() };
-
-}
+};
 
 
-function filterExecuter( userProcess, root){
-  this.executeChild = function(p1,p2){};
+function passExecuter( userProcess, root) {
+  childExecuter.call( this, userProcess, root);
 
-  this.internalExec = function( filePath, jb) {
-    filter(filePath, userProcess, jb, this.executeChild );
+  this.internalExec = function( filePath, jb){
+    this.generalInternalExec( filePath, jb, pass);
   }
 
-  this.io = addChildExecuterFunction(executerFactory(ioExecuter,root),this);
-  this.copy = addChildExecuterFunction(executerFactory(copyExecuter,root),this);
-  this.link = addChildExecuterFunction(executerFactory(linkExecuter,root),this);
-  this.pass = addChildExecuterFunction(executerFactory(passExecuter,root),this);
-  this.filter = addChildExecuterFunction(executerFactory(filterExecuter,root),this);
-
-  this.exec = function(){ root.exec() };
-
-}
-
-util.inherits( filedExecuter, EventEmitter);
-util.inherits( ioExecuter, EventEmitter);
-util.inherits( copyExecuter, EventEmitter);
-util.inherits( linkExecuter, EventEmitter);
-util.inherits( filterExecuter, EventEmitter);
-util.inherits( passExecuter, EventEmitter);
+};
 
 
-function executerFactory(classFunction,root){
+function filterExecuter( userProcess, root) {
+  childExecuter.call( this, userProcess, root);
+
+  this.internalExec = function( filePath, jb){
+    this.generalInternalExec( filePath, jb, filter);
+  }
+
+};
+
+
+util.inherits( executer, EventEmitter);
+
+util.inherits( filedExecuter, executer);
+
+util.inherits( childExecuter, executer);
+util.inherits( ioExecuter, childExecuter);
+util.inherits( copyExecuter, childExecuter);
+util.inherits( linkExecuter, childExecuter);
+util.inherits( passExecuter, childExecuter);
+util.inherits( filterExecuter, childExecuter);
+
+
+function createExecuterFactory(classFunction,root){
   return function(userProcess){ return new classFunction( userProcess, root) };
 }
 
