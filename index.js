@@ -487,10 +487,10 @@ function fsPipe( fromPath, toPath, callback){
       let writeStream = fs.createWriteStream(toPath,{flags: 'wx'}); //to escape copy between same files.
 
       //readStream.on('end',()=>{} ); // rely on end feature
-      writeStream.on('finish',() => { resolver( false );} );
+      writeStream.on('finish',() => { resolver();} );
 
-      readStream.on('error',(err) => { reject(err) } );
-      writeStream.on('error',(err) => { reject(err) } );
+      readStream.on('error',(err) => { rejecter(err) } );
+      writeStream.on('error',(err) => { rejecter(err) } );
 
       readStream.pipe(writeStream);
 
