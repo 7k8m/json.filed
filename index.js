@@ -459,43 +459,29 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, chainedProc
 
   let itr = pathIterator( copied2Path );
   for(let newFilePath of itr ){
-
-    fsPipe(originalFilePath,newFilePath)
-    .then(
-      function() {
-        if( chainedProcess ) chainedProcess( newFilePath );})
-    .catch(
-      function(err) {
-        raiseError(
-          executer,
-          "Failed to copy from " + originalFilePath + " to " + newFilePath,
-          err
-        )
+    fsPipe(
+      originalFilePath,
+      newFilePath,
+      function(err){
+        if(err) raiseError( executer, "Failed to copy from " + originalFilePath + " to " + newFilePath,err);
         if( chainedProcess ) chainedProcess( newFilePath );
       }
     );
-
   }
 }
 
 function fsPipe( fromPath, toPath, callback){
 
-  return new Promise( //Use Promise as experiment.
-    function(resolver, rejecter){
+  let readStream = fs.createReadStream(fromPath);
+  let writeStream = fs.createWriteStream(toPath,{flags: 'wx'}); //to escape copy between same files.
 
-      let readStream = fs.createReadStream(fromPath);
-      let writeStream = fs.createWriteStream(toPath,{flags: 'wx'}); //to escape copy between same files.
+  //readStream.on('end',()=>{} ); // rely on end feature
+  writeStream.on('finish',() => { callback( false );} );
 
-      //readStream.on('end',()=>{} ); // rely on end feature
-      writeStream.on('finish',() => { resolver();} );
+  readStream.on('error',(err) => { callback(err) } );
+  writeStream.on('error',(err) => { callback(err) } );
 
-      readStream.on('error',(err) => { rejecter(err) } );
-      writeStream.on('error',(err) => { rejecter(err) } );
-
-      readStream.pipe(writeStream);
-
-    }
-  );
+  readStream.pipe(writeStream);
 
 }
 
