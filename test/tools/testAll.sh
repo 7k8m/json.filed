@@ -8,4 +8,5 @@ mocha test/unit/testNested.js
 mocha test/unit/testCopy.js
 mocha test/unit/testFilter.js
 mocha test/unit/testError.js
+mocha test/unit/testCalledback.js
 sh test/tools/rmTestJsonFile.sh

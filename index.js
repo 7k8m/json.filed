@@ -324,27 +324,30 @@ function process(
               fs.close(fd,function (err) {
                 raiseError( userProcess._plannedExecuter, 'IOError Failed to read file.',err);
               });
+
             }else{
               fs.close(
                 fd,
                 function(err){
-                  if(err) raiseError( userProcess._plannedExecuter, 'IOError Failed to close file',err);
-
-                  var json = decode( data, jb);
-                  apply(
-                    userProcess,
-                    json,
-                    filePath,
-                    function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
-                    jb,
-                    filePath,
-                    jfProcess,
-                    chainedProcess
-                  );
-
+                  if(err) {
+                    raiseError( userProcess._plannedExecuter, 'IOError Failed to close file',err);
+                    return;
+                  }else{
+                    var json = decode( data, jb);
+                    apply(
+                      userProcess,
+                      json,
+                      filePath,
+                      function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
+                      jb,
+                      filePath,
+                      jfProcess,
+                      chainedProcess
+                      );
+                  }
                 }
               );
-          }
+            }
           }
         );
       }else{
@@ -428,64 +431,62 @@ function wrapUserProcess( userProcess, functionWrapper ){
 
 
 //apply process function to json.
+//
+//"closeFile" is prepared for caller handle close implementation. In some cases,
+//caller does not open fd and no need to close file.
 function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
-
   if( process._plannedExecuter instanceof calledbackExecuter ){
     applyCalledback( process, json, file, closeFile, jb, filePath, chainedProcess);//no post process for calle back.
 
   }else{
-    apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess);
+    applyOrdinary( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess);
 
   }
 
 }
 
 function applyCalledback( process, json, file, closeFile, jb, filePath, chainedProcess){
-
   let guardedProcess = guardProcess( process, true);
 
   if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
 
-  var result = guardedProcess(
+  guardedProcess(
     json,
     filePath,
     function( data ){//callback function passed to userProcess
       if( data ){
+        //when callback is called
+        //here is executed after latter save.
         save(
           data,
           filePath ,
-          function(){}, //No need to close filePath
+          function(){
+            // no need to close filePath
+            chainedProcess( filePath );
+          },
           jb,
           executer);
+
+      } else {
+        chainedProcess( filePath );
       }
-      chainedProcess( filePath );
     },
     guardedProcess._plannedExecuter
   );
 
-  fs.writeFile(
-    filePath,
-    encode(data,jb),
-    encoding(jb),
-    (err)=>{
-      if (err) {
-        raiseError( executer, 'IOError failed to save json');
-        closeFile( function() {} );
-
-      }else{
-        closeFile(
-          function() {
-            //chainedProcess is executed in callbackFunction
-          }
-        );//file is closed in afterSaved, if needed.
-      }
-    }
-  );
+  //when user process finishes
+  //here is executed before former save.
+  save(
+    json,
+    filePath ,
+    function(){}, //No need to close filePath
+    jb,
+    executer);
 
 }
 
 //apply process function to json.
-function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
+function applyOrdinary( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
 
   let guardedProcess = guardProcess( process, false);
 
@@ -514,7 +515,7 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess, chain
 //file can be either of file path and descriptor
 
 function save( data, file, closeFile, jb, executer){
-  saveCore( data,file, closeFile, jb, null, null, executer);
+  saveCore( data, file, closeFile, jb, null, null, executer);
 }
 
 function saveAfterApply( data, file, closeFile, jb, filePath, chainedProcess, executer){
@@ -534,7 +535,7 @@ function saveCore( data, file, closeFile, jb,
       (err)=>{
         if (err) {
           raiseError( executer, 'IOError failed to save json');
-          closeFile( function() {} );
+          closeFile( function() {} );  //no afterCloseProcess
 
         }else{
           closeFile(
