@@ -64,15 +64,15 @@ describe('called back function ', function () {
 
     setTimeout(
       function(){
-        done();
+        setTimeout(
+          function(){
+            done();
+          },
+          1000);
       },
-      1000);
+      100);
 
-    setTimeout(
-      function(){
-        throw new Error("too slow !");
-      },
-      2000);
+
 
   });
 
