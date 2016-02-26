@@ -39,7 +39,7 @@ function executer( root ){
  this.link = addChildExecuterFunction(createExecuterFactory(linkExecuter,root),this);
  this.pass = addChildExecuterFunction(createExecuterFactory(passExecuter,root),this);
  this.filter = addChildExecuterFunction(createExecuterFactory(filterExecuter,root),this);
-
+ this.calledback = addChildExecuterFunction(createExecuterFactory(calledbackExecuter,root),this);
 }
 
 
@@ -112,6 +112,15 @@ function filterExecuter( userProcess, root) {
 
   this.internalExec = function( filePath, jb){
     this.generalInternalExec( filePath, jb, filter);
+  }
+
+};
+
+function calledbackExecuter( userProcess, root) {
+  childExecuter.call( this, userProcess, root);
+
+  this.internalExec = function( filePath, jb){
+    this.generalInternalExec( filePath, jb, calledback);
   }
 
 };
@@ -266,12 +275,24 @@ function pass( filePath, userProcess, jb, chainedProcess){
 }
 
 function filter( filePath, userProcess, jb, chainedProcess){
-  process(filePath,
+  process(
+    filePath,
     filternize(userProcess),
     jb,
     chainedProcess,
     filterPostProcess,
-    raiseUnknownErrorFunction( userProcess._plannedExecuter) //pass does not create new file when not existed
+    raiseUnknownErrorFunction( userProcess._plannedExecuter) //filter does not create new file when not existed
+  );
+}
+
+function calledback( filePath, userProcess, jb, chainedProcess){
+  process(
+    filePath,
+    userProcess,
+    jb,
+    chainedProcess,
+    function(){}, // no post process for calledback
+    raiseUnknownErrorFunction( userProcess._plannedExecuter ) //calledback does not create new file when not existed
   );
 }
 
@@ -353,16 +374,26 @@ function filternize( userProcess ){
 }
 
 
-function guardProcess( userProcess ){
+function guardProcess( userProcess, isCalledback){
 
   let guarded =
     wrapUserProcess(
       userProcess,
       function( userProcess ){
-        return function( json, filePath, errListener){
+        return function(){
           try{
-            return userProcess( json, filePath, errListener);
-
+            if( isCalledback ) {
+              return userProcess(
+                arguments[0],
+                arguments[1],
+                arguments[2],
+                arguments[3] );////json, filePath, callbackFunction, errListener
+            } else {
+              return userProcess(
+                arguments[0],
+                arguments[1],
+                arguments[2] ); //json, filePath, errListener
+            }
           }catch(err){
 
             //walkaround for unclear this/caller problem in javascript.
@@ -399,7 +430,64 @@ function wrapUserProcess( userProcess, functionWrapper ){
 //apply process function to json.
 function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
 
-  let guardedProcess = guardProcess(process);
+  if( process._plannedExecuter instanceof calledbackExecuter ){
+    applyCalledback( process, json, file, closeFile, jb, filePath, chainedProcess);//no post process for calle back.
+
+  }else{
+    apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess);
+
+  }
+
+}
+
+function applyCalledback( process, json, file, closeFile, jb, filePath, chainedProcess){
+
+  let guardedProcess = guardProcess( process, true);
+
+  if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
+
+  var result = guardedProcess(
+    json,
+    filePath,
+    function( data ){//callback function passed to userProcess
+      if( data ){
+        save(
+          data,
+          filePath ,
+          function(){}, //No need to close filePath
+          jb,
+          executer);
+      }
+      chainedProcess( filePath );
+    },
+    guardedProcess._plannedExecuter
+  );
+
+  fs.writeFile(
+    filePath,
+    encode(data,jb),
+    encoding(jb),
+    (err)=>{
+      if (err) {
+        raiseError( executer, 'IOError failed to save json');
+        closeFile( function() {} );
+
+      }else{
+        closeFile(
+          function() {
+            //chainedProcess is executed in callbackFunction
+          }
+        );//file is closed in afterSaved, if needed.
+      }
+    }
+  );
+
+}
+
+//apply process function to json.
+function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
+
+  let guardedProcess = guardProcess( process, false);
 
   if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
 
