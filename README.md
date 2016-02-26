@@ -82,7 +82,7 @@ jf.filed( file )
 .calledback( function( json, filePath, callbacck ) { your code to process json. call callback to here } )
 ````
 
-+ `function( json, filePath, callback ) { ... }` is where process json and call callback from asynchronous function like setTime.
++ `function( json, filePath, callback ) { ... }` is where to process json, and call asynchronous function like setTime /readFile with callback.
     + json from file is passed to function as a `json` parameter
     + `filePath` is where json from.
     +  when `callback` is called, process of next executor begins.
