@@ -77,6 +77,16 @@ jf.filed( file )
     + `filePath` is where json from.
     + result of process does not affect execution of pass, and pass just continues next.
 
+### calledback
+````
+.calledback( function( json, filePath, callbacck ) { your code to process json. pass callback to here} )
+````
+
++ `function( json, filePath, callbacck ) { ... }` is where process json and pass callback to asynchronous function like setTime.
+    + json from file is passed to function as a `json` parameter
+    + `filePath` is where json from.
+    +  when `callback` is called, process of next executor begins.
+        + `callback` is called  `callback(data)`. Here `data` is a json which is saved to file and passed to next executor.
 
 ## Chaining
 ````
