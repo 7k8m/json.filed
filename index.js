@@ -322,7 +322,7 @@ function process(
             if (err) {
               raiseError( userProcess._plannedExecuter, 'IOError Failed to read file.',err);
               fs.close(fd,function (err) {
-                raiseError( userProcess._plannedExecuter, 'IOError Failed to read file.',err);
+                if(err) raiseError( userProcess._plannedExecuter, 'IOError Failed to close file in a error handling.',err);
               });
 
             }else{
@@ -331,12 +331,10 @@ function process(
                 function(err){
                   if(err) {
                     raiseError( userProcess._plannedExecuter, 'IOError Failed to close file',err);
-                    return;
                   }else{
-                    var json = decode( data, jb);
                     apply(
                       userProcess,
-                      json,
+                      decode( data, jb),
                       filePath,
                       function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
                       jb,
