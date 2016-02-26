@@ -9,4 +9,5 @@ mocha test/unit/testCopy.js
 mocha test/unit/testFilter.js
 mocha test/unit/testError.js
 mocha test/unit/testCalledback.js
+mocha test/unit/testCalledback_more.js
 sh test/tools/rmTestJsonFile.sh
