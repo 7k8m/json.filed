@@ -520,7 +520,10 @@ function saveAfterApply( data, file, closeFile, jb, filePath, chainedProcess, ex
   saveCore(data,file,closeFile,jb,filePath,chainedProcess);
 }
 
-function saveCore( data, file, closeFile, jb,
+function saveCore(  data,
+                    file,
+                    closeFile, //how to close file differs between caller.
+                    jb,
                     filePath, chainedProcess, //only passsed in saveAfterApplly
                     executer
                   ){
