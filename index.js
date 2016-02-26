@@ -436,20 +436,20 @@ function wrapUserProcess( userProcess, functionWrapper ){
 //caller does not open fd and no need to close file.
 function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
   if( process._plannedExecuter instanceof calledbackExecuter ){
-    applyCalledback( process, json, file, closeFile, jb, filePath, chainedProcess);//no post process for calle back.
+    applyCalledbackProcess( process, json, file, closeFile, jb, filePath, chainedProcess);//no post process for called back.
 
   }else{
-    applyOrdinary( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess);
+    applyProcess( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess);
 
   }
 
 }
 
-function applyCalledback( process, json, file, closeFile, jb, filePath, chainedProcess){
+function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, chainedProcess){
+
   let guardedProcess = guardProcess( process, true);
-
   if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
-
+  
   guardedProcess(
     json,
     filePath,
@@ -486,7 +486,7 @@ function applyCalledback( process, json, file, closeFile, jb, filePath, chainedP
 }
 
 //apply process function to json.
-function applyOrdinary( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
+function applyProcess( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
 
   let guardedProcess = guardProcess( process, false);
 
