@@ -19,7 +19,7 @@ jf.filed( file )
 
 ### io
 ````
-.io( function( json, filePath ) { your code to process json here } )
+.io( function( json, filePath, executer ) { your code to process json here } )
 ````
 
 + `function( json, filePath ) { ... }` is where process json.
@@ -27,10 +27,11 @@ jf.filed( file )
     + `filePath` is where I/O json from/to.
     + `return json` from function, written to the file of `filePath` parameter.
         + Nothing written, if return no object.
+    + `executer` is an event emitter and can be used in error handling
 
 ### copy
 ````
-.copy( function( json, filePath ) { your code to process json here } )
+.copy( function( json, filePath, executer ) { your code to process json here } )
 ````
 
 + `function( json, filePath ) { ... }` is where process json.
@@ -41,11 +42,11 @@ jf.filed( file )
             + if string, filePath.
             + if iterator, above filePath is iterated.
         + Nothing copied,if return no object.
-
+    + `executer` is an event emitter and can be used in error handling
 
 ### link
 ````
-.link( function( json, filePath ) { your code to process json here } )
+.link( function( json, filePath, executer ) { your code to process json here } )
 ````
 
 + `function( json, filePath ) { ... }` is where process json.
@@ -56,30 +57,33 @@ jf.filed( file )
             + if string, filePath.
             + if iterator, above filePath is iterated.
         + Nothing newly linked,if return no object.
+    + `executer` is an event emitter and can be used in error handling
 
 ### filter
 ````
-.filter( function( json, filePath ) { your code to process json here } )
+.filter( function( json, filePath, executer ) { your code to process json here } )
 ````
 
 + `function( json, filePath ) { ... }` is where process json.
     + json from file is passed to function as a `json` parameter
     + `filePath` is where json from.
     + function return `true` and chained process executed, otherwise chained process not executed for that `json`.
+    + `executer` is an event emitter and can be used in error handling
 
 ### pass
 ````
-.pass( function( json, filePath ) { your code to process json here } )
+.pass( function( json, filePath, executer ) { your code to process json here } )
 ````
 
 + `function( json, filePath ) { ... }` is where process json.
     + json from file is passed to function as a `json` parameter
     + `filePath` is where json from.
     + result of process does not affect execution of pass, and pass just continues next.
+    + `executer` is an event emitter and can be used in error handling
 
 ### calledback
 ````
-.calledback( function( json, filePath, callbacck ) { your code to process json. call callback to here } )
+.calledback( function( json, filePath, callback, executer ) { your code to process json. call callback to here } )
 ````
 
 + `function( json, filePath, callback ) { ... }` is where to process json, and call asynchronous function like setTime /readFile with callback.
@@ -87,6 +91,7 @@ jf.filed( file )
     + `filePath` is where json from.
     +  when `callback` is called, process of next executor begins.
         + `callback` is called  `callback(data)`. Here `data` is a json which is saved to file and passed to next executor.
+    + `executer` is an event emitter and can be used in error handling
 
 ## Chaining
 ````
