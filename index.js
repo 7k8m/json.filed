@@ -136,7 +136,7 @@ util.inherits( copyExecuter, childExecuter);
 util.inherits( linkExecuter, childExecuter);
 util.inherits( passExecuter, childExecuter);
 util.inherits( filterExecuter, childExecuter);
-
+util.inherits( calledbackExecuter, childExecuter);
 
 function createExecuterFactory(classFunction,root){
   return function(userProcess){ return new classFunction( userProcess, root) };
@@ -449,7 +449,7 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, c
 
   let guardedProcess = guardProcess( process, true);
   if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
-  
+
   guardedProcess(
     json,
     filePath,
