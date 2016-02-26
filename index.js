@@ -209,36 +209,37 @@ function io( filePath, userProcess, jb, chainedProcess){
         'w+',
         (err,fd) => {
 
-          if(err) raiseError( userProcess._plannedExecuter, 'IOError Failed to create file.') ;
-
-          //save to file and apply process.
-          save(
-            initialValue,
-            fd,
-            function(){
-                //apply process
-                apply(
-                  userProcess,
-                  initialValue,
-                  fd,
-                  function(afterCloseProcess){// close descriptor.
-                    fs.close(
-                      fd,
-                      function(err){
-                        if(err) raiseError( userProcess._plannedExecuter, "io:failsed to close file");
-                        afterCloseProcess();
-                      }
-                    );
-                  },
-                  jb,
-                  filePath,
-                  saveAfterApply,
-                  chainedProcess
-                );
-            },
-            jb
-          );
-
+          if(err) {
+            raiseError( userProcess._plannedExecuter, 'IOError Failed to create file.') ;
+          } else {
+            //save to file and apply process.
+            save(
+              initialValue,
+              fd,
+              function(){
+                  //apply process
+                  apply(
+                    userProcess,
+                    initialValue,
+                    fd,
+                    function(afterCloseProcess){// close descriptor.
+                      fs.close(
+                        fd,
+                        function(err){
+                          if(err) raiseError( userProcess._plannedExecuter, "io:failsed to close file");
+                          else afterCloseProcess();
+                        }
+                      );
+                    },
+                    jb,
+                    filePath,
+                    saveAfterApply,
+                    chainedProcess
+                  );
+              },
+              jb
+            );
+          }
         }
       );
     }
@@ -297,26 +298,32 @@ function process(
           encoding(jb),
           (err, data) => {
 
-            if (err) raiseError( userProcess._plannedExecuter, 'IOError Failed to read file.',err);
-            fs.close(
-              fd,
-              function(err){
-                if(err) raiseError( userProcess._plannedExecuter, 'IOError Failed to close file',err);
+            if (err) {
+              raiseError( userProcess._plannedExecuter, 'IOError Failed to read file.',err);
+              fs.close(fd,function (err) {
+                raiseError( userProcess._plannedExecuter, 'IOError Failed to read file.',err);
+              });
+            }else{
+              fs.close(
+                fd,
+                function(err){
+                  if(err) raiseError( userProcess._plannedExecuter, 'IOError Failed to close file',err);
 
-                var json = decode( data, jb);
-                apply(
-                  userProcess,
-                  json,
-                  filePath,
-                  function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
-                  jb,
-                  filePath,
-                  jfProcess,
-                  chainedProcess
-                );
+                  var json = decode( data, jb);
+                  apply(
+                    userProcess,
+                    json,
+                    filePath,
+                    function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
+                    jb,
+                    filePath,
+                    jfProcess,
+                    chainedProcess
+                  );
 
-              }
-            );
+                }
+              );
+          }
           }
         );
       }else{
@@ -437,12 +444,17 @@ function saveCore( data, file, closeFile, jb,
       encode(data,jb),
       encoding(jb),
       (err)=>{
-        closeFile(
-          function() {
-            if( chainedProcess ) chainedProcess(filePath);
-          }
-        );//file is closed in afterSaved, if needed.
-        if (err) raiseError( executer, 'IOError failed to save json');
+        if (err) {
+          raiseError( executer, 'IOError failed to save json');
+          closeFile( function() {} );
+
+        }else{
+          closeFile(
+            function() {
+              if( chainedProcess ) chainedProcess(filePath);
+            }
+          );//file is closed in afterSaved, if needed.
+        }
       }
     );
   }catch(error){
@@ -464,7 +476,9 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, chainedProc
       newFilePath,
       function(err){
         if(err) raiseError( executer, "Failed to copy from " + originalFilePath + " to " + newFilePath,err);
-        if( chainedProcess ) chainedProcess( newFilePath );
+        else {
+          if( chainedProcess ) chainedProcess( newFilePath );
+        }
       }
     );
   }
@@ -496,7 +510,9 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath, chainedProcess
       newFilePath,
       function(err){
         if(err) raiseError( executer, "Failed to link from " + originalFilePath + " to " + newFilePath,err);
-        if( chainedProcess ) chainedProcess( newFilePath );
+        else {
+          if( chainedProcess ) chainedProcess( newFilePath );
+        }
       }
     );
   }
