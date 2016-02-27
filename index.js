@@ -394,13 +394,13 @@ function link( filePath, userProcess, jb, nextPlan ){
 }
 
 function copy( filePath, userProcess, jb, nextPlan ){
-  process(filePath, userProcess, jb, nextPlan.executeFunction, fsCopy,
+  process(filePath, userProcess, jb, nextPlan, fsCopy,
     raiseUnknownErrorFunction( userProcess._plannedExecuter ) //copy does not create new file when not existed
   );
 }
 
 function pass( filePath, userProcess, jb, nextPlan ){
-  process(filePath, userProcess, jb, nextPlan.executeFunction, passPostProcess,
+  process(filePath, userProcess, jb, nextPlan, passPostProcess,
     raiseUnknownErrorFunction( userProcess._plannedExecuter ) //pass dows not create new file when not existed
   );
 }
@@ -410,7 +410,7 @@ function filter( filePath, userProcess, jb, nextPlan ){
     filePath,
     filternize(userProcess),
     jb,
-    nextPlan.executeFunction,
+    nextPlan,
     filterPostProcess,
     raiseUnknownErrorFunction( userProcess._plannedExecuter) //filter does not create new file when not existed
   );
@@ -421,7 +421,7 @@ function calledback( filePath, userProcess, jb, nextPlan ){
     filePath,
     userProcess,
     jb,
-    nextPlan.executeFunction ,
+    nextPlan ,
     function(){}, // no post process for calledback
     raiseUnknownErrorFunction( userProcess._plannedExecuter ) //calledback does not create new file when not existed
   );
