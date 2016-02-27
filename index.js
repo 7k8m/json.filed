@@ -185,14 +185,7 @@ function createDownloadPlan( executer ){
       .io( function(){})
       .calledback( function( file, object, callback, executer ){
         request(
-          {
-            method: "GET",
-            uri: url,
-            headers: {
-              'User-Agent': 'jsonfiled'
-            }
-          }
-          ,
+          url,
           function (error, response, body ) {
           if (!error &&
               response.statusCode == 200 &&
