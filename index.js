@@ -289,7 +289,7 @@ function filterExecuter( userProcess, parent ) {
 };
 
 function calledbackExecuter( userProcess, parent ) {
-  childExecuter.call( this, userProcess, root);
+  childExecuter.call( this, userProcess, parent);
 
   this.internalExec = function( filePath, jb, executionPlan ){
     this.generalInternalExec( filePath, jb, calledback, executionPlan );
