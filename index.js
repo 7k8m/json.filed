@@ -472,15 +472,6 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, c
     guardedProcess._plannedExecuter
   );
 
-  //when user process finishes
-  //here is executed before former save.
-  save(
-    json,
-    filePath ,
-    function(){}, //No need to close filePath
-    jb,
-    executer);
-
 }
 
 //apply process function to json.
