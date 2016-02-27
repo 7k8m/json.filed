@@ -124,6 +124,7 @@ function childExecuter( userProcess, parent ){
 
     while( executor != null ){
       plan._nextPlan = createPlan( executor );
+      plan = plan._nextPlan
       executor = executorStack.pop();
     };
 
@@ -275,7 +276,7 @@ function passExecuter( userProcess, parent ) {
 
 
 function filterExecuter( userProcess, parent ) {
-  childExecuter.call( this, userProcess, root);
+  childExecuter.call( this, userProcess, parent);
 
   this.internalExec = function( filePath, jb, executionPlan ){
     this.generalInternalExec( filePath, jb, filter, executionPlan );
@@ -635,7 +636,7 @@ function save( data, file, closeFile, jb, executer){
 }
 
 function saveAfterApply( data, file, closeFile, jb, filePath, nextPlan, executer){
-  saveCore(data,file,closeFile,jb,filePath,nextPlan);
+  saveCore(data,file,closeFile,jb,filePath,nextPlan,executer);
 }
 
 function saveCore(  data,
@@ -645,8 +646,8 @@ function saveCore(  data,
                     filePath, nextPlan, //only passsed in saveAfterApplly
                     executer
                   ){
-
   try{
+
     fs.writeFile(
       file,
       encode(data,jb),
