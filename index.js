@@ -48,6 +48,36 @@ function executer( parent ){
  this.filter = addChildExecuterFunction(createExecuterFactory(filterExecuter, this ));
  this.calledback = addChildExecuterFunction(createExecuterFactory(calledbackExecuter, this ));
 
+ this.exec = function(){
+
+   let executorStack = [];
+   var toStack = this;
+
+   //executor stack from where exec called to root.
+   while( toStack != null ){
+     executorStack.push(toStack);
+     toStack = toStack.parent;
+   }
+
+
+   let root = executorStack.pop();
+   let rootPlan = createPlan( root );
+
+   var executor = root;
+   var plan = rootPlan;
+
+   executor = executorStack.pop();
+
+   while( executor != null ){
+     plan._nextPlan = createPlan( executor );
+     plan = plan._nextPlan;
+     executor = executorStack.pop();
+   };
+
+   root.rootExec( rootPlan );
+
+  };
+
 }
 
 function executePlan( executeFunction ){
@@ -71,8 +101,6 @@ let notexecPlan =
 function filedExecuter( file ){
 
   executer.call( this, null );
-
-  if( file == null ) raiseError( this , "File must not be null", null);
 
   let thisExecuter = this;
 
@@ -103,35 +131,6 @@ function childExecuter( userProcess, parent ){
     executerFunction ( filePath, userProcess, jb, executerPlan.next() );
   }
 
-  this.exec = function(){
-
-    let executorStack = [];
-    var toStack = this;
-
-    do{
-      executorStack.push( toStack );
-      toStack = toStack.parent;
-
-    } while( toStack.parent != null );
-
-    let root = toStack;
-
-    var executor = root;
-    let rootPlan = createPlan( root );
-
-    var plan = rootPlan;
-    executor = executorStack.pop();
-
-    while( executor != null ){
-      plan._nextPlan = createPlan( executor );
-      plan = plan._nextPlan
-      executor = executorStack.pop();
-    };
-
-    root.rootExec( rootPlan );
-
-  };
-
 }
 
 function createPlan( executer ){
@@ -160,9 +159,13 @@ function createChildPlan( executer ){
 function createFiledPlan( executer ){
   return new executePlan(
     function( file ){
-      let itr = pathIterator( file, executer);
-      for( let filePath of itr ){
-        this.next()._executeFunction( filePath );
+      if( file != null ) {
+        let itr = pathIterator( file, executer);
+        for( let filePath of itr ){
+          this.next()._executeFunction( filePath );
+        }
+      }else{
+        raiseError( executer , "File must not be null", null);
       }
     }
   );
@@ -236,6 +239,7 @@ function * singlePath( file ){
 
 
 function ioExecuter( userProcess, parent) {
+
   childExecuter.call( this, userProcess, parent );
 
   this.internalExec = function(filePath, jb, executionPlan ){
@@ -527,7 +531,6 @@ function guardProcess( userProcess, isCalledback){
                 arguments[2] ); //json, filePath, errListener
             }
           }catch(err){
-
             //walkaround for unclear this/caller problem in javascript.
             //I just wanted to use something like "this".
             raiseError(
