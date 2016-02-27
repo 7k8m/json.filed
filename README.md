@@ -17,6 +17,21 @@ jf.filed( file )
             + File format is bson when `.bson`, json when `.json` or `others`.
         + if iterator, above path is iterated.
 
+
+### download
+````
+jf.download( url, file )
+````
+----
+
++ `url`
+    + specify url from download json
++ `file`
+    + file is string or iterator
+        + if string, file is path to write downloaded JSON.
+        + if iterator, above path is iterated.
+
+
 ### io
 ````
 .io( function( json, filePath, executer ) { your code to process json here } )
