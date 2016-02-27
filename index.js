@@ -177,6 +177,9 @@ function createDownloadPlan( executer ){
 
   return new executePlan(
     function( url, filePath ){
+
+      let thisPlan = this;
+
       jf
       .filed( filePath )
       .io( function(){})
@@ -207,7 +210,7 @@ function createDownloadPlan( executer ){
         function(json, filePath ){
           let itr = pathIterator( filePath , executer);
           for( let filePath of itr ){
-            this.next()._executeFunction( filePath );
+            thisPlan.next()._executeFunction( filePath );
           }
         }
       ).exec();
