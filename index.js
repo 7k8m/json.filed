@@ -9,6 +9,8 @@ See the accompanying LICENSE file for terms.
 const fs = require('fs');
 const path = require('path');
 
+const request = require('request');
+
 const bson = require('bson');
 const BSON = new bson.BSONPure.BSON();
 
@@ -30,6 +32,10 @@ module.exports.filed =
      return addErrorListener( new filedExecuter (file), errListener );
    }
 
+module.exports.httped =
+ function (url, file, errListener) {
+    return addErrorListener( new httpedExecuter (url, file), errListener );
+  }
 
 function executer( root ){
  this.executeChild = function( p1,p2 ){};
@@ -48,6 +54,47 @@ function filedExecuter( file ){
   executer.call( this, this)
   let thisExecuter = this;
   this.exec = function(){ filedExecute( file, thisExecuter.executeChild, thisExecuter); };
+
+};
+
+function httpedExecuter( url, file ){
+
+  executer.call( this, this)
+  let thisExecuter = this;
+  this.exec = function(){
+
+    module.exports.filed( file )
+    .io( function(){})
+    .calledback( function( file, object, callback, executer ){
+      request(
+        {
+          method: "GET",
+          uri: url,
+          headers: {
+            'User-Agent': 'jsonfiled'
+          }
+        }
+        ,
+        function (error, response, body ) {
+        if (!error &&
+            response.statusCode == 200 &&
+            response.headers['content-type'].startsWith('application/json')) {
+
+            callback(decode(body,JB_JSON));
+
+        }else{
+            executer.emit("error",response);
+        }
+
+      });
+    })
+    .pass(
+      function(json, filePath ){
+        filedExecute(filePath, thisExecuter.executeChild, thisExecuter);
+      }
+    ).exec();
+
+  };
 
 };
 
@@ -129,6 +176,7 @@ function calledbackExecuter( userProcess, root) {
 util.inherits( executer, EventEmitter);
 
 util.inherits( filedExecuter, executer);
+util.inherits( httpedExecuter, executer);
 
 util.inherits( childExecuter, executer);
 util.inherits( ioExecuter, childExecuter);
