@@ -249,7 +249,7 @@ function copyExecuter( userProcess, parent ) {
   childExecuter.call( this, userProcess, parent );
 
   this.internalExec = function( filePath, jb, executionPlan ){
-    this.generalInternalExec( filePath, jb, copy, executiopnPlan );
+    this.generalInternalExec( filePath, jb, copy, executionPlan );
   }
 
 };
