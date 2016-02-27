@@ -36,7 +36,7 @@ describe('The updated value', function () {
           done();
         }).exec();
       },
-      1000);
+      100);
     })
 
 });
@@ -57,7 +57,7 @@ describe('The value function does not return ', function () {
           //return obj
         }).exec();
       },
-      1000
+      100
     );
 
     setTimeout(
@@ -67,7 +67,7 @@ describe('The value function does not return ', function () {
           done();
         }).exec();
       },
-      1000
+      200
     );
 
   });
@@ -89,7 +89,7 @@ describe('Function return null', function () {
           return null
         }).exec();
       },
-      1000
+      10
     );
 
     setTimeout(
@@ -99,7 +99,7 @@ describe('Function return null', function () {
           done();
         }).exec();
       },
-      1000
+      20
     );
 
   });
@@ -122,7 +122,7 @@ describe('Upper case file extension ', function () {
           done();
         }).exec();
       },
-      1000);
+      10);
     })
 
 });
@@ -147,7 +147,7 @@ describe('Serialized function ', function () {
           done();
         }).exec();
       },
-      1000);
+      10);
     })
 
 });

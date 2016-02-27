@@ -12,7 +12,7 @@ var test3Value = { msg: "value from 3rd IO." };
 
 describe('Chained IO function', function () {
   it('should receive filePath and value which previous IO function passed and returned', function (done) {
-    
+
     jf.filed( testFilePath ).io(
       function( obj, filePath) {
         return testValue;
@@ -43,7 +43,7 @@ describe('Chained IO function', function () {
           done();
         }).exec();
       },
-      1000);
+      100);
 
   });
 });

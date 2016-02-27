@@ -37,7 +37,7 @@ describe('called back function ', function () {
   setTimeout(
     function(){
     },
-    100);
+    20);
 
 });
 
@@ -68,7 +68,7 @@ describe('called back function ', function () {
           function(){
             done();
           },
-          1000);
+          100);
       },
       100);
 

@@ -25,7 +25,7 @@ describe('Pass function', function () {
           }
         ).exec();
       },
-      1000);
+      100);
 
   });
 });
@@ -81,7 +81,7 @@ describe('Pass IO function', function () {
               }
           }
         ).exec();
-    },1000);
+    },100);
   });
 });
 

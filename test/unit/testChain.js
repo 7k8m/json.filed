@@ -45,7 +45,7 @@ describe('Value last chained IO function returned', function () {
           done();
         }).exec();
       },
-      1000);
+      100);
 
   });
 });
@@ -99,7 +99,7 @@ describe('Chained link function', function () {
           if ( count == 3 ) done();
         }).exec();
       },
-      1000);
+      100);
 
   });
 });
@@ -128,7 +128,7 @@ describe('Value received by link proces in 1st', function () {
         }).exec();
 
       },
-      1000);
+      100);
 
   });
 });
@@ -158,14 +158,14 @@ describe('Link process which does not link any', function () {
         }).exec();
 
       },
-      500);
+      100);
 
     setTimeout(
       function(){
         expect(count).to.equal( 0 );
         done();
       },
-      500);
+      100);
 
   });
 });

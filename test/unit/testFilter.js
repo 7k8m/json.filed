@@ -50,7 +50,7 @@ describe('Filter functions ', function () {
       function(){
         done();
       },
-      1000);
+      100);
   });
 
 });

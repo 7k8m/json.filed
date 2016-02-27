@@ -45,7 +45,7 @@ describe('Nested IO functions ', function () {
 
         }).exec();
       },
-      1000);
+      100);
 
   });
 });

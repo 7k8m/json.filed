@@ -40,7 +40,7 @@ describe('The updated value', function () {
           done();
         }).exec();
       },
-      1000);
+      10);
     })
 
 });
@@ -63,7 +63,7 @@ describe('The value function does not return ', function () {
             //return obj
           }).exec();
       },
-      1000
+      10
     );
 
     setTimeout(
@@ -74,7 +74,7 @@ describe('The value function does not return ', function () {
             done();
           }).exec();
         },
-        1000
+        20
       );
 
   });
@@ -99,7 +99,7 @@ describe('Function return null', function () {
             return null
           }).exec();
       },
-      1000
+      10
     );
 
     setTimeout(
@@ -110,7 +110,7 @@ describe('Function return null', function () {
             done();
           }).exec();
         },
-        1000
+        20
       );
 
   });
@@ -145,7 +145,7 @@ describe('File with extension neither json nor bson ', function () {
             done();
           }).exec();
       },
-      1000);
+      10);
     })
 
 });
@@ -181,7 +181,7 @@ describe('File parameter', function () {
 
           }).exec();
       },
-      1000);
+      10);
     })
 
 });
@@ -212,7 +212,7 @@ describe('File parameter', function () {
 
           }).exec();
       },
-      1000);
+      100);
     })
 
 });
@@ -249,7 +249,7 @@ describe('Upper case file extension ', function () {
           done();
         }).exec();
       },
-      1000);
+      100);
     })
 
 });
@@ -275,7 +275,7 @@ describe('linked files ', function () {
           return [ testFile9LinkedPath_1, testFile9LinkedPath_2 ];
         }).exec();
       },
-      500);
+      100);
 
     var count = 0;
     setTimeout(
@@ -286,7 +286,7 @@ describe('linked files ', function () {
           if(count == 2) done();
         }).exec();
       },
-      1000);
+      200);
     })
 
 });
@@ -307,13 +307,13 @@ describe('Function that return no object', function () {
           //return no object
         }).exec();
       },
-      500);
+      100);
 
     setTimeout(
       function(){
         done();
       },
-      1000
+      200
     );
 
   })
@@ -337,7 +337,7 @@ describe('Pass ', function () {
             done();
         }).exec();
       },
-      500);
+      100);
     });
 
 });

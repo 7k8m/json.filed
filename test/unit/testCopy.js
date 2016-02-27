@@ -31,7 +31,7 @@ describe('Copy functions ', function () {
           done();
         }).exec();
       },
-      1000);
+      100);
   });
 
 });
@@ -59,12 +59,12 @@ describe('Copy functions ', function () {
           .pass( function( o ) {
             expect( o ).to.eql( testValue );
             done();
-            
+
           }).exec();
 
         }).exec();
       },
-      1000);
+      100);
   });
 
 });
