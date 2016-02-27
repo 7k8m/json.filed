@@ -47,7 +47,7 @@
         return {msg: filePath }; // write 1st greeting to data.json
     }).exec();
 
-## Above scripts are executed as ...
+## Above script are executed as ...
     $ node greetings.js
     $ cat hello.json
     {"msg":"./hello.json"}
@@ -64,7 +64,7 @@
       return 'linked_hello.json'
     }).exec();
 
-## Above scripts are executed as ...
+## Above script are executed as ...
     $ node chained_greeting.js
     $ cat hello.json
     {"msg":"hello"}
@@ -98,7 +98,7 @@
       }
     ).exec();
 
-## Above scripts are executed as ...
+## Above script are executed as ...
     $ node calledback.js
     hello world
 
