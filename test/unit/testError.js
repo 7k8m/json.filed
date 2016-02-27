@@ -22,7 +22,7 @@ describe('Error ', function () {
 
     jf.filed(null,
       function(err){
-        expect(err.msg).to.eql('Failed to create path Iterator');
+        expect(err.msg).to.eql('File must not be null');
       }
     ).exec();
 
@@ -47,6 +47,7 @@ describe('Error ', function () {
         done();
       }
     ).exec();
+
 
   });
 

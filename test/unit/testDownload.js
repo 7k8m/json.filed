@@ -6,9 +6,9 @@ var jf = require('../../'),
 
 let testPath = './' + Math.random() + '.json';
 
-describe('called back function ', function () {
+describe('Download function ', function () {
   this.timeout(10000);
-  it('should hand JSON passed in callback function to next executer', function (done) {
+  it('should download JSON from internet.', function (done) {
 
     jf.download( 'https://api.github.com/repos/7k8m/json.filed/commits/076aff7302cae3046955de13af41b1be90f41f03', testPath )
     .pass(
