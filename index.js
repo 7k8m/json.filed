@@ -22,19 +22,19 @@ const initialValue = {};
 const JB_JSON = 'j';
 const JB_BSON = 'b';
 
-module.exports = {};
+let jf = {};
 
-module.exports.initialValue =
+jf.initialValue =
   function() { return initialValue; };
 
-module.exports.filed =
+jf.filed =
   function (file, errListener) {
      return addErrorListener( new filedExecuter (file), errListener );
    }
 
-module.exports.httped =
+jf.download =
  function (url, file, errListener) {
-    return addErrorListener( new httpedExecuter (url, file), errListener );
+    return addErrorListener( new downloadExecuter (url, file), errListener );
   }
 
 function executer( root ){
@@ -57,7 +57,7 @@ function filedExecuter( file ){
 
 };
 
-function httpedExecuter( url, file ){
+function downloadExecuter( url, file ){
 
   executer.call( this, this)
   let thisExecuter = this;
@@ -176,7 +176,7 @@ function calledbackExecuter( userProcess, root) {
 util.inherits( executer, EventEmitter);
 
 util.inherits( filedExecuter, executer);
-util.inherits( httpedExecuter, executer);
+util.inherits( downloadExecuter, executer);
 
 util.inherits( childExecuter, executer);
 util.inherits( ioExecuter, childExecuter);
@@ -746,6 +746,8 @@ let defaultEmitter = new DefaultEmitter();
 
 defaultEmitter.on( 'error', defaultErrorListener);
 
-module.exports.defaultEmitter = defaultEmitter;
+jf.defaultEmitter = defaultEmitter;
 
-module.exports.JsonFiledError = JsonFiledError;
+jf.JsonFiledError = JsonFiledError;
+
+module.exports = jf;
