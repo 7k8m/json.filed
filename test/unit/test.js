@@ -181,7 +181,7 @@ describe('File parameter', function () {
 
           }).exec();
       },
-      10);
+      100);
     })
 
 });
