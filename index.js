@@ -37,197 +37,180 @@ jf.download =
     return addErrorListener( new downloadExecuter (url, file), errListener );
   }
 
-function executer( root ){
- this.executeChild = function( p1,p2 ){};
+function executer( parent ){
 
- this.io = addChildExecuterFunction(createExecuterFactory(ioExecuter,root),this);
- this.copy = addChildExecuterFunction(createExecuterFactory(copyExecuter,root),this);
- this.link = addChildExecuterFunction(createExecuterFactory(linkExecuter,root),this);
- this.pass = addChildExecuterFunction(createExecuterFactory(passExecuter,root),this);
- this.filter = addChildExecuterFunction(createExecuterFactory(filterExecuter,root),this);
- this.calledback = addChildExecuterFunction(createExecuterFactory(calledbackExecuter,root),this);
+ this.parent = parent;
+
+ this.io = addChildExecuterFunction(createExecuterFactory(ioExecuter, this ));
+ this.copy = addChildExecuterFunction(createExecuterFactory(copyExecuter, this ));
+ this.link = addChildExecuterFunction(createExecuterFactory(linkExecuter, this ));
+ this.pass = addChildExecuterFunction(createExecuterFactory(passExecuter, this ));
+ this.filter = addChildExecuterFunction(createExecuterFactory(filterExecuter, this ));
+ this.calledback = addChildExecuterFunction(createExecuterFactory(calledbackExecuter, this ));
+
 }
 
+function executePlan( executeFunction ){
+
+  this._executeFunction = executeFunction;
+
+  this._nextPlan = null;
+  this.next =
+    function(){
+      let nextPlan =
+        this._nextPlan != null && this._nextPlan != undefined ?
+        this._nextPlan : notexecPlan;
+      return nextPlan;
+    }
+
+}
+
+let notexecPlan =
+  new executePlan( function(){}, null );
 
 function filedExecuter( file ){
 
-  executer.call( this, this)
+  executer.call( this, null );
+
+  if( file == null ) raiseError( this , "File must not be null", null);
+
   let thisExecuter = this;
-  this.exec = function(){ filedExecute( file, thisExecuter.executeChild, thisExecuter); };
+
+  this.rootExec =
+    function(executePlan){
+      executePlan._executeFunction( file )
+    };
 
 };
 
 function downloadExecuter( url, file ){
 
-  executer.call( this, this)
+  executer.call( this, null );
   let thisExecuter = this;
-  this.exec = function(){
-
-    module.exports.filed( file )
-    .io( function(){})
-    .calledback( function( file, object, callback, executer ){
-      request(
-        {
-          method: "GET",
-          uri: url,
-          headers: {
-            'User-Agent': 'jsonfiled'
-          }
-        }
-        ,
-        function (error, response, body ) {
-        if (!error &&
-            response.statusCode == 200 &&
-            response.headers['content-type'].startsWith('application/json')) {
-
-            callback(decode(body,JB_JSON));
-
-        }else{
-            executer.emit("error",response);
-        }
-
-      });
-    })
-    .pass(
-      function(json, filePath ){
-        filedExecute(filePath, thisExecuter.executeChild, thisExecuter);
-      }
-    ).exec();
-
-  };
+  this.rootExec =
+    function( executePlan ){
+      executePlan._executeFunction( url, file )
+    };
 
 };
 
 
-function childExecuter( userProcess, root){
+function childExecuter( userProcess, parent ){
 
-  executer.call( this, root );
+  executer.call( this, parent );
 
-  this.generalInternalExec = function ( filePath, jb , executerFunction) {
-    executerFunction ( filePath, userProcess, jb, this.executeChild );
+  this.generalInternalExec = function ( filePath, jb , executerFunction, executerPlan ) {
+    executerFunction ( filePath, userProcess, jb, executerPlan.next() );
   }
 
   this.exec = function(){
-    root.exec()
+
+    let executorStack = [];
+    var toStack = this;
+
+    do{
+      executorStack.push( toStack );
+      toStack = toStack.parent;
+
+    } while( toStack.parent != null );
+
+    let root = toStack;
+
+    var executor = root;
+    let rootPlan = createPlan( root );
+
+    var plan = rootPlan;
+    executor = executorStack.pop();
+
+    while( executor != null ){
+      plan._nextPlan = createPlan( executor );
+      executor = executorStack.pop();
+    };
+
+    root.rootExec( rootPlan );
+
   };
 
 }
 
-
-function ioExecuter( userProcess, root) {
-  childExecuter.call( this, userProcess, root);
-
-  this.internalExec = function(filePath, jb){
-    this.generalInternalExec( filePath, jb, io);
-  }
-
-};
-
-
-function copyExecuter( userProcess, root) {
-  childExecuter.call( this, userProcess, root);
-
-  this.internalExec = function( filePath, jb){
-    this.generalInternalExec( filePath, jb, copy);
-  }
-
-};
-
-
-function linkExecuter( userProcess, root) {
-  childExecuter.call( this, userProcess, root);
-
-  this.internalExec = function( filePath, jb){
-    this.generalInternalExec( filePath, jb, link);
-  }
-
-};
-
-
-function passExecuter( userProcess, root) {
-  childExecuter.call( this, userProcess, root);
-
-  this.internalExec = function( filePath, jb){
-    this.generalInternalExec( filePath, jb, pass);
-  }
-
-};
-
-
-function filterExecuter( userProcess, root) {
-  childExecuter.call( this, userProcess, root);
-
-  this.internalExec = function( filePath, jb){
-    this.generalInternalExec( filePath, jb, filter);
-  }
-
-};
-
-function calledbackExecuter( userProcess, root) {
-  childExecuter.call( this, userProcess, root);
-
-  this.internalExec = function( filePath, jb){
-    this.generalInternalExec( filePath, jb, calledback);
-  }
-
-};
-
-
-util.inherits( executer, EventEmitter);
-
-util.inherits( filedExecuter, executer);
-util.inherits( downloadExecuter, executer);
-
-util.inherits( childExecuter, executer);
-util.inherits( ioExecuter, childExecuter);
-util.inherits( copyExecuter, childExecuter);
-util.inherits( linkExecuter, childExecuter);
-util.inherits( passExecuter, childExecuter);
-util.inherits( filterExecuter, childExecuter);
-util.inherits( calledbackExecuter, childExecuter);
-
-function createExecuterFactory(classFunction,root){
-  return function(userProcess){ return new classFunction( userProcess, root) };
+function createPlan( executer ){
+  if( executer instanceof filedExecuter) return createFiledPlan( executer );
+  else if( executer instanceof downloadExecuter ) return createDownloadPlan(executer);
+  else return createChildPlan( executer );
 }
 
-function addChildExecuterFunction( executerFactory, parent ){
-
-  var f = function( userProcess, errListener ){ //function to create child executer.
-
-    let executer = executerFactory( userProcess );
-    userProcess._plannedExecuter = executer; //hack to emit error from userProcess by executer.
-
-    parent.executeChild = function( filePath ){ //switch state of parent also.
+function createChildPlan( executer ){
+  return new executePlan(
+    function( filePath ){
       try{
         executer.internalExec(
           filePath,
-          calcJb( filePath )
+          calcJb( filePath ),
+          this
         );
 
       }catch(err){
         raiseError(executer,err.toString(),err);
       }
     }
+  );
+}
 
-    if( errListener != null ){
-      addErrorListener( executer, errListener);
+function createFiledPlan( executer ){
+  return new executePlan(
+    function( file ){
+      let itr = pathIterator( file, executer);
+      for( let filePath of itr ){
+        this.next()._executeFunction( filePath );
+      }
     }
-
-    return executer;
-
-  }
-
-  return f;//return function added to parent.
-
+  );
 }
 
 
-function filedExecute( file, execute, filedExecuter){
-  let itr = pathIterator( file, filedExecuter);
-  for( let filePath of itr ){
-    execute(filePath, calcJb(filePath) );
-  }
+
+function createDownloadPlan( executer ){
+
+  return new executePlan(
+    function( url, filePath ){
+      jf
+      .filed( filePath )
+      .io( function(){})
+      .calledback( function( file, object, callback, executer ){
+        request(
+          {
+            method: "GET",
+            uri: url,
+            headers: {
+              'User-Agent': 'jsonfiled'
+            }
+          }
+          ,
+          function (error, response, body ) {
+          if (!error &&
+              response.statusCode == 200 &&
+              response.headers['content-type'].startsWith('application/json')) {
+
+              callback(decode(body,JB_JSON));
+
+          }else{
+              executer.emit("error",response);
+          }
+
+        });
+      })
+      .pass(
+        function(json, filePath ){
+          let itr = pathIterator( filePath , executer);
+          for( let filePath of itr ){
+            this.next()._executeFunction( filePath );
+          }
+        }
+      ).exec();
+    }
+  );
 }
+
 
 function pathIterator( file, filedExecuter){
   try{
@@ -250,13 +233,112 @@ function * singlePath( file ){
   yield file;
 }
 
-function io( filePath, userProcess, jb, chainedProcess){
 
+function ioExecuter( userProcess, parent) {
+  childExecuter.call( this, userProcess, parent );
+
+  this.internalExec = function(filePath, jb, executionPlan ){
+    this.generalInternalExec( filePath, jb, io, executionPlan );
+  }
+
+};
+
+
+function copyExecuter( userProcess, parent ) {
+  childExecuter.call( this, userProcess, parent );
+
+  this.internalExec = function( filePath, jb, executionPlan ){
+    this.generalInternalExec( filePath, jb, copy, executiopnPlan );
+  }
+
+};
+
+
+function linkExecuter( userProcess, parent ) {
+  childExecuter.call( this, userProcess, parent );
+
+  this.internalExec = function( filePath, jb, executionPlan ){
+    this.generalInternalExec( filePath, jb, link, executionPlan );
+  }
+
+};
+
+
+function passExecuter( userProcess, parent ) {
+  childExecuter.call( this, userProcess, parent );
+
+  this.internalExec = function( filePath, jb, executionPlan ){
+    this.generalInternalExec( filePath, jb, pass, executionPlan );
+  }
+
+};
+
+
+function filterExecuter( userProcess, parent ) {
+  childExecuter.call( this, userProcess, root);
+
+  this.internalExec = function( filePath, jb, executionPlan ){
+    this.generalInternalExec( filePath, jb, filter, executionPlan );
+  }
+
+};
+
+function calledbackExecuter( userProcess, parent ) {
+  childExecuter.call( this, userProcess, root);
+
+  this.internalExec = function( filePath, jb, executionPlan ){
+    this.generalInternalExec( filePath, jb, calledback, executionPlan );
+  }
+
+};
+
+
+util.inherits( executer, EventEmitter);
+
+util.inherits( filedExecuter, executer);
+util.inherits( downloadExecuter, executer);
+
+util.inherits( childExecuter, executer);
+util.inherits( ioExecuter, childExecuter);
+util.inherits( copyExecuter, childExecuter);
+util.inherits( linkExecuter, childExecuter);
+util.inherits( passExecuter, childExecuter);
+util.inherits( filterExecuter, childExecuter);
+util.inherits( calledbackExecuter, childExecuter);
+
+function createExecuterFactory( classFunction, parent ){
+  return function(userProcess){ return new classFunction( userProcess, parent ) };
+}
+
+function addChildExecuterFunction( executerFactory ){
+
+  var f = function( userProcess, errListener ){ //function to create child executer.
+
+    let executer = executerFactory( userProcess );
+    userProcess._plannedExecuter = executer; //hack to emit error from userProcess by executer.
+
+    if( errListener != null ){
+      addErrorListener( executer, errListener);
+    }
+
+    return executer;
+
+  }
+  return f;//return function added to parent.
+
+}
+
+
+function filedExecute( file, rootPlan, filedExecuter){
+  rootPlan.executePlan(file, filedExecuter);
+}
+
+function io( filePath, userProcess, jb, nextPlan){
   process(
     filePath,
     userProcess,
     jb,
-    chainedProcess,
+    nextPlan,
     saveAfterApply,
     function(){
       //file to read does not exists.
@@ -291,7 +373,7 @@ function io( filePath, userProcess, jb, chainedProcess){
                     jb,
                     filePath,
                     saveAfterApply,
-                    chainedProcess
+                    nextPlan
                   );
               },
               jb
@@ -304,41 +386,41 @@ function io( filePath, userProcess, jb, chainedProcess){
 
 }
 
-function link( filePath, userProcess, jb, chainedProcess ){
-  process(filePath, userProcess, jb, chainedProcess, fsLink,
+function link( filePath, userProcess, jb, nextPlan ){
+  process(filePath, userProcess, jb, nextPlan, fsLink,
     raiseUnknownErrorFunction( userProcess._plannedExecuter ) // link does not create new file when not existed
   );
 }
 
-function copy( filePath, userProcess, jb, chainedProcess ){
-  process(filePath, userProcess, jb, chainedProcess, fsCopy,
+function copy( filePath, userProcess, jb, nextPlan ){
+  process(filePath, userProcess, jb, nextPlan.executeFunction, fsCopy,
     raiseUnknownErrorFunction( userProcess._plannedExecuter ) //copy does not create new file when not existed
   );
 }
 
-function pass( filePath, userProcess, jb, chainedProcess){
-  process(filePath, userProcess, jb, chainedProcess, passPostProcess,
+function pass( filePath, userProcess, jb, nextPlan ){
+  process(filePath, userProcess, jb, nextPlan.executeFunction, passPostProcess,
     raiseUnknownErrorFunction( userProcess._plannedExecuter ) //pass dows not create new file when not existed
   );
 }
 
-function filter( filePath, userProcess, jb, chainedProcess){
+function filter( filePath, userProcess, jb, nextPlan ){
   process(
     filePath,
     filternize(userProcess),
     jb,
-    chainedProcess,
+    nextPlan.executeFunction,
     filterPostProcess,
     raiseUnknownErrorFunction( userProcess._plannedExecuter) //filter does not create new file when not existed
   );
 }
 
-function calledback( filePath, userProcess, jb, chainedProcess){
+function calledback( filePath, userProcess, jb, nextPlan ){
   process(
     filePath,
     userProcess,
     jb,
-    chainedProcess,
+    nextPlan.executeFunction ,
     function(){}, // no post process for calledback
     raiseUnknownErrorFunction( userProcess._plannedExecuter ) //calledback does not create new file when not existed
   );
@@ -348,7 +430,7 @@ function process(
   filePath,
   userProcess,
   jb,
-  chainedProcess,
+  nextPlan,
   jfProcess,
   fileCreationProcess // process to create file when not existed
 ){
@@ -388,7 +470,7 @@ function process(
                       jb,
                       filePath,
                       jfProcess,
-                      chainedProcess
+                      nextPlan
                       );
                   }
                 }
@@ -480,21 +562,20 @@ function wrapUserProcess( userProcess, functionWrapper ){
 //
 //"closeFile" is prepared for caller handle close implementation. In some cases,
 //caller does not open fd and no need to close file.
-function apply( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
+function apply( process, json, file, closeFile, jb, filePath, postProcess, nextPlan ){
   if( process._plannedExecuter instanceof calledbackExecuter ){
-    applyCalledbackProcess( process, json, file, closeFile, jb, filePath, chainedProcess);//no post process for called back.
+    applyCalledbackProcess( process, json, file, closeFile, jb, filePath, nextPlan );//no post process for called back.
 
   }else{
-    applyProcess( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess);
+    applyProcess( process, json, file, closeFile, jb, filePath, postProcess, nextPlan );
 
   }
 
 }
 
-function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, chainedProcess){
+function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, nextPlan ){
 
   let guardedProcess = guardProcess( process, true);
-  if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
 
   guardedProcess(
     json,
@@ -508,13 +589,13 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, c
           filePath ,
           function(){
             // no need to close filePath
-            chainedProcess( filePath );
+            nextPlan._executeFunction( filePath );
           },
           jb,
           executer);
 
       } else {
-        chainedProcess( filePath );
+        nextPlan._executeFunction( filePath );
       }
     },
     guardedProcess._plannedExecuter
@@ -523,11 +604,9 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, c
 }
 
 //apply process function to json.
-function applyProcess( process, json, file, closeFile, jb, filePath, postProcess, chainedProcess){
+function applyProcess( process, json, file, closeFile, jb, filePath, postProcess, nextPlan){
 
   let guardedProcess = guardProcess( process, false);
-
-  if( chainedProcess == undefined ) chainedProcess = function(p1,p2){};
 
   var result = guardedProcess(json, filePath, guardedProcess._plannedExecuter);
 
@@ -539,12 +618,12 @@ function applyProcess( process, json, file, closeFile, jb, filePath, postProcess
       closeFile, //executed after saved.
       jb,
       filePath,
-      chainedProcess,
+      nextPlan,
       guardedProcess._plannedExecuter
     );
 
   }else{
-    closeFile( function(){ chainedProcess( filePath )} );
+    closeFile( function(){ nextPlan._executeFunction( filePath )} );
   }
 
 }
@@ -555,15 +634,15 @@ function save( data, file, closeFile, jb, executer){
   saveCore( data, file, closeFile, jb, null, null, executer);
 }
 
-function saveAfterApply( data, file, closeFile, jb, filePath, chainedProcess, executer){
-  saveCore(data,file,closeFile,jb,filePath,chainedProcess);
+function saveAfterApply( data, file, closeFile, jb, filePath, nextPlan, executer){
+  saveCore(data,file,closeFile,jb,filePath,nextPlan);
 }
 
 function saveCore(  data,
                     file,
                     closeFile, //how to close file differs between caller.
                     jb,
-                    filePath, chainedProcess, //only passsed in saveAfterApplly
+                    filePath, nextPlan, //only passsed in saveAfterApplly
                     executer
                   ){
 
@@ -580,23 +659,19 @@ function saveCore(  data,
         }else{
           closeFile(
             function() {
-              if( chainedProcess ) chainedProcess(filePath);
+              if( nextPlan ) nextPlan._executeFunction(filePath);
             }
           );//file is closed in afterSaved, if needed.
         }
       }
     );
   }catch(error){
-    closeFile(
-      function() {
-        if( chainedProcess ) chainedProcess(filePath);
-      }
-    );
+    closeFile( function() {} );
     raiseError( executer, "failed in save", error);
   }
 }
 
-function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, chainedProcess, executer ){ //"fs" is to avoid name conflict.
+function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, nextPlan, executer ){ //"fs" is to avoid name conflict.
 
   let itr = pathIterator( copied2Path );
   for(let newFilePath of itr ){
@@ -606,7 +681,7 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, chainedProc
       function(err){
         if(err) raiseError( executer, "Failed to copy from " + originalFilePath + " to " + newFilePath,err);
         else {
-          if( chainedProcess ) chainedProcess( newFilePath );
+          if( nextPlan ) nextPlan._executeFunction( newFilePath );
         }
       }
     );
@@ -628,7 +703,7 @@ function fsPipe( fromPath, toPath, callback){
 
 }
 
-function fsLink( linkPath, file, closeFile, jb, originalFilePath, chainedProcess, executer){ //"fs" is to avoid name conflict.
+function fsLink( linkPath, file, closeFile, jb, originalFilePath, nextPlan, executer){ //"fs" is to avoid name conflict.
 
   //link runs only after file was closed. closeFile is passed as compatibility of postProcess interface
   //closeFile();
@@ -640,19 +715,19 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath, chainedProcess
       function(err){
         if(err) raiseError( executer, "Failed to link from " + originalFilePath + " to " + newFilePath,err);
         else {
-          if( chainedProcess ) chainedProcess( newFilePath );
+          if( nextPlan ) nextPlan._executeFunction( newFilePath );
         }
       }
     );
   }
 }
 
-function passPostProcess( result, file, closeFile, jb, originalFilePath, chainedProcess ){
-  if( chainedProcess ) chainedProcess( originalFilePath );
+function passPostProcess( result, file, closeFile, jb, originalFilePath, nextPlan ){
+  if( nextPlan ) nextPlan._executeFunction( originalFilePath );
 }
 
-function filterPostProcess( result, file, closeFile, jb, originalFilePath, chainedProcess ){
-  if( result && chainedProcess ) chainedProcess( originalFilePath );
+function filterPostProcess( result, file, closeFile, jb, originalFilePath, nextPlan ){
+  if( result && nextPlan ) nextPlan._executeFunction( originalFilePath );
 }
 
 function encoding( jb ){
