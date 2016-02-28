@@ -182,7 +182,7 @@ function createDownloadPlan( executer ){
 
       jf
       .filed( filePath )
-      .io( function(){})
+      //.io( function(){})
       .calledback(
         function( file, object, callback ){
         request(
@@ -195,10 +195,11 @@ function createDownloadPlan( executer ){
                 callback(decode(body,JB_JSON));
 
             }else{
-                executer.emit("error", error );//not of calleback but download
+                executer.emit('error', error);
             }
           });
-        })
+        }
+      )
       .pass(
         function(json, filePath ){
           let itr = pathIterator( filePath , executer);
@@ -423,7 +424,8 @@ function calledback( filePath, userProcess, jb, nextPlan ){
     jb,
     nextPlan ,
     function(){}, // no post process for calledback
-    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter ) //calledback does not create new file when not existed
+    // calledback ignore creating new file but need to invoke applycalledbacking userProcess
+    function(){ applyCalledbackProcess( userProcess, {} , filePath, function(){} , jb, filePath, nextPlan );  }
   );
 }
 
