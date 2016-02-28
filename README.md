@@ -5,7 +5,8 @@ Processor of json file
     var jf = require('json.filed')
 
 ## Executers
-### filed
+### Root executers
+#### filed
 ````
 jf.filed( file )
 ````
@@ -18,7 +19,7 @@ jf.filed( file )
         + if iterator, above path is iterated.
 
 
-### download
+#### download
 ````
 jf.download( url, file )
 ````
@@ -31,8 +32,8 @@ jf.download( url, file )
         + if string, file is path to write downloaded JSON.
         + if iterator, above path is iterated.
 
-
-### io
+### Child executers
+#### io
 ````
 .io( function( json, filePath, executer ) { your code to process json here } )
 ````
@@ -44,7 +45,7 @@ jf.download( url, file )
         + Nothing written, if return no object.
     + `executer` is an event emitter and can be used in error handling
 
-### copy
+#### copy
 ````
 .copy( function( json, filePath, executer ) { your code to process json here } )
 ````
@@ -59,7 +60,7 @@ jf.download( url, file )
         + Nothing copied,if return no object.
     + `executer` is an event emitter and can be used in error handling
 
-### link
+#### link
 ````
 .link( function( json, filePath, executer ) { your code to process json here } )
 ````
@@ -74,7 +75,7 @@ jf.download( url, file )
         + Nothing newly linked,if return no object.
     + `executer` is an event emitter and can be used in error handling
 
-### filter
+#### filter
 ````
 .filter( function( json, filePath, executer ) { your code to process json here } )
 ````
@@ -85,7 +86,7 @@ jf.download( url, file )
     + function return `true` and chained process executed, otherwise chained process not executed for that `json`.
     + `executer` is an event emitter and can be used in error handling
 
-### pass
+#### pass
 ````
 .pass( function( json, filePath, executer ) { your code to process json here } )
 ````
@@ -96,7 +97,7 @@ jf.download( url, file )
     + result of process does not affect execution of pass, and pass just continues next.
     + `executer` is an event emitter and can be used in error handling
 
-### calledback
+#### calledback
 ````
 .calledback( function( json, filePath, callback, executer ) { your code to process json. call callback to here } )
 ````
