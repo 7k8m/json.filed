@@ -47,7 +47,7 @@
         return {msg: filePath }; // write 1st greeting to data.json
     }).exec();
 
-## Above script are executed as ...
+## Above script is executed as ...
     $ node greetings.js
     $ cat hello.json
     {"msg":"./hello.json"}
@@ -64,12 +64,37 @@
       return 'linked_hello.json'
     }).exec();
 
-## Above script are executed as ...
+## Above script is executed as ...
     $ node chained_greeting.js
     $ cat hello.json
     {"msg":"hello"}
     $ cat linked_hello.json
     {"msg":"hello"}
+
+
+## download.js
+    'use strict';
+
+    var jf = require('json.filed');
+
+    jf.download(
+      {
+        method: "GET",
+        uri: 'https://api.github.com/repos/7k8m/json.filed/commits/076aff7302cae3046955de13af41b1be90f41f03',
+        headers: {
+          'User-Agent': 'json.filed'
+        }
+      },
+      './firstcommit.json' )
+    .pass(
+      function(obj){
+        console.log(obj.commit.message);
+      }
+    ).exec();
+
+## Above script is executed as ...
+    $ node download.js
+    initial commit    
 
 
 ## calledback.js
@@ -98,7 +123,7 @@
       }
     ).exec();
 
-## Above script are executed as ...
+## Above script is executed as ...
     $ node calledback.js
     hello world
 
