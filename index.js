@@ -85,6 +85,7 @@ function executePlan( executeFunction ){
   this._executeFunction = executeFunction;
 
   this._nextPlan = null;
+
   this.next =
     function(){
       let nextPlan =
@@ -174,12 +175,9 @@ function createFiledPlan( executer ){
 
 
 function createDownloadPlan( executer ){
-
   return new executePlan(
     function( url, filePath ){
-
       let thisPlan = this;
-
       jf
       .filed( filePath )
       .calledback(
@@ -240,7 +238,6 @@ function * singlePath( file ){
 
 
 function ioExecuter( userProcess, parent) {
-
   childExecuter.call( this, userProcess, parent );
 
   this.internalExec = function(filePath, jb, executionPlan ){
@@ -333,7 +330,6 @@ function addChildExecuterFunction( executerFactory ){
   return f;//return function added to parent.
 
 }
-
 
 function filedExecute( file, rootPlan, filedExecuter){
   rootPlan.executePlan(file, filedExecuter);
@@ -459,9 +455,9 @@ function process(
           (err, data) => {
 
             if (err) {
-              raiseError( userProcess._plannedExecuter, 'IOError Failed to read file.',err);
+              raiseError( userProcess._plannedExecuter, 'IOError Failed to read file.', err);
               fs.close(fd,function (err) {
-                if(err) raiseError( userProcess._plannedExecuter, 'IOError Failed to close file in a error handling.',err);
+                if(err) raiseError( userProcess._plannedExecuter, 'IOError Failed to close file in a error handling.', err);
               });
 
             }else{
@@ -469,7 +465,7 @@ function process(
                 fd,
                 function(err){
                   if(err) {
-                    raiseError( userProcess._plannedExecuter, 'IOError Failed to close file',err);
+                    raiseError( userProcess._plannedExecuter, 'IOError Failed to close file', err);
                   }else{
                     apply(
                       userProcess,
@@ -597,7 +593,7 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess, nextP
 }
 
 function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, nextPlan ){
-
+  // guard from user handed process.
   let guardedProcess = guardProcess( process, true);
 
   guardedProcess(
@@ -628,7 +624,7 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, n
 
 //apply process function to json.
 function applyProcess( process, json, file, closeFile, jb, filePath, postProcess, nextPlan){
-
+  // guard from user handed process.
   let guardedProcess = guardProcess( process, false);
 
   var result = guardedProcess(json, filePath, guardedProcess._plannedExecuter);
@@ -652,7 +648,6 @@ function applyProcess( process, json, file, closeFile, jb, filePath, postProcess
 }
 
 //file can be either of file path and descriptor
-
 function save( data, file, closeFile, jb, executer){
   saveCore( data, file, closeFile, jb, null, null, executer);
 }
@@ -665,7 +660,7 @@ function saveCore(  data,
                     file,
                     closeFile, //how to close file differs between caller.
                     jb,
-                    filePath, nextPlan, //only passsed in saveAfterApplly
+                    filePath, nextPlan, //only passsed in save after applly
                     executer
                   ){
   try{
