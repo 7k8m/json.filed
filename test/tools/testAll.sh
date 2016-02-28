@@ -11,4 +11,6 @@ mocha test/unit/testError.js
 mocha test/unit/testCalledback.js
 mocha test/unit/testCalledback_more.js
 mocha test/unit/testDownload.js
+mocha test/unit/testExecutionPlan.js
+mocha test/unit/testExecutionPlan_2.js
 sh test/tools/rmTestJsonFile.sh

@@ -216,8 +216,13 @@ function pathIterator( file, filedExecuter){
   try{
     if ( typeof file == 'string' ){
       return singlePath(file);
+
     } else if ( file[ Symbol.iterator ] ) {
       return file;
+
+    } else if ( typeof file == 'function' ){
+      return pathIterator( file(), filedExecuter );
+      
     } else {
       throw new Error();
     }
@@ -612,7 +617,7 @@ function applyProcess( process, json, file, closeFile, jb, filePath, postProcess
   var result = guardedProcess(json, filePath, guardedProcess._plannedExecuter);
 
   if(result != undefined && result != null){
-    //if result returned, executePostProcess
+    //if result returned, execute PostProcess
     postProcess(
       result,
       file,
