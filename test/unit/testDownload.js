@@ -14,7 +14,7 @@ http.createServer( (request, response) => {
 
 describe('Download function ', function () {
   this.timeout(10000);
-  it('should download JSON from internet.', function (done) {
+  it('should download JSON from web server.', function (done) {
 
     jf.download( 'http://localhost:8080', testPath )
     .pass(
