@@ -1,5 +1,5 @@
 # json.filed
-Processor/library of json file
+Processor / library of json file
 
 ## Module
     var jf = require('json.filed')
