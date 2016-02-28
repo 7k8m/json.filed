@@ -789,7 +789,7 @@ function httpServer(){
     if( servedJsonPathMap.has( urlpathname ) ) {
       response.writeHead(200, {'Content-Type': 'application/json'});
 
-      jf.filed( servedJsonPathMap.get( urlPathname ) )
+      jf.filed( servedJsonPathMap.get( urlpathname ) )
       .pass(
         function( json ){
           response.end( JSON.stringify( json ) );

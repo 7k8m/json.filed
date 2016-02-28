@@ -24,6 +24,12 @@ describe('HttpServe function ', function () {
       },
       5000);
 
+    jf
+    .download( 'http://localhost:8080/test.json', testPath )
+    .pass( ( data ) => { expect( data ).to.eql(testValue) } )
+    .pass( () => {  done(); } )
+    .exec();
+
   });
 
 
