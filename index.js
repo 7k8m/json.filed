@@ -222,7 +222,7 @@ function pathIterator( file, filedExecuter){
 
     } else if ( typeof file == 'function' ){
       return pathIterator( file(), filedExecuter );
-      
+
     } else {
       throw new Error();
     }
@@ -405,8 +405,10 @@ function copy( filePath, userProcess, jb, nextPlan ){
 }
 
 function pass( filePath, userProcess, jb, nextPlan ){
-  process(filePath, userProcess, jb, nextPlan, passPostProcess,
-    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter ) //pass does not create new file when not existed
+  let passnized = passnize( userProcess );
+  process(filePath, passnized , jb, nextPlan, passPostProcess,
+    //pass does not create new file when not existed, but need to invoke applyProcess userProcess
+    function(){ applyProcess( passnized, {} , filePath, function(){}, jb, filePath, passPostProcess, nextPlan );}
   );
 }
 
@@ -428,7 +430,7 @@ function calledback( filePath, userProcess, jb, nextPlan ){
     jb,
     nextPlan ,
     function(){}, // no post process for calledback
-    // calledback ignore creating new file but need to invoke applycalledbacking userProcess
+    // calledback ignore creating new file, but need to invoke applycalledbacking userProcess
     function(){ applyCalledbackProcess( userProcess, {} , filePath, function(){} , jb, filePath, nextPlan );  }
   );
 }
@@ -501,8 +503,8 @@ function filternize( userProcess ){
     wrapUserProcess(
       userProcess,
       function( process ){
-        return function(obj,filePath){
-            if( process ( obj, filePath) ) return true;
+        return function(obj, filePath, executer){
+            if( process ( obj, filePath, executer) ) return true;
             else return false;
         };
       }
@@ -511,6 +513,21 @@ function filternize( userProcess ){
 
 }
 
+function passnize( userProcess ){
+  // return true to pass, regardless result of user process.
+  let result =
+    wrapUserProcess(
+      userProcess,
+      function( process ){
+        return function(obj, filePath, executer){
+            process ( obj, filePath, executer)
+            return true;
+        };
+      }
+    );
+  return result;
+
+}
 
 function guardProcess( userProcess, isCalledback){
 
