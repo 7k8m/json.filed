@@ -394,13 +394,13 @@ function io( filePath, userProcess, jb, nextPlan){
 
 function link( filePath, userProcess, jb, nextPlan ){
   process(filePath, userProcess, jb, nextPlan, fsLink,
-    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter ) // link does not create new file when not existed
+    raiseFileNotFoundErrorFunction( userProcess._plannedExecuter ) // link does not create new file when not existed
   );
 }
 
 function copy( filePath, userProcess, jb, nextPlan ){
   process(filePath, userProcess, jb, nextPlan, fsCopy,
-    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter ) //copy does not create new file when not existed
+    raiseFileNotFoundErrorFunction( userProcess._plannedExecuter ) //copy does not create new file when not existed
   );
 }
 
@@ -419,7 +419,7 @@ function filter( filePath, userProcess, jb, nextPlan ){
     jb,
     nextPlan,
     filterPostProcess,
-    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter) //filter does not create new file when not existed
+    raiseFileNotFoundErrorFunction( userProcess._plannedExecuter) //filter does not create new file when not existed
   );
 }
 
@@ -820,9 +820,9 @@ function raiseUnknownErrorFunction(emitter){
   }
 }
 
-function raiseContradictFileCreationErrorFunction(emitter){
+function raiseFileNotFoundErrorFunction(emitter){
   return function(){
-    raiseError( emitter, "Attempt to create a new file in an impossilbe process", null);
+    raiseError( emitter, "File not found error.", null);
   }
 }
 
