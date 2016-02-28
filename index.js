@@ -389,19 +389,19 @@ function io( filePath, userProcess, jb, nextPlan){
 
 function link( filePath, userProcess, jb, nextPlan ){
   process(filePath, userProcess, jb, nextPlan, fsLink,
-    raiseUnknownErrorFunction( userProcess._plannedExecuter ) // link does not create new file when not existed
+    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter ) // link does not create new file when not existed
   );
 }
 
 function copy( filePath, userProcess, jb, nextPlan ){
   process(filePath, userProcess, jb, nextPlan, fsCopy,
-    raiseUnknownErrorFunction( userProcess._plannedExecuter ) //copy does not create new file when not existed
+    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter ) //copy does not create new file when not existed
   );
 }
 
 function pass( filePath, userProcess, jb, nextPlan ){
   process(filePath, userProcess, jb, nextPlan, passPostProcess,
-    raiseUnknownErrorFunction( userProcess._plannedExecuter ) //pass dows not create new file when not existed
+    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter ) //pass dows not create new file when not existed
   );
 }
 
@@ -412,7 +412,7 @@ function filter( filePath, userProcess, jb, nextPlan ){
     jb,
     nextPlan,
     filterPostProcess,
-    raiseUnknownErrorFunction( userProcess._plannedExecuter) //filter does not create new file when not existed
+    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter) //filter does not create new file when not existed
   );
 }
 
@@ -423,7 +423,7 @@ function calledback( filePath, userProcess, jb, nextPlan ){
     jb,
     nextPlan ,
     function(){}, // no post process for calledback
-    raiseUnknownErrorFunction( userProcess._plannedExecuter ) //calledback does not create new file when not existed
+    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter ) //calledback does not create new file when not existed
   );
 }
 
@@ -797,6 +797,11 @@ function raiseUnknownErrorFunction(emitter){
   }
 }
 
+function raiseContradictFileCreationErrorFunction(emitter){
+  return function(){
+    raiseError( emitter, "Attempt to create a new file in an impossilbe process", null);
+  }
+}
 
 var defaultErrorListener = function ( error ){
   console.error( error );
