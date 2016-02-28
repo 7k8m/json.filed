@@ -13,4 +13,5 @@ mocha test/unit/testCalledback_more.js
 mocha test/unit/testDownload.js
 mocha test/unit/testExecutionPlan.js
 mocha test/unit/testExecutionPlan_2.js
+mocha test/unit/testEmptyFileChain.js
 sh test/tools/rmTestJsonFile.sh
