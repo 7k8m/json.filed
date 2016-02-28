@@ -5,9 +5,6 @@ var jf = require('../../'),
 
 const testFilePath = './' + Math.random() + '.json';
 
-const copyFilePath1 = './' + Math.random() + '.json';
-const copyFilePath2 = './' + Math.random() + '.json';
-
 var testValue1 = { msg: "test value 1" };
 var testValue2 = { msg: "test value 2" };
 
@@ -20,17 +17,16 @@ describe('Chained operation ', function () {
       .pass( function(){
 
         let rootPart =
-          jf.filed( testFilePath );
+          jf.filed( testFilePath )
+          .copy( function(){ return './' + Math.random() + '.json'; }, function( err ){ console.log(err) } )
 
         rootPart
-        .copy( function(){ return copyFilePath1; }, function( err ){ console.log(err) } )
         .io( function( obj, filePath ) { return testValue1; } )
         .pass( function( obj, filePath ){
           expect( obj ).to.eql( testValue1 );
         } ).exec();
 
         rootPart
-        .copy( function(){ return copyFilePath2; }, function( err ){ console.log(err) } )
         .io( function( obj, filePath ) { return testValue2; } )
         .pass( function( obj, filePath ){
           expect( obj ).to.eql( testValue2 );
