@@ -113,10 +113,10 @@ jf.download( url, file )
 ````
 jf.filed( file )
 .io( function( json, filePath ) { your code to process json here } )
-.copy( function( json, filePath ) { your another code to process json here} )
-.link( function( json, filePath ) { your another code to process json here} )
-.filter( function( json, filePath ) { your another code to process json here} )
-.pass( function( json, filePath ) { your another code to process json here} )
+.copy( function( json, filePath ) { your another code to process json here } )
+.link( function( json, filePath ) { your another code to process json here } )
+.filter( function( json, filePath ) { your another code to process json here } )
+.pass( function( json, filePath ) { your another code to process json here } )
 ````
 
 io,copy and link and filter and pass can be chained as above.
