@@ -182,7 +182,6 @@ function createDownloadPlan( executer ){
 
       jf
       .filed( filePath )
-      //.io( function(){})
       .calledback(
         function( file, object, callback ){
         request(
@@ -402,7 +401,7 @@ function copy( filePath, userProcess, jb, nextPlan ){
 
 function pass( filePath, userProcess, jb, nextPlan ){
   process(filePath, userProcess, jb, nextPlan, passPostProcess,
-    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter ) //pass dows not create new file when not existed
+    raiseContradictFileCreationErrorFunction( userProcess._plannedExecuter ) //pass does not create new file when not existed
   );
 }
 
