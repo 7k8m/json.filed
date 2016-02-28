@@ -9,6 +9,9 @@ See the accompanying LICENSE file for terms.
 const fs = require('fs');
 const path = require('path');
 
+const http = require('http');
+const URL = require('url');
+
 const request = require('request');
 
 const bson = require('bson');
@@ -23,6 +26,10 @@ const JB_JSON = 'j';
 const JB_BSON = 'b';
 
 let jf = {};
+
+var httpServerObj = null;
+const httpServerPort = 8080;
+const servedJsonPathMap = new Map();
 
 jf.initialValue =
   function() { return initialValue; };
@@ -47,6 +54,7 @@ function executer( parent ){
  this.pass = addChildExecuterFunction(createExecuterFactory(passExecuter, this ));
  this.filter = addChildExecuterFunction(createExecuterFactory(filterExecuter, this ));
  this.calledback = addChildExecuterFunction(createExecuterFactory(calledbackExecuter, this ));
+ this.httpServe = addChildExecuterFunction(createExecuterFactory(httpServeExecuter, this ));
 
  this.exec = function(){
 
@@ -295,6 +303,14 @@ function calledbackExecuter( userProcess, parent ) {
 
 };
 
+function httpServeExecuter( userProcess, parent ) {
+  childExecuter.call( this, userProcess, parent);
+
+  this.internalExec = function( filePath, jb, executionPlan ){
+    this.generalInternalExec( filePath, jb, httpServe, executionPlan );
+  }
+
+};
 
 util.inherits( executer, EventEmitter);
 
@@ -308,6 +324,7 @@ util.inherits( linkExecuter, childExecuter);
 util.inherits( passExecuter, childExecuter);
 util.inherits( filterExecuter, childExecuter);
 util.inherits( calledbackExecuter, childExecuter);
+util.inherits( httpServeExecuter, childExecuter);
 
 function createExecuterFactory( classFunction, parent ){
   return function(userProcess){ return new classFunction( userProcess, parent ) };
@@ -428,6 +445,12 @@ function calledback( filePath, userProcess, jb, nextPlan ){
     function(){}, // no post process for calledback
     // calledback ignore creating new file, but need to invoke applycalledbacking userProcess
     function(){ applyCalledbackProcess( userProcess, {} , filePath, function(){} , jb, filePath, nextPlan );  }
+  );
+}
+
+function httpServe( filePath, userProcess, jb, nextPlan ){
+  process(filePath, userProcess, jb, nextPlan, httpServePostProcess,
+    raiseFileNotFoundErrorFunction( userProcess._plannedExecuter)
   );
 }
 
@@ -746,6 +769,40 @@ function passPostProcess( result, file, closeFile, jb, originalFilePath, nextPla
 
 function filterPostProcess( result, file, closeFile, jb, originalFilePath, nextPlan ){
   if( result && nextPlan ) nextPlan._executeFunction( originalFilePath );
+}
+
+function httpServePostProcess( urlPathName, file, closeFile, jb, originalFilePath, nextPlan ){
+  httpServeJson( httpServer(), urlPathName, originalFilePath );
+  if( nextPlan ) nextPlan._executeFunction( originalFilePath );
+}
+
+function httpServeJson( server, urlPathName, localFilePath ){
+  servedJsonPathMap.set(urlPathName, localFilePath);
+}
+
+function httpServer(){
+
+  if( httpServerObj != null ) return httpServerObj;
+
+  httpServerObj = http.createServer( (request, response) => {
+    let urlpathname = URL.parse(request.url).pathname;
+    if( servedJsonPathMap.has( urlpathname ) ) {
+      response.writeHead(200, {'Content-Type': 'application/json'});
+
+      jf.filed( servedJsonPathMap.get( urlPathname ) )
+      .pass(
+        function( json ){
+          response.end( JSON.stringify( json ) );
+        }
+      )
+      .exec();
+
+    }else{
+      response.writeHead(404);
+      response.end();
+    }
+  }).listen(httpServerPort);
+
 }
 
 function encoding( jb ){
