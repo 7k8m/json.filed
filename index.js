@@ -183,22 +183,22 @@ function createDownloadPlan( executer ){
       jf
       .filed( filePath )
       .io( function(){})
-      .calledback( function( file, object, callback, executer ){
+      .calledback(
+        function( file, object, callback ){
         request(
           url,
-          function (error, response, body ) {
-          if (!error &&
-              response.statusCode == 200 &&
-              response.headers['content-type'].startsWith('application/json')) {
+            function (error, response, body ) {
+            if (!error &&
+                response.statusCode == 200 &&
+                response.headers['content-type'].startsWith('application/json')) {
 
-              callback(decode(body,JB_JSON));
+                callback(decode(body,JB_JSON));
 
-          }else{
-              executer.emit("error",response);
-          }
-
-        });
-      })
+            }else{
+                executer.emit("error", error );//not of calleback but download
+            }
+          });
+        })
       .pass(
         function(json, filePath ){
           let itr = pathIterator( filePath , executer);
