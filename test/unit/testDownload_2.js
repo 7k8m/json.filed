@@ -26,20 +26,22 @@ describe('Download function ', function () {
         function * (){ yield './' + Math.random() + '.json'; } );
 
     downloadedJson
-    .io( ( json ) => { expect( json.num ).to.equal( 1 ) }).exec();
+    .io( ( json ) => { expect( json.num ).to.equal( 1 ) })
+    .pass( () => {
+      downloadedJson
+      .io( ( json ) => { expect( json.num ).to.equal( 2 ) })
+      .pass( () => {
+        done();
+        server.close();
+      } )
+      .exec();
+    })
+    .exec();
 
     setTimeout(
       function(){
       },
       100);
-
-    downloadedJson
-    .io( ( json ) => { expect( json.num ).to.equal( 2 ) })
-    .pass( () => {
-      done();
-      server.close();
-    } )
-    .exec();
 
   });
 
