@@ -97,6 +97,28 @@
     initial commit    
 
 
+## httpServe.js
+    'use strict';
+    // easy JSON server
+    var jf = require('json.filed');
+
+    let hello = jf.filed('./hello.json');
+
+    hello.httpServe( () => { return '/greeting'; } )
+    .exec();
+
+    jf.httpServer().listen( 8080 );
+    // http://localhost:8080/greeting
+
+
+## Above script is executed ad ...
+    $ cat hello.json
+    { "msg": "hello" }
+    $ node httpServe.js &
+    $ curl http://localhost:8080/greeting
+    {"msg":"hello"}
+
+
 ## calledback.js
     var jf = require('json.filed');
 
