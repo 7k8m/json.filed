@@ -14,7 +14,7 @@ let server = http.createServer(
   (request, response) => {
     response.writeHead(200, {'Content-Type': 'application/json'});
     response.end( JSON.stringify( testValue() ) );
-}).listen(8080);
+}).listen(8081);
 
 describe('Download function ', function () {
   this.timeout(10000);
@@ -22,7 +22,7 @@ describe('Download function ', function () {
 
     let downloadedJson =
       jf.download(
-        'http://localhost:8080',
+        'http://localhost:8081',
         function * (){ yield './' + Math.random() + '.json'; } );
 
     downloadedJson

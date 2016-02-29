@@ -13,7 +13,7 @@ describe('HttpServe function ', function () {
   it('should serve JSON from local web server.', function (done) {
 
     let httpServer = jf.httpServer();
-    httpServer.listen( 8080 );
+    httpServer.listen( 8083 );
 
     jf
     .filed( testPath )
@@ -28,7 +28,7 @@ describe('HttpServe function ', function () {
       5000);
 
     jf
-    .download( 'http://localhost:8080/test.json', testPath )
+    .download( 'http://localhost:8083/test.json', testPath )
     .pass( ( data ) => { expect( data ).to.eql(testValue) } )
     .pass( () => {
       done();

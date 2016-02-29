@@ -13,7 +13,8 @@ describe('HttpServe function ', function () {
   it('should serve JSON from local web server.', function (done) {
 
     let httpServer = jf.httpServer();
-    httpServer.listen( 8080 );
+    httpServer.listen( 8084 );
+
 
     jf
     .filed( testPath )
@@ -24,22 +25,22 @@ describe('HttpServe function ', function () {
 
 
     jf
-    .download( 'http://localhost:8080/test.json', './' + Math.random() + '.json' )
+    .download( 'http://localhost:8084/test.json', './' + Math.random() + '.json' )
     .pass( ( data ) => { expect( data ).to.eql(testValue) } )
     .pass( () => {
 
       jf
-      .download( 'http://localhost:8080/test2.json', './' + Math.random() + '.json' )
+      .download( 'http://localhost:8084/test2.json', './' + Math.random() + '.json' )
       .pass( ( data ) => { expect( data ).to.eql(testValue) } )
       .pass( () => {
-        done(); 
+        done();
         httpServer.close();
       } )
       .exec();
 
     } )
     .exec();
-
+  
   });
 
 
