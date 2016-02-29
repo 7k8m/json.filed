@@ -4,7 +4,7 @@ let jf = require('json.filed');
 let fs = require('fs');
 let path = require('path');
 
-fs.readdir( '/Users/tmnk/Documents/runJsonFiled', function( err,files ){
+fs.readdir( <directory where json files exist>, function( err,files ){
   let jsonFiles =
     jf.filed(
       files.filter(
