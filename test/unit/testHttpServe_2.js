@@ -19,20 +19,24 @@ describe('HttpServe function ', function () {
     .filed( testPath )
     .io( ()=> { return testValue } )
     .httpServe( () => '/test.json')
+    .httpServe( () => '/test2.json')
     .exec();
 
-    setTimeout(
-      function(){
-        done();
-      },
-      5000);
 
     jf
-    .download( 'http://localhost:8080/test.json', testPath )
+    .download( 'http://localhost:8080/test.json', './' + Math.random() + '.json' )
     .pass( ( data ) => { expect( data ).to.eql(testValue) } )
     .pass( () => {
-      done();
-      httpServer.close();
+
+      jf
+      .download( 'http://localhost:8080/test2.json', './' + Math.random() + '.json' )
+      .pass( ( data ) => { expect( data ).to.eql(testValue) } )
+      .pass( () => {
+        done(); 
+        httpServer.close();
+      } )
+      .exec();
+
     } )
     .exec();
 

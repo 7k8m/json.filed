@@ -7,7 +7,7 @@ var jf = require('../../'),
 let testPath = './' + Math.random() + '.json';
 let testValue = { msg: "hello world" };
 
-http.createServer( (request, response) => {
+let server = http.createServer( (request, response) => {
   response.writeHead(200, {'Content-Type': 'application/json'});
   response.end( JSON.stringify( testValue ) );
 }).listen(8080);
@@ -21,6 +21,7 @@ describe('Download function ', function () {
       function( obj, filePath ){
         expect( obj ).to.eql( testValue );
         done();
+        server.close();
       }
     ).exec();
 

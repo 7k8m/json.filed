@@ -10,7 +10,7 @@ function testValue(){
   return { num: count }
 }
 
-http.createServer(
+let server = http.createServer(
   (request, response) => {
     response.writeHead(200, {'Content-Type': 'application/json'});
     response.end( JSON.stringify( testValue() ) );
@@ -35,7 +35,10 @@ describe('Download function ', function () {
 
     downloadedJson
     .io( ( json ) => { expect( json.num ).to.equal( 2 ) })
-    .pass( () => { done(); } )
+    .pass( () => {
+      done();
+      server.close();
+    } )
     .exec();
 
   });
