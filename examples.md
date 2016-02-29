@@ -101,12 +101,12 @@
     'use strict';
     // easy JSON server
     var jf = require('json.filed');
-    
+
     let hello = jf.filed('./hello.json');
-    
+
     hello.httpServe( () => '/greeting' )
     .exec();
-    
+
     jf.httpServer().listen( 8080 );
     // http://localhost:8080/greeting
 
@@ -117,6 +117,30 @@
     $ node httpServe.js &
     $ curl http://localhost:8080/greeting
     {"msg":"hello"}
+
+
+## httpServe_2.js
+    'use strict';
+
+    let jf = require('json.filed');
+    let fs = require('fs');
+    let path = require('path');
+
+    fs.readdir( '/Users/tmnk/Documents/runJsonFiled', function( err,files ){
+      let jsonFiles =
+        jf.filed(
+          files.filter(
+            ( filePath ) => filePath.toLowerCase().endsWith('.json')
+          )
+        );
+
+      jsonFiles.httpServe( ( obj, filePath ) => '/' + path.basename( filePath ) )
+      .exec();
+
+    } );
+
+    jf.httpServer().listen( 8080 );
+    // http://localhost:8080/<jsonfilename>
 
 
 ## calledback.js
