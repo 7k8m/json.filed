@@ -2,7 +2,7 @@
 Processor / library of json file
 ## Use case
 + read, write and process JSON file
-+ download and serve JSON via http
++ share JSON files between nodes
 + and so on.
 
 
