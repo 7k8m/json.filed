@@ -1,7 +1,7 @@
 # json.filed
 Processor / library of json file
 ## Use case
-+ read and write JSON files
++ read, write and process JSON file
 + and so on.
 
 
