@@ -2,6 +2,7 @@
 Processor / library of json file
 ## Use case
 + read, write and process JSON file
++ download and serve JSON via http
 + and so on.
 
 
@@ -112,6 +113,25 @@ jf.download( url, file )
     +  when `callback` is called, process of next executor begins.
         + `callback` is called  `callback(data)`. Here `data` is a json which is saved to file and passed to next executor.
     + `executer` is an event emitter and can be used in error handling
+
+#### httpServe
+````
+.httpServe( function( json, filePath, executer ) { your code to process json. call callback to here } )
+````
+
++ `function( json, filePath ) { ... }` is where to process json.
+    + json from file is passed to function as a `json` parameter
+    + `filePath` is where json from.
+    +  return value from function is registered as `pathname` to httpServer
+        + httpServer responds json when the `pathname` is requested.
+    + `executer` is an event emitter and can be used in error handling
+
+`jf.httpServer()` creates and returns http server.
+Code as next starts web server starts listening with port 8080.
+````
+let httpServer = jf.httpServer();
+httpServer.listen( 8080 );
+````
 
 ## Chaining
 ````
