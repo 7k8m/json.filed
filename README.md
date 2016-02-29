@@ -126,7 +126,7 @@ jf.download( url, file )
         + httpServer responds json when the `pathname` is requested.
     + `executer` is an event emitter and can be used in error handling
 
-`jf.httpServer()` creates and returns http server.
+`jf.httpServer()` creates and returns httpServer.
 Code as next starts web server to listen with port 8080.
 ````
 let httpServer = jf.httpServer();
