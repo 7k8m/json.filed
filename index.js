@@ -28,7 +28,6 @@ const JB_BSON = 'b';
 let jf = {};
 
 var httpServerObj = null;
-const httpServerPort = 8080;
 const servedJsonPathMap = new Map();
 
 jf.initialValue =
@@ -772,15 +771,15 @@ function filterPostProcess( result, file, closeFile, jb, originalFilePath, nextP
 }
 
 function httpServePostProcess( urlPathName, file, closeFile, jb, originalFilePath, nextPlan ){
-  httpServeJson( httpServer(), urlPathName, originalFilePath );
+  httpServeJson( urlPathName, originalFilePath );
   if( nextPlan ) nextPlan._executeFunction( originalFilePath );
 }
 
-function httpServeJson( server, urlPathName, localFilePath ){
+function httpServeJson( urlPathName, localFilePath ){
   servedJsonPathMap.set(urlPathName, localFilePath);
 }
 
-function httpServer(){
+jf.httpServer = function(){
 
   if( httpServerObj != null ) return httpServerObj;
 
@@ -801,7 +800,9 @@ function httpServer(){
       response.writeHead(404);
       response.end();
     }
-  }).listen(httpServerPort);
+  });
+
+  return httpServerObj;
 
 }
 

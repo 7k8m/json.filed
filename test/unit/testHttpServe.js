@@ -12,6 +12,9 @@ describe('HttpServe function ', function () {
   this.timeout(10000);
   it('should serve JSON from local web server.', function (done) {
 
+    let httpServer = jf.httpServer();
+    httpServer.listen( 8080 );
+
     jf
     .filed( testPath )
     .io( ()=> { return testValue } )
