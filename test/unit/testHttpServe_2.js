@@ -21,26 +21,31 @@ describe('HttpServe function ', function () {
     .io( ()=> { return testValue } )
     .httpServe( () => '/test.json')
     .httpServe( () => '/test2.json')
+    .pass( () => {
+      
+      jf
+      .download( 'http://localhost:8084/test.json', './' + Math.random() + '.json' )
+      .pass( ( data ) => { expect( data ).to.eql(testValue) } )
+      .pass( () => {
+
+        jf
+        .download( 'http://localhost:8084/test2.json', './' + Math.random() + '.json' )
+        .pass( ( data ) => { expect( data ).to.eql(testValue) } )
+        .pass( () => {
+          done();
+          httpServer.close();
+        } )
+        .exec();
+
+    })
     .exec();
 
 
-    jf
-    .download( 'http://localhost:8084/test.json', './' + Math.random() + '.json' )
-    .pass( ( data ) => { expect( data ).to.eql(testValue) } )
-    .pass( () => {
 
-      jf
-      .download( 'http://localhost:8084/test2.json', './' + Math.random() + '.json' )
-      .pass( ( data ) => { expect( data ).to.eql(testValue) } )
-      .pass( () => {
-        done();
-        httpServer.close();
-      } )
-      .exec();
 
     } )
     .exec();
-  
+
   });
 
 

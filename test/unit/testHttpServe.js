@@ -19,21 +19,16 @@ describe('HttpServe function ', function () {
     .filed( testPath )
     .io( ()=> { return testValue } )
     .httpServe( () => '/test.json')
-    .exec();
-
-    setTimeout(
-      function(){
+    .pass(() =>{
+      jf
+      .download( 'http://localhost:8083/test.json', testPath )
+      .pass( ( data ) => { expect( data ).to.eql(testValue) } )
+      .pass( () => {
         done();
-      },
-      5000);
-
-    jf
-    .download( 'http://localhost:8083/test.json', testPath )
-    .pass( ( data ) => { expect( data ).to.eql(testValue) } )
-    .pass( () => {
-      done();
-      httpServer.close();
-    } )
+        httpServer.close();
+      } )
+      .exec();
+    })
     .exec();
 
   });
