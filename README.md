@@ -1,7 +1,7 @@
 # json.filed
 Processor / library of json file
 + read and write JSON files
-+ etc...
++ and so on.
 
 
 ## Module
