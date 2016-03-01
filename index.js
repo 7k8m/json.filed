@@ -361,7 +361,8 @@ function sugarnize( userArgument ) {
 
   switch( typeof userArgument ) {
     case 'function' :
-      return userArgument;
+      //To ._plannedExecuter hack working, sugarnizing function is *NEEDED+.
+      return function(){ return userArgument.apply( null, arguments ) };
 
     default:
       return () => userArgument;
