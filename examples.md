@@ -22,10 +22,10 @@
     jf.filed('./data.json')
     .io(
       (json) => {
-      console.log(json.msg);// previous wrote greeting, 'good afternoon'
-      json.msg = 'good night world.';
-      // not write this time, because I'm sleepy 😴  
-      // return json;
+         console.log(json.msg);// previous wrote greeting, 'good afternoon'
+         json.msg = 'good night world.';
+         // not write this time, because I'm sleepy 😴  
+         // return json;
     }).exec();
 
 
@@ -43,7 +43,7 @@
     var jf = require('json.filed');
 
     jf.filed(['./hello.json','./😄.json'])
-    .io( {msg: filePath } }).exec(); // write 1st greeting to data.json
+    .io( ( obj,filePath ) => { msg: filePath } }).exec(); // write 1st greeting to data.json
 
 
 ## Above script is executed as ...
