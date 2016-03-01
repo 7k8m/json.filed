@@ -87,6 +87,7 @@ function executer( parent ){
 
 }
 
+
 function executePlan( executeFunction ){
 
   this._executeFunction = executeFunction;
@@ -102,6 +103,7 @@ function executePlan( executeFunction ){
     }
 
 }
+
 
 let notexecPlan =
   new executePlan( function(){}, null );
@@ -141,11 +143,13 @@ function childExecuter( userProcess, parent ){
 
 }
 
+
 function createPlan( executer ){
   if( executer instanceof filedExecuter) return createFiledPlan( executer );
   else if( executer instanceof downloadExecuter ) return createDownloadPlan(executer);
   else return createChildPlan( executer );
 }
+
 
 function createChildPlan( executer ){
   return new executePlan(
@@ -164,6 +168,7 @@ function createChildPlan( executer ){
   );
 }
 
+
 function createFiledPlan( executer ){
   return new executePlan(
     function( file ){
@@ -178,7 +183,6 @@ function createFiledPlan( executer ){
     }
   );
 }
-
 
 
 function createDownloadPlan( executer ){
@@ -333,6 +337,8 @@ function addChildExecuterFunction( executerFactory ){
 
   var f = function( userProcess, errListener ){ //function to create child executer.
 
+    userProcess = sugarnize( userProcess );
+
     let executer = executerFactory( userProcess );
     userProcess._plannedExecuter = executer; //hack to emit error from userProcess by executer.
 
@@ -346,6 +352,23 @@ function addChildExecuterFunction( executerFactory ){
   return f;//return function added to parent.
 
 }
+
+
+function sugarnize( userArgument ) {
+
+  if( userArgument == null ||
+      userArgument == undefined ) return () => userArgument;
+
+  switch( typeof userArgument ) {
+    case 'function' :
+      return userArgument;
+
+    default:
+      return () => userArgument;
+
+  };
+}
+
 
 function filedExecute( file, rootPlan, filedExecuter){
   rootPlan.executePlan(file, filedExecuter);
@@ -514,6 +537,7 @@ function process(
   );
 }
 
+
 //(*->*) -> (*->boolean) and a littile bit more.
 function filternize( userProcess ){
   // return true/false according to result of user process.
@@ -530,6 +554,7 @@ function filternize( userProcess ){
   return result;
 
 }
+
 
 function passnize( userProcess ){
   // return true to pass, regardless result of user process.
