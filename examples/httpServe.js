@@ -1,9 +1,8 @@
 'use strict';
-// easy JSON server
 var jf = require('json.filed');
 
+// easy JSON server
 let hello = jf.filed('./hello.json');
-
 hello.httpServe('/greeting' )
 .exec();
 
