@@ -6,12 +6,19 @@ Processor / library of json file
 + and so on.
 
 
-## Module
+# hello world
+    var jf = require('json.filed');
+    
+    jf.filed('./data.json')
+    .io( { msg: 'hello world.'} ).exec(); // write greeting to data.json
+
+
+# Module
     var jf = require('json.filed')
 
-## Executers
-### Root executers
-#### filed
+# Executers
+## Root executers
+### filed
 ````
 jf.filed( file )
 ````
@@ -24,7 +31,7 @@ jf.filed( file )
         + if iterator, above path is iterated.
 
 
-#### download
+### download
 ````
 jf.download( url, file )
 ````
@@ -37,8 +44,8 @@ jf.download( url, file )
         + if string, file is path to write downloaded JSON.
         + if iterator, above path is iterated.
 
-### Child executers
-#### io
+## Child executers
+### io
 ````
 .io( function( json, filePath, executer ) { your code to process json here } )
 ````
@@ -50,7 +57,7 @@ jf.download( url, file )
         + Nothing written, if return no object.
     + `executer` is an event emitter and can be used in error handling
 
-#### copy
+### copy
 ````
 .copy( function( json, filePath, executer ) { your code to process json here } )
 ````
@@ -65,7 +72,7 @@ jf.download( url, file )
         + Nothing copied,if return no object.
     + `executer` is an event emitter and can be used in error handling
 
-#### link
+### link
 ````
 .link( function( json, filePath, executer ) { your code to process json here } )
 ````
@@ -80,7 +87,7 @@ jf.download( url, file )
         + Nothing newly linked,if return no object.
     + `executer` is an event emitter and can be used in error handling
 
-#### filter
+### filter
 ````
 .filter( function( json, filePath, executer ) { your code to process json here } )
 ````
@@ -91,7 +98,7 @@ jf.download( url, file )
     + function return `true` and chained process executed, otherwise chained process not executed for that `json`.
     + `executer` is an event emitter and can be used in error handling
 
-#### pass
+### pass
 ````
 .pass( function( json, filePath, executer ) { your code to process json here } )
 ````
@@ -102,7 +109,7 @@ jf.download( url, file )
     + result of process does not affect execution of pass, and pass just continues next.
     + `executer` is an event emitter and can be used in error handling
 
-#### calledback
+### calledback
 ````
 .calledback( function( json, filePath, callback, executer ) { your code to process json. call callback to here } )
 ````
@@ -114,7 +121,7 @@ jf.download( url, file )
         + `callback` is called  `callback(data)`. Here `data` is a json which is saved to file and passed to next executor.
     + `executer` is an event emitter and can be used in error handling
 
-#### httpServe
+### httpServe
 ````
 .httpServe( function( json, filePath, executer ) { your code to process json. call callback to here } )
 ````
@@ -133,7 +140,7 @@ let httpServer = jf.httpServer();
 httpServer.listen( 8080 );
 ````
 
-## Chaining
+# Chaining
 ````
 jf.filed( file )
 .io( function( json, filePath ) { your code to process json here } )
@@ -143,10 +150,10 @@ jf.filed( file )
 .pass( function( json, filePath ) { your another code to process json here } )
 ````
 
-io,copy and link and filter and pass can be chained as above.
+child executers can be chained as above.
 
-## Error handling
-### Error listener of executer
+# Error handling
+## Error listener of executer
 Error captured in each executer can be handled in error listener of executer
 ````
 jf.filed(
@@ -166,7 +173,7 @@ Each executer is emitter and you can send error to them.
   function( err ) { your code to handle error here } ).exec();
 ````
 
-### DefaultEmitter
+## DefaultEmitter
 Error captured not in each executer is emitted by defaultEmitter and can be handled by error listener of defaultEmitter
 ````
 var jf = require( 'json.filed' )
@@ -177,4 +184,4 @@ jf.defaultEmitter.on(
 ).exec();
 ````
 
-## Binary format (bson) support
+# Binary format (bson) support
