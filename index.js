@@ -106,7 +106,7 @@ function executePlan( executeFunction ){
 
 
 let notexecPlan =
-  new executePlan( function(){}, null );
+  new executePlan( function(){} );
 
 function filedExecuter( file ){
 
