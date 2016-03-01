@@ -12,7 +12,7 @@ jf.download(
   },
   './firstcommit.json' )
 .pass(
-  function(obj){
+  ( obj ) => {
     console.log(obj.commit.message);
   }
 ).exec();
