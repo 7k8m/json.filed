@@ -12,51 +12,34 @@ describe('Filed instance ', function () {
 
     let randomNameJsonFile =
       jf.filed( ( function * (){
-          yield './' + Math.random() + '.json';
-          }
-        )
-      );
-
+          yield './' + Math.random() + '.json'; }));
 
     var filePath1;
     randomNameJsonFile
     .io( function( obj, filePath ) {
       filePath1 = filePath;
-      return testValue_1
-    }).exec();
+      return testValue_1 })
+    .pass( () => {
 
+      var filePath2;
+      randomNameJsonFile
+      .io( function( obj, filePath ) {
+        filePath2 = filePath;
+        return testValue_2 })
+      .pass(
+        () => {
 
-    var filePath2;
-    randomNameJsonFile
-    .io( function( obj, filePath ) {
-      filePath2 = filePath;
-      return testValue_2
-    }).exec();
+           console.log( filePath1 );
+           jf.filed( filePath1 )
+           .io( (obj ) => { expect( obj ).to.eql( testValue_1 )})
+           .pass( () => {
 
-
-    setTimeout(
-      function() {
-
-        console.log( filePath1 );
-        jf.filed( filePath1 )
-        .io( (obj ) => { expect( obj ).to.eql( testValue_1 )}).exec();
-
-
-        console.log( filePath2 )
-        jf.filed( filePath2 )
-        .io(( obj ) => { expect( obj ).to.eql( testValue_2 )}).exec();
-
-
-      },
-      100
-    );
-
-    setTimeout(
-      function() {
-        done();
-      },
-      1000
-    );
-
-  });
+               console.log( filePath2 )
+               jf.filed( filePath2 )
+               .io(( obj ) => { expect( obj ).to.eql( testValue_2 )})
+               .pass( () => { done(); })
+               .exec(); })
+            .exec(); })
+      .exec(); })
+  .exec(); })
 });
