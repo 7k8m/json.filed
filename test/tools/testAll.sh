@@ -17,4 +17,5 @@ mocha test/unit/testExecutionPlan_2.js
 mocha test/unit/testEmptyFileChain.js
 mocha test/unit/testHttpServe.js
 mocha test/unit/testHttpServe_2.js
+mocha test/unit/testSugarSyntax.js
 sh test/tools/rmTestJsonFile.sh
