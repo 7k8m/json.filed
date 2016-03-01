@@ -130,19 +130,14 @@ describe('File with extension neither json nor bson ', function () {
         function( obj ) {
           return value_in_xson;
         }
-      ).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile5Path ).io(
-          function( obj ) {
-            expect(obj).to.eql( value_in_xson );
-            done();
-          }).exec();
-      },
-      10);
-    })
-
+    ).pass( () =>{
+      jf.filed( testFile5Path ).io(
+        function( obj ) {
+          expect(obj).to.eql( value_in_xson );
+          done();
+      }).exec();
+    }).exec();
+  });
 });
 
 var testFilePath6_1 = './' + Math.random() + '.json';
