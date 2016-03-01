@@ -31,18 +31,13 @@ describe('The updated value', function () {
         function( obj ) {
           return updatedValue;
         }
-      ).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile2Path ).io( function( obj ) {
-          expect(obj).to.eql(updatedValue);
-          done();
-        }).exec();
-      },
-      10);
-    })
-
+      ).pass(() => {
+          jf.filed( testFile2Path ).io( function( obj ) {
+            expect(obj).to.eql(updatedValue);
+            done();
+          }).exec();
+      }).exec();
+    });
 });
 
 const testFile3Path = './' + Math.random() + '.json';
