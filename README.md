@@ -11,7 +11,7 @@ Processor / library of json file
 
     jf.filed('./data.json')
     .io( { msg: 'hello world.'} ) // write 1st greeting to data.json
-    .io( json => { console.log( json.msg ) } ) // print "hello world." in data.json.
+    .io( json => { console.log( json.msg ) } ) // read from data.json and print "hello world."
     .exec();
 [Other examples ...](./examples.md)
 
