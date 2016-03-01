@@ -4,30 +4,30 @@
     var jf = require('json.filed');
 
     jf.filed('./data.json')
-    .io( function(json) {
-      return {msg: 'hello world.'}; // write 1st greeting to data.json
-    }).exec();
+    .io( { msg: 'hello world.'} ).exec(); // write 1st greeting to data.json
 
 ## greeting2.js
     var jf = require('json.filed');
 
-    jf.filed('./data.json')
-    .io( function(json) {
+    jf.filed('./data.json').io(
+      (json) => {
       console.log(json.msg); // previous wrote greeting, 'hello'
-      json.msg = 'good after noon world.'; // update msg
-      return json; // return to write json file
+      json.msg = 'good after noon world.'; // next greeting
+      return json;
     }).exec();
 
 ## greeting3.js
     var jf = require('json.filed');
 
     jf.filed('./data.json')
-    .io( function(json) {
+    .io(
+      (json) => {
       console.log(json.msg);// previous wrote greeting, 'good afternoon'
-      json.msg = 'good night world.'; // update msg
-      // not write this time, because I'm sleepy 😴
+      json.msg = 'good night world.';
+      // not write this time, because I'm sleepy 😴  
       // return json;
     }).exec();
+
 
 ## Above scripts are executed as ...
     $ node greeting.js
@@ -43,9 +43,8 @@
     var jf = require('json.filed');
 
     jf.filed(['./hello.json','./😄.json'])
-    .io( function(json,filePath) {
-        return {msg: filePath }; // write 1st greeting to data.json
-    }).exec();
+    .io( {msg: filePath } }).exec(); // write 1st greeting to data.json
+
 
 ## Above script is executed as ...
     $ node greetings.js
@@ -58,11 +57,9 @@
     var jf = require('json.filed');
 
     jf.filed('./hello.json')
-    .io( function(json,filePath) {
-      return {msg: "hello" }; }) // write 1st greeting to data.json
-    .link( function(json,filePath){
-      return 'linked_hello.json'
-    }).exec();
+    .io( { msg: "hello" } ) // write 1st greeting to data.json
+    .link( 'linked_hello.json' }).exec();
+
 
 ## Above script is executed as ...
     $ node chained_greeting.js
@@ -74,21 +71,19 @@
 
 ## download.js
     'use strict';
-
-    var jf = require('json.filed');
-
+     var jf = require('json.filed');
     jf.download(
-      {
+    {
         method: "GET",
         uri: 'https://api.github.com/repos/7k8m/json.filed/commits/076aff7302cae3046955de13af41b1be90f41f03',
         headers: {
           'User-Agent': 'json.filed'
         }
-      },
-      './firstcommit.json' )
+    },
+    './firstcommit.json' )
     .pass(
-      function(obj){
-        console.log(obj.commit.message);
+      ( obj ) => {
+         console.log(obj.commit.message);
       }
     ).exec();
 
@@ -98,13 +93,11 @@
 
 
 ## httpServe.js
-    'use strict';
+    use strict';
     // easy JSON server
     var jf = require('json.filed');
-
     let hello = jf.filed('./hello.json');
-
-    hello.httpServe( () => '/greeting' )
+    hello.httpServe('/greeting' )
     .exec();
 
     jf.httpServer().listen( 8080 );
@@ -147,11 +140,9 @@
     var jf = require('json.filed');
 
     jf.filed( './hello.json' )
-    .io( function( obj, filePath) {
-        return {msg: 'hello' };
-      }
-    ).calledback(
-      function(obj, filePath, callback){
+    .io( { msg: 'hello' } )
+    .calledback(
+    function(obj, filePath, callback){
 
         //nested json.filed process here.
         jf.filed( filePath )
@@ -164,9 +155,7 @@
 
       }
     ).pass(
-      function(obj, filePath){
-        console.log(obj.msg);
-      }
+      (obj) => { console.log(obj.msg) }
     ).exec();
 
 ## Above script is executed as ...
