@@ -10,7 +10,9 @@ Processor / library of json file
     var jf = require('json.filed');
     
     jf.filed('./data.json')
-    .io( { msg: 'hello world.'} ).exec(); // write greeting to data.json
+    .io( { msg: 'hello world.'} ) // write 1st greeting to data.json
+    .io( json => { console.log( json.msg ) } ) // print "hello world." in data.json.
+    .exec();
 
 
 # Module
