@@ -10,7 +10,10 @@ Processor / library of json file
     var jf = require('json.filed');
     
     jf.filed('./data.json')
-    .io( { msg: 'hello world.'} ).exec(); // write greeting to data.json
+    .io( { msg: 'hello world.'} ) // write 1st greeting to data.json
+    .io( json => { console.log( json.msg ) } ) // print "hello world." in data.json.
+    .exec();
+[Other examples ...](./examples.md)
 
 
 # Module
@@ -56,6 +59,7 @@ jf.download( url, file )
     + `return json` from function, written to the file of `filePath` parameter.
         + Nothing written, if return no object.
     + `executer` is an event emitter and can be used in error handling
++ As syntax sugar, object typed other than function is wrapped as function, as hello world above. 
 
 ### copy
 ````
@@ -71,6 +75,7 @@ jf.download( url, file )
             + if iterator, above filePath is iterated.
         + Nothing copied,if return no object.
     + `executer` is an event emitter and can be used in error handling
++ As syntax sugar, object typed other than function is wrapped as function. 
 
 ### link
 ````
@@ -86,6 +91,7 @@ jf.download( url, file )
             + if iterator, above filePath is iterated.
         + Nothing newly linked,if return no object.
     + `executer` is an event emitter and can be used in error handling
++ As syntax sugar, object typed other than function is wrapped as function. 
 
 ### filter
 ````
@@ -97,6 +103,7 @@ jf.download( url, file )
     + `filePath` is where json from.
     + function return `true` and chained process executed, otherwise chained process not executed for that `json`.
     + `executer` is an event emitter and can be used in error handling
++ As syntax sugar, object typed other than function is wrapped as function. 
 
 ### pass
 ````
@@ -132,7 +139,9 @@ jf.download( url, file )
     +  return value from function is registered as `pathname` to httpServer
         + httpServer responds json when the `pathname` is requested.
     + `executer` is an event emitter and can be used in error handling
++ As syntax sugar, object typed other than function is wrapped as function. 
 
+#### httpServer
 `jf.httpServer()` creates and returns httpServer.
 Code as next starts web server to listen with port 8080.
 ````
