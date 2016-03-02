@@ -48,6 +48,8 @@ function executer( parent ){
  this.parent = parent;
 
  this.io = addChildExecuterFunction(createExecuterFactory(ioExecuter, this ));
+ this.in = addChildExecuterFunction(createExecuterFactory(inExecuter, this ));
+ this.out = addChildExecuterFunction(createExecuterFactory(outExecuter, this ));
  this.copy = addChildExecuterFunction(createExecuterFactory(copyExecuter, this ));
  this.link = addChildExecuterFunction(createExecuterFactory(linkExecuter, this ));
  this.pass = addChildExecuterFunction(createExecuterFactory(passExecuter, this ));
@@ -263,6 +265,26 @@ function ioExecuter( userProcess, parent) {
 };
 
 
+function inExecuter( userProcess, parent) {
+  childExecuter.call( this, userProcess, parent );
+
+  this.internalExec = function(filePath, jb, executionPlan ){
+    this.generalInternalExec( filePath, jb, input, executionPlan );
+  }
+
+};
+
+
+function outExecuter( userProcess, parent) {
+  childExecuter.call( this, userProcess, parent );
+
+  this.internalExec = function(filePath, jb, executionPlan ){
+    this.generalInternalExec( filePath, jb, output, executionPlan );
+  }
+
+};
+
+
 function copyExecuter( userProcess, parent ) {
   childExecuter.call( this, userProcess, parent );
 
@@ -327,6 +349,8 @@ util.inherits( downloadExecuter, executer);
 
 util.inherits( childExecuter, executer);
 util.inherits( ioExecuter, childExecuter);
+util.inherits( inExecuter, childExecuter);
+util.inherits( outExecuter, childExecuter);
 util.inherits( copyExecuter, childExecuter);
 util.inherits( linkExecuter, childExecuter);
 util.inherits( passExecuter, childExecuter);
@@ -379,13 +403,41 @@ function filedExecute( file, rootPlan, filedExecuter){
   rootPlan.executePlan(file, filedExecuter);
 }
 
-function io( filePath, userProcess, jb, nextPlan){
+function io( filePath, userProcess, jb, nextPlan ){
+  ioCore(
+    filePath,
+    userProcess,
+    jb,
+    nextPlan,
+    saveAfterApply);
+}
+
+function input( filePath, userProcess, jb, nextPlan ) {
+  ioCore(
+    filePath,
+    userProcess,
+    jb,
+    nextPlan,
+    () => { if( nextPlan ) nextPlan._executeFunction(filePath); });
+}
+
+function output( filePath, userProcess, jb, nextPlan ){
+  //json argument of userProcess is fixed null in guardProcess
+  ioCore(
+    filePath,
+    userProcess,
+    jb,
+    nextPlan,
+    saveAfterApply);
+}
+
+function ioCore( filePath, userProcess, jb, nextPlan, afterApply){
   process(
     filePath,
     userProcess,
     jb,
     nextPlan,
-    saveAfterApply,
+    afterApply,
     function(){
       //file to read does not exists.
       //create file with initial value and process json.
@@ -418,7 +470,7 @@ function io( filePath, userProcess, jb, nextPlan){
                     },
                     jb,
                     filePath,
-                    saveAfterApply,
+                    afterApply,
                     nextPlan
                   );
               },
@@ -578,32 +630,43 @@ function passnize( userProcess ){
 
 }
 
-function guardProcess( userProcess, isCalledback){
+//normalize userProcess for each executer.
+//parameters, exceptions to be thrown.
+function normalizeProcess( userProcess, executer ){
 
-  let guarded =
+  let normalized =
     wrapUserProcess(
       userProcess,
       function( userProcess ){
         return function(){
           try{
-            if( isCalledback ) {
+            if( executer instanceof calledbackExecuter ) {
               return userProcess(
                 arguments[0],
                 arguments[1],
                 arguments[2],
-                arguments[3]); // json, filePath, callbackFunction, errListener
+                arguments[3] // json, filePath, callbackFunction, errListener
+              );
+            } else if (executer instanceof outExecuter ){
+              //json parameter of out does not exist
+              return userProcess(
+                arguments[1],
+                arguments[2] // filePath, errListner
+              );
+
             } else {
               return userProcess(
                 arguments[0],
                 arguments[1],
-                arguments[2] ); // json, filePath, errListner
+                arguments[2] // json, filePath, errListner
+              );
             }
           }catch(err){
             //walkaround for unclear this/caller problem in javascript.
             //I just wanted to use something like "this".
             raiseError(
-              userProcess._plannedExecuter.listenerCount('error') > 0 ?
-              userProcess._plannedExecuter :
+              executer.listenerCount('error') > 0 ?
+              executer :
               defaultEmitter ,
               'User process error',
               err
@@ -614,7 +677,7 @@ function guardProcess( userProcess, isCalledback){
       }
     );
 
-  return guarded;
+  return normalized;
 
 }
 
@@ -646,10 +709,10 @@ function apply( process, json, file, closeFile, jb, filePath, postProcess, nextP
 }
 
 function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, nextPlan ){
-  // guard from user handed process.
-  let guardedProcess = guardProcess( process, true);
 
-  guardedProcess(
+  let normalized = normalizeProcess( process, process._plannedExecuter );
+
+  normalized(
     json,
     filePath,
     function( data ){//callback function passed to userProcess
@@ -664,13 +727,13 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, n
             nextPlan._executeFunction( filePath );
           },
           jb,
-          guardedProcess._plannedExecuter);
+          normalized._plannedExecuter);
 
       } else {
         nextPlan._executeFunction( filePath );
       }
     },
-    guardedProcess._plannedExecuter
+    normalized._plannedExecuter
   );
 
 }
@@ -678,9 +741,9 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, n
 //apply process function to json.
 function applyProcess( process, json, file, closeFile, jb, filePath, postProcess, nextPlan){
   // guard from user handed process.
-  let guardedProcess = guardProcess( process, false);
+  let normalized = normalizeProcess( process, process._plannedExecuter);
 
-  var result = guardedProcess(json, filePath, guardedProcess._plannedExecuter);
+  var result = normalized(json, filePath, normalized._plannedExecuter);
 
   if(result != undefined && result != null){
     //if result returned, execute PostProcess
@@ -691,7 +754,7 @@ function applyProcess( process, json, file, closeFile, jb, filePath, postProcess
       jb,
       filePath,
       nextPlan,
-      guardedProcess._plannedExecuter
+      normalized._plannedExecuter
     );
 
   }else{
