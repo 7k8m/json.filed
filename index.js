@@ -138,9 +138,14 @@ function childExecuter( userProcess, parent ){
   executer.call( this, parent );
 
   this.generalInternalExec = function ( filePath, jb , executerFunction, executerPlan ) {
-    executerFunction ( filePath, userProcess, jb, executerPlan.next() );
-  }
 
+    executerFunction (
+      filePath,
+      userProcess,
+      jb,
+      executerPlan.next()
+    );
+  }
 }
 
 
@@ -362,11 +367,10 @@ function sugarnize( userArgument ) {
   switch( typeof userArgument ) {
     case 'function' :
       //To ._plannedExecuter hack working, sugarnizing function is *NEEDED+.
-      return function(){ return userArgument.apply( null, arguments ) };
+      return function() { return userArgument.apply( null, arguments ) };
 
     default:
       return () => userArgument;
-
   };
 }
 
@@ -587,12 +591,12 @@ function guardProcess( userProcess, isCalledback){
                 arguments[0],
                 arguments[1],
                 arguments[2],
-                arguments[3] );////json, filePath, callbackFunction, errListener
+                arguments[3]); // json, filePath, callbackFunction, errListener
             } else {
               return userProcess(
                 arguments[0],
                 arguments[1],
-                arguments[2] ); //json, filePath, errListener
+                arguments[2] ); // json, filePath, errListner
             }
           }catch(err){
             //walkaround for unclear this/caller problem in javascript.
@@ -660,7 +664,7 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, n
             nextPlan._executeFunction( filePath );
           },
           jb,
-          executer);
+          guardedProcess._plannedExecuter);
 
       } else {
         nextPlan._executeFunction( filePath );
