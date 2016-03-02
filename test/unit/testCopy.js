@@ -42,29 +42,38 @@ const testPath_4 = './' + Math.random() + '.json';
 describe('Copy functions ', function () {
   it('should create multiple copied file', function (done) {
 
+    var firstCopyNext = true;
     jf.filed( testPath_1 )
     .copy(
       function(obj, filePath){
         return [ testPath_3, testPath_4 ];
       }
-    ).exec();
-
-    setTimeout(
+    ).pass(
       function(){
-        jf.filed( testPath_3 )
-        .pass( function( o ) {
-          expect( o ).to.eql( testValue );
+        if( firstCopyNext ){
 
-          jf.filed( testPath_4 )
+          jf
+          .filed( testPath_3 )
           .pass( function( o ) {
-            expect( o ).to.eql( testValue );
-            done();
 
+            expect( o ).to.eql( testValue );
+
+            jf
+            .filed( testPath_4 )
+            .pass( function( o ) {
+              expect( o ).to.eql( testValue );
+
+              done();
+
+            }).exec();
           }).exec();
 
-        }).exec();
-      },
-      100);
+          firstCopyNext = false;
+          
+        }
+      }
+    ).exec();
+
   });
 
 });

@@ -34,16 +34,13 @@ describe('Chained IO function', function () {
         expect( filePath ).to.eql( testFilePath );
         expect( obj ).to.eql( test3Value );
       }
-    ).exec();
-
-    setTimeout(
-      function(){
+    ).pass(
+      function() {
         jf.filed( testFilePath ).io( function( obj ) {
           expect( obj ).to.eql(test3Value);
           done();
         }).exec();
-      },
-      100);
-
+      }
+    ).exec();
   });
 });
