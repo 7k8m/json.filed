@@ -47,32 +47,19 @@ describe('The value function does not return ', function () {
     jf.filed( testFile3Path ).io(
       function( obj ) {
         return initialValue;
-      }).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile3Path ).io(
-          function( obj ) {
-            expect(obj).to.eql(initialValue);
-            obj.msg = "this value is not written."
-            //return obj
-          }).exec();
-      },
-      10
-    );
-
-    setTimeout(
-      function(){
-        jf.filed( testFile3Path ).io(
-          function( obj ) {
-            expect(obj).to.eql(initialValue);
-            done();
-          }).exec();
-        },
-        20
-      );
-
-  });
+      })
+      .io(
+        function( obj ) {
+          expect(obj).to.eql(initialValue);
+          obj.msg = "this value is not written."
+          //return obj
+      })
+      .io(
+        function( obj ) {
+          expect(obj).to.eql(initialValue);
+          done();
+        }).exec();
+    })
 });
 
 
@@ -83,31 +70,14 @@ describe('Function return null', function () {
       function( obj ) {
         return initialValue;
       }
-    ).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile4Path ).io(
-          function( obj ) {
-            expect(obj).to.eql(initialValue);
-            obj.msg = "this value is not written also."
-            return null
-          }).exec();
-      },
-      10
-    );
-
-    setTimeout(
-      function(){
-        jf.filed( testFile4Path ).io(
-          function( obj ) {
-            expect(obj).to.eql(initialValue);
-            done();
-          }).exec();
-        },
-        20
-      );
-
+    ).io((obj)=>{
+      expect(obj).to.eql(initialValue);
+      obj.msg = "this value is not written also."
+      return null
+    }).pass((obj)=>{
+        expect(obj).to.eql(initialValue);
+        done();
+    }).exec();
   });
 });
 
