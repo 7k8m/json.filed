@@ -531,7 +531,8 @@ function process(
         );
       }else{
         //file not exists.
-        fileCreationProcess();
+        if (err.code == 'ENOENT') fileCreationProcess();
+        else raiseError( userProcess._plannedExecuter, 'File open error', err);
 
       }
     }
