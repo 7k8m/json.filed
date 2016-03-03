@@ -20,7 +20,7 @@ jf.filed('./data.json')
         jf.filed('./data2.json')
         .read(
           ( obj2 ) => {
-            callback( { msg: obj1.msg + " " +obj2.msg } );
+            callback( { msg: obj1.msg + " " + obj2.msg } );
           }
         ).exec();
       }
