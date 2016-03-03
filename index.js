@@ -771,7 +771,6 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, n
     json,
     filePath,
     function( data ){//callback function passed to userProcess
-      console.log('callback function in called back')
       if( data ){
         //when callback is called
         //here is executed after latter save.
