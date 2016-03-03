@@ -421,11 +421,12 @@ function addParallelExecuterFunction( parent ){
             var remain = paralleledExecuters.length;
             for( let eachExecuter of paralleledExecuters ){
               eachExecuter
-              .pass( () => {
+              .pass(
+                () => {
                   remain --;
                   if(remain == 0) callback();
-              },
-              ( err )  => { executer.emit('error', err ) } )
+                },
+                ( err )  => { executer.emit('error', err ) } )
               .exec();
             }
 
