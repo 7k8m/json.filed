@@ -10,8 +10,8 @@ Processor / library of json file
     var jf = require('json.filed');
 
     jf.filed('./data.json')
-    .io( { msg: 'hello world.'} ) // write 1st greeting to data.json
-    .io( json => { console.log( json.msg ) } ) // read from data.json and print "hello world."
+    .write( { msg: 'hello world.'} ) // write 1st greeting to data.json
+    .read( json => { console.log( json.msg ) } ) // read from data.json and print "hello world."
     .exec();
 [Other examples ...](./examples.md)
 
@@ -60,6 +60,31 @@ jf.download( url, file )
         + Nothing written, if return no object.
     + `executer` is an event emitter and can be used in error handling
 + As syntactic sugar, object typed other than function is wrapped as function, as hello world above.
+
+### in
+````
+.in( function( json, filePath, executer ) { your code to process json here } )
+````
+
++ `function( json, filePath ) { ... }` is where process json.
+    + json from file is passed to function as a `json` parameter
+    + `filePath` is where I/O json from/to.
+    + `executer` is an event emitter and can be used in error handling
++ As syntactic sugar, object typed other than function is wrapped as function, as hello world above.
++ As syntactic sugar, `read` instead of `in` is prepared.
+
+### out
+````
+.out( function( filePath, executer ) { your code to process json here } )
+````
+
++ `function( filePath ) { ... }` is where process json.
+    + `filePath` is where I/O json from/to.
+    + `return json` from function, written to the file of `filePath` parameter.
+        + Nothing written, if return no object.
+    + `executer` is an event emitter and can be used in error handling
++ As syntactic sugar, object typed other than function is wrapped as function, as hello world above.
++ As syntactic sugar, `write` instead of `out` is prepared.
 
 ### copy
 ````
@@ -139,7 +164,7 @@ jf.download( url, file )
     +  return value from function is registered as `pathname` to httpServer
         + httpServer responds json when the `pathname` is requested.
     + `executer` is an event emitter and can be used in error handling
-+ As syntactic sugar, object typed other than function is wrapped as function. 
++ As syntactic sugar, object typed other than function is wrapped as function.
 
 #### httpServer
 `jf.httpServer()` creates and returns httpServer.
@@ -148,6 +173,16 @@ Code as next starts web server to listen with port 8080.
 let httpServer = jf.httpServer();
 httpServer.listen( 8080 );
 ````
+
+### parallel
+````
+.parallel( <chained json.filed executers>, <chained json.filed executers> .... )
+````
+
++ `<chained json.filed executers>` are chains of executers started from filed or download.
+    + Each executers are executed and when all execcuters are finished, next executer of parallel starts
+    + `.exec` functions of each chain are called inside parallel. So do not call `.exec` in argument.
+
 
 # Chaining
 ````
