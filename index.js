@@ -400,25 +400,40 @@ function addParallelExecuterFunction( parent ){
   let parallelExecuterFunction =
     addChildExecuterFunction( createExecuterFactory( parallelExecuter, parent) );
 
-  return function() {
+  let f = function() { //executers1,executers2....,errListener
 
       let paralleledExecuters = Array.from( arguments ).slice( 0, arguments.length - 1);
-      let executer = arguments[ arguments.length - 1]; // if error to emit
+
+      let tailArgument = arguments[ arguments.length - 1 ];
+
+      // executer is not listener.
+      let errListener =
+        tailArgument instanceof executer ? null :tailArgument ;
+
+      // executer is one of paralleled executers to be executed.
+      if(errListener == null) paralleledExecuters.push( tailArgument );
 
       return parallelExecuterFunction(
         // paralleled sugarnize executers to one function and callback here
-        function( json, filePath, callback, errListner ) {
-            var remain = paralleledExecuters.count;
-            for( eachExecuter of paralleledExecuters ){
-              paralleledExecuters.pass( () => {
-                remain --;
-                if(remain == 0) callback();
-              }, errListner )
+        function( json, filePath, callback, executer ) {
+            if( errListener ) executer.addListener( 'error' , errListener );
+
+            var remain = paralleledExecuters.length;
+            for( let eachExecuter of paralleledExecuters ){
+              eachExecuter
+              .pass( () => {
+                  remain --;
+                  if(remain == 0) callback();
+              },
+              ( err )  => { executer.emit('error', err ) } )
               .exec();
             }
+
         },
-        parent);
+        errListener);
     }
+
+    return f;
 
 }
 
@@ -684,20 +699,20 @@ function normalizeProcess( userProcess, executer ){
                 arguments[0],
                 arguments[1],
                 arguments[2],
-                arguments[3] // json, filePath, callbackFunction, errListener
+                arguments[3] // json, filePath, callbackFunction, executer
               );
             } else if (executer instanceof outExecuter ){
               //json parameter of out does not exist
               return userProcess(
                 arguments[1],
-                arguments[2] // filePath, errListner
+                arguments[2] // filePath, executer
               );
 
             } else {
               return userProcess(
                 arguments[0],
                 arguments[1],
-                arguments[2] // json, filePath, errListner
+                arguments[2] // json, filePath, executer
               );
             }
           }catch(err){
@@ -755,6 +770,7 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, n
     json,
     filePath,
     function( data ){//callback function passed to userProcess
+      console.log('callback function in called back')
       if( data ){
         //when callback is called
         //here is executed after latter save.
