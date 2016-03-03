@@ -48,8 +48,10 @@ function executer( parent ){
  this.parent = parent;
 
  this.io = addChildExecuterFunction(createExecuterFactory(ioExecuter, this ));
- this.in = addChildExecuterFunction(createExecuterFactory(inExecuter, this ));
- this.out = addChildExecuterFunction(createExecuterFactory(outExecuter, this ));
+ this.in = this.read =
+  addChildExecuterFunction(createExecuterFactory(inExecuter, this ));
+ this.out = this.write =
+  addChildExecuterFunction(createExecuterFactory(outExecuter, this ));
  this.copy = addChildExecuterFunction(createExecuterFactory(copyExecuter, this ));
  this.link = addChildExecuterFunction(createExecuterFactory(linkExecuter, this ));
  this.pass = addChildExecuterFunction(createExecuterFactory(passExecuter, this ));
