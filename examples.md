@@ -4,12 +4,13 @@
     var jf = require('json.filed');
 
     jf.filed('./data.json')
-    .io( { msg: 'hello world.'} ).exec(); // write 1st greeting to data.json
+    .write( { msg: 'hello world.'} ).exec(); // write 1st greeting to data.json
 
 ## greeting2.js
     var jf = require('json.filed');
 
-    jf.filed('./data.json').io(
+    jf.filed('./data.json')
+    .io(
       (json) => {
       console.log(json.msg); // previous wrote greeting, 'hello'
       json.msg = 'good after noon world.'; // next greeting
@@ -43,7 +44,7 @@
     var jf = require('json.filed');
 
     jf.filed(['./hello.json','./😄.json'])
-    .io( ( obj,filePath ) => { msg: filePath } }).exec(); // write 1st greeting to data.json
+    .io( ( obj,filePath ) => { msg: filePath } }).exec();
 
 
 ## Above script is executed as ...
@@ -57,7 +58,7 @@
     var jf = require('json.filed');
 
     jf.filed(['./hello.json','./😄.json'])
-    .io( ( obj,filePath ) => { msg: filePath } ).exec(); // write 1st greeting to data.json
+    .io( ( obj,filePath ) => { msg: filePath } ).exec();
 
 
 ## Above script is executed as ...
@@ -71,7 +72,7 @@
 ## download.js
     'use strict';
      var jf = require('json.filed');
-     
+
     jf.download(
     {
         method: "GET",
@@ -95,12 +96,12 @@
 ## httpServe.js
     use strict';
     var jf = require('json.filed');
-    
+
     // easy JSON server
     let hello = jf.filed('./hello.json');
     hello.httpServe('/greeting' )
     .exec();
-    
+
     jf.httpServer().listen( 8080 );
     // http://localhost:8080/greeting
 
@@ -168,5 +169,5 @@
 
     jf.filed('./data.bson')
     .io( function(bson) {
-      return {msg: 'hello world.'}; // write 1st greeting to data.bson
+      return {msg: 'hello world.'}; // write greeting to data.bson
     }).exec();
