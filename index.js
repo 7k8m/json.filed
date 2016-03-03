@@ -402,16 +402,28 @@ function addParallelExecuterFunction( parent ){
 
   let f = function() { //executers1,executers2....,errListener
 
-      let paralleledExecuters = Array.from( arguments ).slice( 0, arguments.length - 1);
+      if(arguments.length == 0)
+        return parallelExecuterFunction(function(){});
 
-      let tailArgument = arguments[ arguments.length - 1 ];
+      let paralleledExecuters =
+        arguments[0][Symbol.iterator] ?
+        arguments[0] :
+          arguments.length == 1 ?
+          arguments:
+          Array.from( arguments ).slice( 0, arguments.length - 1);
+
+      let tailArgument =
+        arguments.length > 1 ? arguments[ arguments.length - 1 ] :
+        null;
 
       // executer is not listener.
       let errListener =
         tailArgument instanceof executer ? null :tailArgument ;
 
       // executer is one of paralleled executers to be executed.
-      if(errListener == null) paralleledExecuters.push( tailArgument );
+      if(errListener == null && tailArgument != null) {
+        paralleledExecuters.push( tailArgument );
+      }
 
       return parallelExecuterFunction(
         // paralleled sugarnize executers to one function and callback here
