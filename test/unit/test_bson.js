@@ -79,28 +79,17 @@ describe('Function return null', function () {
   it('does not make json to be written.', function (done) {
     jf.filed( testFile4Path).io( function( obj ) {
       return initialValue;
-    }).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile4Path).io( function( obj ) {
-          expect(obj).to.eql(initialValue);
-          obj.msg = "this value is not written also."
-          return null
-        }).exec();
-      },
-      10
-    );
-
-    setTimeout(
-      function(){
-        jf.filed( testFile4Path).io( function( obj ) {
+    })
+    .io( function( obj ) {
+        expect(obj).to.eql(initialValue);
+        obj.msg = "this value is not written also."
+        return null;
+    })
+    .io(function( obj ) {
           expect(obj).to.eql(initialValue);
           done();
-        }).exec();
-      },
-      20
-    );
+        }
+    ).exec();
 
   });
 });
@@ -113,18 +102,16 @@ describe('Upper case file extension ', function () {
         function( obj, filePath ) {
           return { path: testFile8Path };
         }
+      )
+      .pass(
+        function(){
+          jf.filed( testFile8Path ).io( function( obj, filePath ) {
+            expect( obj.path ).to.eql( testFile8Path );
+            done();
+          }).exec();
+        }
       ).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile8Path ).io( function( obj, filePath ) {
-          expect( obj.path ).to.eql( testFile8Path );
-          done();
-        }).exec();
-      },
-      10);
-    })
-
+    });
 });
 
 const serializedFunctionFilePath = './serializedFunction.' + Math.random() + '.bson';
