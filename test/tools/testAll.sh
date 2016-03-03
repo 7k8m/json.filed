@@ -20,4 +20,6 @@ mocha test/unit/testHttpServe_2.js
 mocha test/unit/testSugarSyntax.js
 mocha test/unit/testExecuterHack.js
 mocha test/unit/testioinout.js
+mocha test/unit/testParallel.js
+mocha test/unit/testParallel_2.js
 sh test/tools/rmTestJsonFile.sh
