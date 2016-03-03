@@ -58,6 +58,7 @@ function executer( parent ){
  this.filter = addChildExecuterFunction(createExecuterFactory(filterExecuter, this ));
  this.calledback = addChildExecuterFunction(createExecuterFactory(calledbackExecuter, this ));
  this.httpServe = addChildExecuterFunction(createExecuterFactory(httpServeExecuter, this ));
+ this.parallel = addParallelExecuterFunction( this );
 
  this.exec = function(){
 
@@ -344,12 +345,19 @@ function httpServeExecuter( userProcess, parent ) {
 
 };
 
+function parallelExecuter( userProcess, parent ) {
+  calledbackExecuter.call( this, userProcess, parent);
+}
+
+
+
 util.inherits( executer, EventEmitter);
 
 util.inherits( filedExecuter, executer);
 util.inherits( downloadExecuter, executer);
 
 util.inherits( childExecuter, executer);
+
 util.inherits( ioExecuter, childExecuter);
 util.inherits( inExecuter, childExecuter);
 util.inherits( outExecuter, childExecuter);
@@ -359,6 +367,8 @@ util.inherits( passExecuter, childExecuter);
 util.inherits( filterExecuter, childExecuter);
 util.inherits( calledbackExecuter, childExecuter);
 util.inherits( httpServeExecuter, childExecuter);
+
+util.inherits( parallelExecuter, calledbackExecuter);
 
 function createExecuterFactory( classFunction, parent ){
   return function(userProcess){ return new classFunction( userProcess, parent ) };
@@ -380,10 +390,37 @@ function addChildExecuterFunction( executerFactory ){
     return executer;
 
   }
+
   return f;//return function added to parent.
 
 }
 
+function addParallelExecuterFunction( parent ){
+
+  let parallelExecuterFunction =
+    addChildExecuterFunction( createExecuterFactory( parallelExecuter, parent) );
+
+  return function() {
+
+      let paralleledExecuters = Array.from( arguments ).slice( 0, arguments.length - 1);
+      let executer = arguments[ arguments.length - 1]; // if error to emit
+
+      return parallelExecuterFunction(
+        // paralleled sugarnize executers to one function and callback here
+        function( json, filePath, callback, errListner ) {
+            var remain = paralleledExecuters.count;
+            for( eachExecuter of paralleledExecuters ){
+              paralleledExecuters.pass( () => {
+                remain --;
+                if(remain == 0) callback();
+              }, errListner )
+              .exec();
+            }
+        },
+        parent);
+    }
+
+}
 
 function sugarnize( userArgument ) {
 
