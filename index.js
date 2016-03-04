@@ -38,6 +38,11 @@ jf.filed =
      return addErrorListener( new filedExecuter (file), errListener );
    }
 
+jf.newFile =
+ function (file, errListener) {
+    return addErrorListener( new newFileExecuter (file), errListener );
+  }
+
 jf.download =
  function (url, file, errListener) {
     return addErrorListener( new downloadExecuter (url, file), errListener );
@@ -126,6 +131,20 @@ function filedExecuter( file ){
 
 };
 
+
+function newFileExecuter( file ){
+
+  executer.call( this, null );
+
+  let thisExecuter = this;
+
+  this.rootExec =
+    function(executePlan){
+      executePlan._executeFunction( file )
+    };
+
+};
+
 function downloadExecuter( url, file ){
 
   executer.call( this, null );
@@ -155,7 +174,8 @@ function childExecuter( userProcess, parent ){
 
 
 function createPlan( executer ){
-  if( executer instanceof filedExecuter) return createFiledPlan( executer );
+  if( executer instanceof filedExecuter ) return createFiledPlan( executer );
+  else if( executer instanceof newFileExecuter ) return createNewFilePlan( executer );
   else if( executer instanceof downloadExecuter ) return createDownloadPlan(executer);
   else return createChildPlan( executer );
 }
@@ -180,12 +200,37 @@ function createChildPlan( executer ){
 
 
 function createFiledPlan( executer ){
+  return createFilePlanCore(
+    ( filePath, plan ) => plan.next()._executeFunction( filePath ),
+    executer
+  );
+}
+
+
+function createNewFilePlan( executer ){
+  return createFilePlanCore(
+    function( filePath, plan ){
+      fs.writeFile(
+        filePath,
+        initialValue,
+        { flag: 'wx'},
+        function( err ){
+          if( err ) raiseError( executer, 'Failed to create new File.', err );
+          else plan.next()._executeFunction( filePath );
+        }
+      );
+    },
+    executer
+  );
+}
+
+function createFilePlanCore( executeForFileFunction, executer ){
   return new executePlan(
     function( file ){
       if( file != null ) {
-        let itr = pathIterator( file, executer);
+        let itr = pathIterator( file, executer );
         for( let filePath of itr ){
-          this.next()._executeFunction( filePath );
+          executeForFileFunction( filePath, this );
         }
       }else{
         raiseError( executer , "File must not be null", null);
