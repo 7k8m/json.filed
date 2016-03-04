@@ -16,6 +16,21 @@ jf.filed( file )
         + if iterator, above path is iterated.
 
 
+### newFile
+````
+jf.newFile( file )
+````
+----
+
++ `file`
+    + file is string or iterator
+        + if string, file is path to read and/or write.
+            + File format is bson when `.bson`, json when `.json` or `others`.
+        + if iterator, above path is iterated.
+    + if a file for the path exists already, error is raised.
+
+
+
 ### download
 ````
 jf.download( url, file )
