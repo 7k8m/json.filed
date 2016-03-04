@@ -133,16 +133,7 @@ function filedExecuter( file ){
 
 
 function newFileExecuter( file ){
-
-  executer.call( this, null );
-
-  let thisExecuter = this;
-
-  this.rootExec =
-    function(executePlan){
-      executePlan._executeFunction( file )
-    };
-
+  filedExecuter.call( this, file );
 };
 
 function downloadExecuter( url, file ){
@@ -174,8 +165,9 @@ function childExecuter( userProcess, parent ){
 
 
 function createPlan( executer ){
-  if( executer instanceof filedExecuter ) return createFiledPlan( executer );
-  else if( executer instanceof newFileExecuter ) return createNewFilePlan( executer );
+
+  if( executer instanceof newFileExecuter ) return createNewFilePlan( executer );
+  else if( executer instanceof filedExecuter ) return createFiledPlan( executer );
   else if( executer instanceof downloadExecuter ) return createDownloadPlan(executer);
   else return createChildPlan( executer );
 }
@@ -212,8 +204,8 @@ function createNewFilePlan( executer ){
     function( filePath, plan ){
       fs.writeFile(
         filePath,
-        initialValue,
-        { flag: 'wx'},
+        encode( initialValue, calcJb(filePath) ),
+        { flag: 'wx' },
         function( err ){
           if( err ) raiseError( executer, 'Failed to create new File.', err );
           else plan.next()._executeFunction( filePath );
@@ -399,6 +391,8 @@ function parallelExecuter( userProcess, parent ) {
 util.inherits( executer, EventEmitter);
 
 util.inherits( filedExecuter, executer);
+util.inherits( newFileExecuter, filedExecuter);
+
 util.inherits( downloadExecuter, executer);
 
 util.inherits( childExecuter, executer);
