@@ -32,7 +32,7 @@ For example, suppose `json` as `{ msg: 'hello world' }`:
 Write is easier than read !
 Just place JSON object to be written in 2nd parentheses.
 
-For example, write `{ msg: 'good after noon' }` :
+For example, suppose writing msg, 'good after noon' :
 
      .write( { msg: 'good after noon' } )
  
