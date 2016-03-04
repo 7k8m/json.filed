@@ -27,3 +27,5 @@ Write your code to use json value in braces.
 
 Write is easier than read !
 Just place JSON object to be written in 2nd parentheses.
+
+* [More examples ...](./examples.md)
