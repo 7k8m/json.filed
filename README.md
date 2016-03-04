@@ -15,8 +15,5 @@ Processor / library of json file
     .exec();
 [how to use ...](./how2use.md)
 
-# Install
-    npm install json.filed
-
 # Reference
 See [this page](./reference.md)

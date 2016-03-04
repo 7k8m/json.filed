@@ -1,4 +1,8 @@
-# Before use
+# Install
+    npm install json.filed
+
+
+# Load module
     var jf = require( 'json.filed' );
 
 
@@ -17,7 +21,7 @@ For example :
 
 Result :
 
-    $ node exampleOnHow2Use.js 
+    $ node exampleOnHow2Use.js
     hello world
 
 
@@ -30,11 +34,11 @@ Result :
 For example :
 
      .write( { msg: 'good after noon' } )
- 
+
 Result :
 
-    $ cat data.json 
+    $ cat data.json
     {"msg":"good after noon"}
-    
-    
+
+
 [More examples ...](./examples.md)
