@@ -5,8 +5,8 @@ var jf = require('../../'),
     fs = require('fs');
 
 const testFilePath = './' + Math.random() + '.json';
-describe('The initialValue', function () {
-  it('should be equal to defined in json.filed.', function (done) {
+describe('newFile executer', function () {
+  it('should create new file and if already exists, raise error.', function (done) {
     jf
     .newFile( testFilePath )
     .io(
