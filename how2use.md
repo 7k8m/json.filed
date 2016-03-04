@@ -19,7 +19,8 @@ Features of json.filed is exposed via above `jsonfile`.
 The json value is read to `json` parameter of function as above.
 Write your code to use `json` value in braces.
 
-For example, suppose `json` as `{ msg: 'hello world' }` :
+For example, suppose `json` as `{ msg: 'hello world' }`:
+
      .read( ( json ) => { console.log( json.msg ) } )
 
 
@@ -31,7 +32,8 @@ For example, suppose `json` as `{ msg: 'hello world' }` :
 Write is easier than read !
 Just place JSON object to be written in 2nd parentheses.
 
-For example, write `{ msg: 'good after noon' }` 
+For example, write `{ msg: 'good after noon' }` :
+
      .write( { msg: 'good after noon' } )
  
 [More examples ...](./examples.md)
