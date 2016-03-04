@@ -1,5 +1,5 @@
 # Before use
-     let jf = require( 'json.filed' );
+     var jf = require( 'json.filed' );
 
 Required module of json.filed is loaded.
 
