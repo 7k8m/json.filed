@@ -7,7 +7,7 @@ Required module of json.filed is loaded.
 # Locate path of file
     var jsonfile = jf.filed( '/path/to/jsonFile' );
    
-A path to json file is specified and needed information is bound to `jsonfile` variable.
+A path to json file is specified.
 Features of json.filed is exposed via above `jsonfile` in next chapters.
 
 
