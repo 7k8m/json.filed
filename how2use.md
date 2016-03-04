@@ -33,5 +33,5 @@ Just place JSON object to be written in 2nd parentheses.
 
 For example, write `{ msg: 'good after noon' }` 
     .write( { msg: 'good after noon' } )
-
+ 
 [More examples ...](./examples.md)
