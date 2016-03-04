@@ -13,8 +13,7 @@ Processor / library of json file
     .write( { msg: 'hello world.'} )
     .read( json => { console.log( json.msg ) } )
     .exec();
-
-[Other examples ...](./examples.md)
+* [How to use ...](./how2use.md)
 
 # Install
     npm install json.filed
