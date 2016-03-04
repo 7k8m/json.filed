@@ -17,7 +17,10 @@ Features of json.filed is exposed via above `jsonfile`.
     .exec();
 
 The json value is read to `json` parameter of function as above.
-Write your code to use json value in braces.
+Write your code to use `json` value in braces.
+
+For example, suppose `json` as `{ msg: 'hello world' }` :
+    .read( ( json ) => { console.log( json.msg ) } )
 
 
 # Write
@@ -27,5 +30,8 @@ Write your code to use json value in braces.
 
 Write is easier than read !
 Just place JSON object to be written in 2nd parentheses.
+
+For example, write `{ msg: 'good after noon' }` 
+    .write( { msg: 'good after noon' } )
 
 [More examples ...](./examples.md)
