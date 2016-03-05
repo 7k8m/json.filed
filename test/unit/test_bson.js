@@ -124,17 +124,15 @@ describe('Serialized function ', function () {
         function( obj, filePath ) {
           return { say: function( greeting ){ return greeting; } };
         }
-      ).exec();
-
-    setTimeout(
+      )
+    .pass(
       function(){
         jf.filed( serializedFunctionFilePath )
         .io( function( obj ) {
           expect( obj.say( hello ) ).to.eql( hello );
           done();
         }).exec();
-      },
-      10);
-    })
+    }).exec();
+  });
 
 });
