@@ -23,4 +23,5 @@ mocha test/unit/testExecuterHack.js
 mocha test/unit/testioinout.js
 mocha test/unit/testParallel.js
 mocha test/unit/testParallel_2.js
+mocha test/unit/testFileUrl.js
 sh test/tools/rmTestJsonFile.sh
