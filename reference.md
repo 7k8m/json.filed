@@ -15,6 +15,8 @@ jf.filed( file )
             + File format is bson when `.bson`, json when `.json` or `others`.
         + if iterator, above path is iterated.
 
++ object exposes `file()` function which returns value specified `file` parameter above.
+
 
 ### newFile
 ````
@@ -29,7 +31,7 @@ jf.newFile( file )
         + if iterator, above path is iterated.
     + if a file for the path exists already, error is raised.
 
-
++ object exposes `file()` function which returns value specified `file` parameter above.
 
 ### download
 ````
@@ -43,6 +45,9 @@ jf.download( url, file )
     + file is string or iterator
         + if string, file is path to write downloaded JSON.
         + if iterator, above path is iterated.
+
++ object exposes `url()` function which returns value specified `url` parameter above.
++ object exposes `file()` function which returns value specified `file` parameter above.
 
 ## Child executers
 ### io
