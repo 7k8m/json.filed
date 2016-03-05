@@ -1,6 +1,6 @@
 {
   "name": "json.filed",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Processor of json file",
   "main": "index.js",
   "files": ["index.js"],
