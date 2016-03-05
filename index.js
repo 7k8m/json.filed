@@ -129,6 +129,8 @@ function filedExecuter( file ){
       executePlan._executeFunction( file )
     };
 
+  this.file = () => file;
+
 };
 
 
@@ -144,6 +146,9 @@ function downloadExecuter( url, file ){
     function( executePlan ){
       executePlan._executeFunction( url, file )
     };
+    
+  this.url = () => url;
+  this.file = () => file;
 
 };
 
