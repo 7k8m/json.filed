@@ -80,6 +80,7 @@ var test4Value = { msg: "test value of 4." };
 
 describe('Chained link function', function () {
   it('should be read in other IO process', function (done) {
+    var count = 0;
     jf.filed( testFile4Path ).io(
       function( obj, filePath) {
         return test4Value;
@@ -88,19 +89,15 @@ describe('Chained link function', function () {
       function(obj, filePath){
         return [testFile4_1Path, testFile4_2Path];
       }
-    ).exec();
-
-    var count = 0;
-    setTimeout(
+    ).pass(
       function(){
         jf.filed( [ testFile4Path, testFile4_1Path, testFile4_2Path] ).io( function( obj ) {
           expect(obj).to.eql(test4Value);
           count ++;
           if ( count == 3 ) done();
         }).exec();
-      },
-      100);
-
+      }
+    ).exec();
   });
 });
 
@@ -114,9 +111,7 @@ describe('Value received by link proces in 1st', function () {
       function( obj, filePath) {
         return test5Value;
       }
-    ).exec();
-
-    setTimeout(
+    ).pass(
       function(){
         jf.filed( testFile5_1Path ).link( function( obj, filePath) {
           return testFile5_2Path;
@@ -126,10 +121,8 @@ describe('Value received by link proces in 1st', function () {
           expect(obj).to.eql(test5Value);
           done();
         }).exec();
-
-      },
-      100);
-
+      }
+    ).exec();
   });
 });
 
@@ -137,35 +130,42 @@ const testFile6Path = './' + Math.random() + '.json';
 var test6Value = { msg: "test 6 value" };
 describe('Link process which does not link any', function () {
   it('should not cause chained process', function (done) {
+
+    var count = 0;
+
     jf.filed( testFile6Path ).io(
       function( obj, filePath) {
         return test6Value;
       }
-    ).exec();
-
-    var count = 0;
-    setTimeout(
-      function(){
-        jf.filed( testFile6Path ).link( function( obj, filePath) {
-
+    ).calledback(
+      function(　object, filePath, callback　) {
+        jf.filed( testFile6Path )
+        .link( function( obj, filePath) {
           expect(filePath).to.eql(testFile6Path);
           expect(obj).to.eql(test6Value);
+
+          callback();
 
           return null;
 
         }).io(function(obj, filePath){
-          count ++; //If test goes ringht, not executed.
+          expect(filePath).to.equal(testFile6Path);
+          count ++; //If test goes right, not executed.
+
         }).exec();
 
-      },
-      100);
-
-    setTimeout(
+      }
+    ).pass(
       function(){
-        expect(count).to.equal( 0 );
-        done();
-      },
-      100);
+        setTimeout(
+          function(){
+            expect(count).to.equal( 1 );
+            done();
+          },
+          100
+        );
+      }
+    ).exec();
 
   });
 });
