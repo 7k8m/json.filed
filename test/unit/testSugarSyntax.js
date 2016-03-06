@@ -19,6 +19,7 @@ describe('Sugar syntax ', function () {
     .pass( obj => { expect( obj ).to.eql( testValue ) } )
     .filter( true )
     .copy( testFile2Path )
+    .filter( (obj,filePath) => { return filePath == testFile2Path } )
     .pass(( obj, filePath) => { expect( filePath ).to.eql( testFile2Path ) } )
     .pass( () => { done() } )
     .exec();

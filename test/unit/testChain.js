@@ -106,6 +106,7 @@ const testFile5_1Path = './' + Math.random() + '.json';
 const testFile5_2Path = './' + Math.random() + '.json';
 var test5Value = { msg: "test 5 value" };
 describe('Value received by link proces in 1st', function () {
+  var count = 0;
   it('should be read in next IO function', function (done) {
     jf.filed( testFile5_1Path ).io(
       function( obj, filePath) {
@@ -117,9 +118,13 @@ describe('Value received by link proces in 1st', function () {
           return testFile5_2Path;
 
         }).io(function(obj, filePath){
-          expect(filePath).to.eql(testFile5_2Path);
+          expect( filePath == testFile5_1Path ||
+                  filePath == testFile5_2Path).to.eql( true );
           expect(obj).to.eql(test5Value);
-          done();
+          count ++;
+
+          if( count == 2 ) done();
+
         }).exec();
       }
     ).exec();

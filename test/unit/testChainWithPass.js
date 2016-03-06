@@ -66,7 +66,7 @@ describe('Pass IO function', function () {
     setTimeout(
       function(){
 
-        const fileMap = new Map([[testFilePath2_1,true],[testFilePath2_2,true]]);
+        const fileMap = new Map([[testFilePath2,true], [testFilePath2_1,true],[testFilePath2_2,true]]);
 
         jf.filed( testFilePath2 ).link(
           function( obj, filePath) {

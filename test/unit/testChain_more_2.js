@@ -30,9 +30,12 @@ describe('Chained IO function', function () {
 
           return [testFilePath1];
         }
+      ).filter(
+        function(obj,filePath){
+          return filePath == testFilePath1;
+        }
       ).link(
         function( obj, filePath){
-
           expect( filePath ).to.eql( testFilePath1 );
           expect( obj ).to.eql( testValue );
 

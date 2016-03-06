@@ -146,7 +146,7 @@ function downloadExecuter( url, file ){
     function( executePlan ){
       executePlan._executeFunction( url, file )
     };
-    
+
   this.url = () => url;
   this.file = () => file;
 
@@ -931,6 +931,9 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, nextPlan, e
       }
     );
   }
+
+  if( nextPlan ) nextPlan._executeFunction( originalFilePath );
+
 }
 
 function fsPipe( fromPath, toPath, callback){
@@ -965,6 +968,9 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath, nextPlan, exec
       }
     );
   }
+
+  if( nextPlan ) nextPlan._executeFunction( originalFilePath );
+
 }
 
 function passPostProcess( result, file, closeFile, jb, originalFilePath, nextPlan ){
