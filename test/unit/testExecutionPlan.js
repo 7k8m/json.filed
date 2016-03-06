@@ -25,25 +25,18 @@ describe('Chained operation ', function () {
         .io( function( obj, filePath ) { return testValue1; } )
         .pass( function( obj, filePath ){
           expect( obj ).to.eql( testValue1 );
-        } ).exec();
 
-        rootPart
-        .io( function( obj, filePath ) { return testValue2; } )
-        .pass( function( obj, filePath ){
-          expect( obj ).to.eql( testValue2 );
-        } ).exec();
+          rootPart
+          .io( function( obj, filePath ) { return testValue2; } )
+          .pass( function( obj, filePath ){
+            expect( obj ).to.eql( testValue2 );
+            done();
+          } ).exec();
 
+        } ).exec();
 
       })
       .exec();
-
-    setTimeout(
-      function() {
-        done();
-      },
-      100
-    );
-
 
   });
 });
