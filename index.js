@@ -699,6 +699,24 @@ function process(
       }else{
         //file not exists.
         if (err.code == 'ENOENT') fileCreationProcess();
+        else if(
+          userProcess._plannedExecuter instanceof outExecuter &&
+          err.code == 'EACCES' ) {
+            //case for write executer with write permission only allowed
+            //apply process
+              apply(
+                userProcess,
+                null,
+                filePath,
+                function(afterCloseProcess){// close descriptor.
+                  afterCloseProcess();
+                },
+                jb,
+                filePath,
+                jfProcess,
+                nextPlan
+              );
+          }
         else raiseError( userProcess._plannedExecuter, 'File open error', err);
 
       }
