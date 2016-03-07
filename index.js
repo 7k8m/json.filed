@@ -554,7 +554,7 @@ function ioCore( filePath, userProcess, jb, nextPlan, afterApply){
       //create file with initial value and process json.
       fs.open(
         filePath,
-        'w+',
+        'w',
         (err,fd) => {
 
           if(err) {
@@ -655,7 +655,7 @@ function process(
 
   fs.open(
     filePath,
-    'r+',
+    'r',
     (err,fd) => {
 
       if( ! err ){
