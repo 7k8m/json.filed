@@ -57,7 +57,7 @@
 ## linked_hello.js
     var jf = require('json.filed');
 
-    jf.filed(['./hello.json','./😄.json'])
+    jf.filed(['./hello.json','./linked_hello.json'])
     .io( ( obj,filePath ) => { msg: filePath } ).exec();
 
 
