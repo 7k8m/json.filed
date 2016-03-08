@@ -67,6 +67,8 @@ function executer( parent ){
 
  this.exec = function(){
 
+   let runtime = new runtimeInformation();
+
    let executorStack = [];
    var toStack = this;
 
@@ -86,10 +88,15 @@ function executer( parent ){
    executor = executorStack.pop();
 
    while( executor != null ){
+     plan.runtime = runtime;
      plan._nextPlan = createPlan( executor );
      plan = plan._nextPlan;
      executor = executorStack.pop();
    };
+
+   plan.runtime = runtime;
+   plan._nextPlan = new notexecPlan();
+   plan._nextPlan.runtime = runtime;
 
    root.rootExec( rootPlan );
 
@@ -106,17 +113,34 @@ function executePlan( executeFunction ){
 
   this.next =
     function(){
-      let nextPlan =
-        this._nextPlan != null && this._nextPlan != undefined ?
-        this._nextPlan : notexecPlan;
-      return nextPlan;
+      return this._nextPlan;
+    }
+
+}
+
+function runtimeInformation(){
+  this.jsonFilesInProcess = new Map();
+  this.addJsonFile =
+    function( jsonFile ){
+      this.jsonFilesInProcess.set(jsonFile, {} );
+    }
+
+  this.removeJsonFile =
+    function ( jsonFile ){
+      this.jsonFilesInProcess.delete( jsonFile );
     }
 
 }
 
 
-let notexecPlan =
-  new executePlan( function(){} );
+function notexecPlan() {
+  executePlan.call(
+    this,
+    function( jsonFile ){
+      this.runtime.removeJsonFile( jsonFile );
+    }
+  );
+}
 
 function filedExecuter( file ){
 
@@ -226,8 +250,9 @@ function createFilePlanCore( executeForFileFunction, executer ){
     function( file ){
       if( file != null ) {
         let itr = pathIterator( file, executer );
-        for( let filePath of itr ){
-          executeForFileFunction( filePath, this );
+        for( let jsonFile of itr ){
+          this.runtime.addJsonFile( jsonFile );
+          executeForFileFunction( jsonFile, this );
         }
       }else{
         raiseError( executer , "File must not be null", null);
@@ -319,7 +344,7 @@ function multiplePath( file ){
 }
 
 // Historycally JsonFile was developed substitugin filePath of plain String.
-// So in several parts, JsonFile object is handled in variable named xxxxPath.  
+// So in several parts, JsonFile object is handled in variable named xxxxPath.
 function JsonFile( filePath ){
   this.path = function(){
     return filePath;
@@ -959,23 +984,24 @@ function saveCore(  data,
   }
 }
 
-function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, nextPlan, executer ){ //"fs" is to avoid name conflict.
+function fsCopy( copied2Path, file, closeFile, jb, originalJsonFile, nextPlan, executer ){ //"fs" is to avoid name conflict.
 
   let itr = pathIterator( copied2Path );
-  for(let newFilePath of itr ){
+  for(let newJsonFile of itr ){
+    nextPlan.runtime.addJsonFile( newJsonFile );
     fsPipe(
-      originalFilePath,
-      newFilePath,
+      originalJsonFile,
+      newJsonFile,
       function(err){
-        if(err) raiseError( executer, "Failed to copy from " + originalFilePath + " to " + newFilePath,err);
+        if(err) raiseError( executer, "Failed to copy from " + originalJsonFile.path() + " to " + newJsonFile.path() ,err);
         else {
-          if( nextPlan ) nextPlan._executeFunction( newFilePath );
+          if( nextPlan ) nextPlan._executeFunction( newJsonFile ) ;
         }
       }
     );
   }
 
-  if( nextPlan ) nextPlan._executeFunction( originalFilePath );
+  if( nextPlan ) nextPlan._executeFunction( originalJsonFile ) ;
 
 }
 
@@ -994,25 +1020,26 @@ function fsPipe( fromPath, toPath, callback){
 
 }
 
-function fsLink( linkPath, file, closeFile, jb, originalFilePath, nextPlan, executer){ //"fs" is to avoid name conflict.
+function fsLink( linkPath, file, closeFile, jb, originalJsonFile, nextPlan, executer){ //"fs" is to avoid name conflict.
 
   //link runs only after file was closed. closeFile is passed as compatibility of postProcess interface
   //closeFile();
   let itr = pathIterator( linkPath );
-  for(let newFilePath of itr ){
+  for(let newJsonFile of itr ){
+    nextPlan.runtime.addJsonFile( newJsonFile );
     fs.link(
-      originalFilePath.path(),
-      newFilePath.path(),
+      originalJsonFile.path(),
+      newJsonFile.path(),
       function(err){
-        if(err) raiseError( executer, "Failed to link from " + originalFilePath + " to " + newFilePath,err);
+        if(err) raiseError( executer, "Failed to link from " + originalJsonFile.path() + " to " + newJsonFile.path(),err);
         else {
-          if( nextPlan ) nextPlan._executeFunction( newFilePath );
+          if( nextPlan ) nextPlan._executeFunction( newJsonFile );
         }
       }
     );
   }
 
-  if( nextPlan ) nextPlan._executeFunction( originalFilePath );
+  if( nextPlan ) nextPlan._executeFunction( originalJsonFile );
 
 }
 
@@ -1021,6 +1048,7 @@ function passPostProcess( result, file, closeFile, jb, originalFilePath, nextPla
 }
 
 function filterPostProcess( result, file, closeFile, jb, originalJsonFile , nextPlan ){
+  if( ! result ) nextPlan.runtime.removeJsonFile( originalJsonFile);
   if( result && nextPlan ) nextPlan._executeFunction( originalJsonFile );
 }
 
