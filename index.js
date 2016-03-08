@@ -206,14 +206,14 @@ function createFiledPlan( executer ){
 
 function createNewFilePlan( executer ){
   return createFilePlanCore(
-    function( filePath, plan ){
+    function( jsonFile, plan ){
       fs.writeFile(
-        filePath,
-        encode( initialValue, calcJb(filePath) ),
+        jsonFile.path(),
+        encode( initialValue, calcJb( jsonFile ) ),
         { flag: 'wx' },
         function( err ){
           if( err ) raiseError( executer, 'Failed to create new File.', err );
-          else plan.next()._executeFunction( filePath );
+          else plan.next()._executeFunction( jsonFile );
         }
       );
     },
@@ -279,7 +279,7 @@ function pathIterator( file, filedExecuter){
       return singlePath(file);
 
     } else if ( file[ Symbol.iterator ] ) {
-      return file;
+      return multiplePath( file );
 
     } else if ( typeof file == 'function' ){
       return pathIterator( file(), filedExecuter );
@@ -296,8 +296,34 @@ function pathIterator( file, filedExecuter){
 }
 
 function * singlePath( file ){
-  yield file;
+  yield new JsonFile(file);
 }
+
+function multiplePath( file ){
+  let originalIterator =
+    file[Symbol.iterator]();
+  let itr = {};
+  itr[Symbol.iterator] =
+    function(){
+      return {
+          next: function(){
+            let result = originalIterator.next();
+            return {
+                done: result.done,
+                value: new JsonFile( result.value )
+            }
+          }
+      }
+    }
+  return itr;
+}
+
+function JsonFile( filePath ){
+  this.path = function(){
+    return filePath;
+  }
+}
+
 
 
 function ioExecuter( userProcess, parent) {
@@ -553,7 +579,7 @@ function ioCore( filePath, userProcess, jb, nextPlan, afterApply){
       //file to read does not exists.
       //create file with initial value and process json.
       fs.open(
-        filePath,
+        filePath.path(),
         'w',
         (err,fd) => {
 
@@ -654,7 +680,7 @@ function process(
 ){
 
   fs.open(
-    filePath,
+    filePath.path(),
     'r',
     (err,fd) => {
 
@@ -842,7 +868,7 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, n
 
   normalized(
     json,
-    filePath,
+    filePath.path(),
     function( data ){//callback function passed to userProcess
       if( data ){
         //when callback is called
@@ -871,7 +897,7 @@ function applyProcess( process, json, file, closeFile, jb, filePath, postProcess
   // guard from user handed process.
   let normalized = normalizeProcess( process, process._plannedExecuter);
 
-  var result = normalized(json, filePath, normalized._plannedExecuter);
+  var result = normalized(json, filePath.path(), normalized._plannedExecuter);
 
   if(result != undefined && result != null){
     //if result returned, execute PostProcess
@@ -910,7 +936,7 @@ function saveCore(  data,
   try{
 
     fs.writeFile(
-      file,
+      file instanceof JsonFile ? file.path() : file ,
       encode(data,jb),
       encoding(jb),
       (err)=>{
@@ -955,8 +981,8 @@ function fsCopy( copied2Path, file, closeFile, jb, originalFilePath, nextPlan, e
 
 function fsPipe( fromPath, toPath, callback){
 
-  let readStream = fs.createReadStream(fromPath);
-  let writeStream = fs.createWriteStream(toPath,{flags: 'wx'}); //to escape copy between same files.
+  let readStream = fs.createReadStream(fromPath.path());
+  let writeStream = fs.createWriteStream(toPath.path(),{flags: 'wx'}); //to escape copy between same files.
 
   //readStream.on('end',()=>{} ); // rely on end feature
   writeStream.on('finish',() => { callback( false );} );
@@ -975,8 +1001,8 @@ function fsLink( linkPath, file, closeFile, jb, originalFilePath, nextPlan, exec
   let itr = pathIterator( linkPath );
   for(let newFilePath of itr ){
     fs.link(
-      originalFilePath,
-      newFilePath,
+      originalFilePath.path(),
+      newFilePath.path(),
       function(err){
         if(err) raiseError( executer, "Failed to link from " + originalFilePath + " to " + newFilePath,err);
         else {
@@ -994,17 +1020,17 @@ function passPostProcess( result, file, closeFile, jb, originalFilePath, nextPla
   if( nextPlan ) nextPlan._executeFunction( originalFilePath );
 }
 
-function filterPostProcess( result, file, closeFile, jb, originalFilePath, nextPlan ){
-  if( result && nextPlan ) nextPlan._executeFunction( originalFilePath );
+function filterPostProcess( result, file, closeFile, jb, originalJsonFile , nextPlan ){
+  if( result && nextPlan ) nextPlan._executeFunction( originalJsonFile );
 }
 
-function httpServePostProcess( urlPathName, file, closeFile, jb, originalFilePath, nextPlan ){
-  httpServeJson( urlPathName, originalFilePath );
-  if( nextPlan ) nextPlan._executeFunction( originalFilePath );
+function httpServePostProcess( urlPathName, file, closeFile, jb, originalJsonFile, nextPlan ){
+  httpServeJson( urlPathName, originalJsonFile );
+  if( nextPlan ) nextPlan._executeFunction( originalJsonFile );
 }
 
-function httpServeJson( urlPathName, localFilePath ){
-  servedJsonPathMap.set(urlPathName, localFilePath);
+function httpServeJson( urlPathName, localJsonFile ){
+  servedJsonPathMap.set(urlPathName, localJsonFile.path() );
 }
 
 jf.httpServer = function(){
@@ -1069,7 +1095,7 @@ function encode( obj, jb ){
 
 function calcJb( filePath ){
 
-  switch( path.extname( filePath ).toLowerCase() ){
+  switch( path.extname( filePath.path() ).toLowerCase() ){
 
     case ".bson":
       return JB_BSON;
