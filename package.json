@@ -1,12 +1,13 @@
 {
   "name": "json.filed",
   "version": "0.0.14",
-  "description": "Processor of json file",
+  "description": "library for deferred processing of JSON file",
   "main": "index.js",
   "files": ["index.js"],
   "keywords": [
     "file",
-    "json"
+    "json",
+    "deferred processing"
   ],
   "author": "Tomohito Nakayama <nkym.tmht@hotmail.co.jp>",
   "license": "BSD-3-Clause",
