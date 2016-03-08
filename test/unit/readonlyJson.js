@@ -8,7 +8,6 @@ const testFilePath = './' + Math.random() + '.json';
 const testFile2Path = './' + Math.random() + '.json';
 
 var testValue = { msg: "value from 1st IO." };
-var testValue2 = { msg: "written to write only json" };
 
 describe('Json file with read only permission ', function () {
   it('can be read in read executer', function (done) {
