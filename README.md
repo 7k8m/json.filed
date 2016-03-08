@@ -1,5 +1,5 @@
 # json.filed
-Processor / library of json file
+library of deferred processing JSON file 
 
 ## Use case
 + read, write and process JSON file
