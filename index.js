@@ -702,13 +702,12 @@ function process(
         else if(
           userProcess._plannedExecuter instanceof outExecuter &&
           err.code == 'EACCES' ) {
-            //case for write executer with write permission only allowed
-            //apply process
+            //case for write executer with write permission only allowed file
               apply(
                 userProcess,
                 null,
                 filePath,
-                function(afterCloseProcess){// close descriptor.
+                function(afterCloseProcess){// No need to close filePath but afterClosProcess needed.
                   afterCloseProcess();
                 },
                 jb,
