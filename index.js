@@ -318,13 +318,13 @@ function multiplePath( file ){
   return itr;
 }
 
+// Historycally JsonFile was developed substitugin filePath of plain String.
+// So in several parts, JsonFile object is handled in variable named xxxxPath.  
 function JsonFile( filePath ){
   this.path = function(){
     return filePath;
   }
 }
-
-
 
 function ioExecuter( userProcess, parent) {
   childExecuter.call( this, userProcess, parent );
