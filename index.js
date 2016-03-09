@@ -146,8 +146,6 @@ function collectPlan( executer )
           let collectedResult = new JsonFile( executer.collectToFilePath );
           thisPlan.runtime.resetJsonFile ( collectedResult );
 
-          console.log('collected as array')
-
           applyProcess(
             executer.userProcess,
             obj,
