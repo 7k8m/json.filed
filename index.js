@@ -48,6 +48,11 @@ jf.download =
     return addErrorListener( new downloadExecuter (url, file), errListener );
   }
 
+jf.roots =
+  function ( rootExecuters, errListener ){
+    return addErrorListener( new rootsExecuter(rootExecuters), errListener);
+  }
+
 function executer( parent ){
 
  this.parent = parent;
@@ -261,6 +266,21 @@ function downloadExecuter( url, file ){
 };
 
 
+function rootsExecuter( rootExecuters ){
+
+  executer.call( this, null );
+
+  let thisExecuter = this;
+
+  this.rootExec =
+    function( executePlan ){
+      executePlan._executeFunction( rootExecuters );
+    };
+
+
+};
+
+
 function childExecuter( userProcess, parent ){
 
   executer.call( this, parent );
@@ -283,6 +303,7 @@ function createPlan( executer ){
   else if( executer instanceof filedExecuter ) return createFiledPlan( executer );
   else if( executer instanceof downloadExecuter ) return createDownloadPlan(executer);
   else if( executer instanceof collectExecuter ) return new collectPlan(executer);
+  else if( executer instanceof rootsExecuter ) return createRootsPlan(executer);
   else return createChildPlan( executer );
 }
 
@@ -382,13 +403,31 @@ function createDownloadPlan( executer ){
             thisPlan.next()._executeFunction( jsonFile );
           }
         },
-        err => { executer.emit( err ) } 
+        err => { executer.emit( err ) }
       ).exec();
     }
   );
 }
 
+function createRootsPlan( rootsExecuter ){
+  return new executePlan(
+    function( executers ){
+      for( let executer of executers ){
+        let plan = createPlan( executer );
+        plan._nextPlan = this._next;
 
+        if( executer instanceof filedExecuter ){ //also handle newFile here
+          plan._executeFunction( executer.file() );
+        } else if ( executer instanceof downloadExecuter ) {
+          plan._executeFunction( executor.url(), executer.file() )
+        }else{
+          raiseError(rootsExecuter, 'not acceptable executer ' + executer, null);
+        }
+
+      }
+    }
+  );
+}
 
 
 function path2jsonFile( file, filedExecuter){
