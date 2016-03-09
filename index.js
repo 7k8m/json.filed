@@ -130,7 +130,6 @@ function collectPlan( executer )
   let collectedFiles = new Map();
 
   let collectedAll = function(){
-
     let collectedJsons = [];
 
       jf
@@ -236,6 +235,7 @@ function filedExecuter( file ){
   executer.call( this, null );
 
   let thisExecuter = this;
+  thisExecuter.fileToProcess = path2jsonFile(file);
 
   this.rootExec =
     function(executePlan){
@@ -255,6 +255,8 @@ function downloadExecuter( url, file ){
 
   executer.call( this, null );
   let thisExecuter = this;
+  thisExecuter.fileToProcess = path2jsonFile(file);
+
   this.rootExec =
     function( executePlan ){
       executePlan._executeFunction( url, file )
@@ -356,7 +358,7 @@ function createFilePlanCore( executeForFileFunction, executer ){
     function( file ){
       if( file != null ) {
 
-        let jsonFilesArray = Array.from( path2jsonFile( file, executer ));
+        let jsonFilesArray = Array.from(executer.fileToProcess);
         jsonFilesArray.forEach( this.runtime.addJsonFile, this.runtime);
 
         for( let jsonFile of jsonFilesArray ){
@@ -398,7 +400,8 @@ function createDownloadPlan( executer ){
       )
       .pass(
         function(json, filePath ){
-          let array = path2jsonFile( filePath , executer);
+          let array = executer.fileToProcess;
+          array.forEach( thisPlan.runtime.addJsonFile, thisPlan.runtime);
           for( let jsonFile of array ){
             thisPlan.next()._executeFunction( jsonFile );
           }
@@ -411,15 +414,26 @@ function createDownloadPlan( executer ){
 
 function createRootsPlan( rootsExecuter ){
   return new executePlan(
+
     function( executers ){
+
+      executers.forEach(
+        executer => {
+          executer.fileToProcess
+          .forEach( this.runtime.addJsonFile )
+        }
+      );
+
       for( let executer of executers ){
+
         let plan = createPlan( executer );
-        plan._nextPlan = this._next;
+        plan._nextPlan = this._nextPlan;
+        plan.runtime = this.runtime;
 
         if( executer instanceof filedExecuter ){ //also handle newFile here
           plan._executeFunction( executer.file() );
         } else if ( executer instanceof downloadExecuter ) {
-          plan._executeFunction( executor.url(), executer.file() )
+          plan._executeFunction( executer.url(), executer.file() )
         }else{
           raiseError(rootsExecuter, 'not acceptable executer ' + executer, null);
         }
@@ -571,8 +585,8 @@ util.inherits( executer, EventEmitter);
 
 util.inherits( filedExecuter, executer);
 util.inherits( newFileExecuter, filedExecuter);
-
 util.inherits( downloadExecuter, executer);
+util.inherits( rootsExecuter, executer);
 
 util.inherits( childExecuter, executer);
 
