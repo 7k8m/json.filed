@@ -2,7 +2,6 @@
 library for deferred processing of JSON file 
 
 ## Use case
----
 + what
     + read, write and process JSON files
     + share JSON files between nodes
