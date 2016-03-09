@@ -288,18 +288,12 @@ describe('Pass ', function () {
         function( obj, filePath ) {
           return test11msg;
         }
-      ).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile11Path ).pass( function( obj, filePath ) {
-            expect(obj).to.eql( test11msg );
-            done();
-        }).exec();
-      },
-      100);
-    });
-
+      )
+      .pass( function( obj, filePath ) {
+          expect(obj).to.eql( test11msg );
+          done();
+      }).exec();
+  });
 });
 
 describe('filed( obj ).io(function(){}).io(function(){}).exec', function () {

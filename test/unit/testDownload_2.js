@@ -13,7 +13,9 @@ function testValue(){
 let server = http.createServer(
   (request, response) => {
     response.writeHead(200, {'Content-Type': 'application/json'});
-    response.end( JSON.stringify( testValue() ) );
+    let v = testValue();
+    response.end( JSON.stringify( v ) );
+    //console.log(v)
 }).listen(8081);
 
 describe('Download function ', function () {
@@ -23,28 +25,26 @@ describe('Download function ', function () {
     let downloadedJson =
       jf.download(
         'http://localhost:8081',
-        function * (){ yield './' + Math.random() + '.json'; } );
-
-    downloadedJson
-    .io( ( json ) => { expect( json.num ).to.equal( 1 ) })
-    .pass( () => {
-      downloadedJson
-      .io( ( json ) => { expect( json.num ).to.equal( 2 ) })
-      .pass( () => {
-        done();
-        server.close();
-      } )
-      .exec();
-    })
-    .exec();
+        function * (){ yield './' + Math.random() + '.json'; } ,
+      function(err){ console.log( err )}
+    );
 
     setTimeout(
-      function(){
+      () =>{
+        downloadedJson
+        .io( ( json ) => { expect( json.num ).to.equal( 1 ) })
+        .pass( () => {
+          downloadedJson
+          .io( ( json ) => { expect( json.num ).to.equal( 2 ) })
+          .pass( () => {
+            done();
+            server.close();
+          })
+          .exec();
+        })
+        .exec();
       },
-      100);
-
+      1000
+    );
   });
-
-
-
 });
