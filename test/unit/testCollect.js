@@ -9,6 +9,8 @@ const testFile2Path = './' + Math.random() + '.json';
 
 const collectedFilePath = './' + Math.random() + '.json';
 
+const objToAdd = { msg: 'added by collect executer' };
+
 describe('Collect function', function () {
   it('should work without error', function (done) {
 
@@ -19,6 +21,7 @@ describe('Collect function', function () {
     )
     .collect(
       function(obj){
+        obj[2] = objToAdd;
         return obj;
       },
       collectedFilePath,
@@ -26,7 +29,7 @@ describe('Collect function', function () {
     )
     .pass(( obj ) => {
 
-      expect( obj.length ).to.be.equal(2);
+      expect( obj.length ).to.be.equal(3);
 
       expect(
         obj[0].file == testFilePath ||
@@ -35,7 +38,9 @@ describe('Collect function', function () {
         obj[1].file == testFilePath ||
         obj[1].file == testFile2Path ).to.be.equal( true );
 
-      expect( obj[0].file != obj[1].file ).to.be.equals(true);
+      expect( obj[0].file != obj[1].file ).to.be.equal(true);
+
+      expect( obj[2] ).to.be.eql( objToAdd );
 
       done() } )
     .exec();
