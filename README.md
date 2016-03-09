@@ -5,9 +5,10 @@ library for deferred processing of JSON file
 + what
     + read, write and process JSON files
     + share JSON files between nodes
+    + collect contents of multiple JSON file into a JSON file.
     + and so on.
 + when
-    + Applications needs to store data but DBMS is not the case.
+    + Applications needs to store data, but DBMS is not the case.
     + Scripts handling JSON files on a node
     + and so on.
 
