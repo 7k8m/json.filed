@@ -136,26 +136,26 @@ function collectPlan( executer )
       .calledback( (obj, filePath, callback) => {
           collectedJsons.push(obj);
           if( collectedJsons.length == collectedFiles.size ){
-            callback( collectedJsons );
+            callback(null);
           }
         },
         ( err ) => executer.emit( 'error' , err )
       )
       .pass( (obj) => {
 
-          let collectedResult = new JsonFile( executer.collectToFilePath );
-          thisPlan.runtime.resetJsonFile ( collectedResult );
+          let collectedResultFile = new JsonFile( executer.collectToFilePath );
+          thisPlan.runtime.resetJsonFile ( collectedResultFile );
 
           applyProcess(
             executer.userProcess,
-            obj,
-            collectedResult,
+            collectedJsons,
+            collectedResultFile,
             function(afterCloseProcess){
               afterCloseProcess();
             },
-            calcJb( collectedResult,
+            calcJb( collectedResultFile,
                     executer ),
-            collectedResult,
+            collectedResultFile,
             saveAfterApply,
             thisPlan.next()
           );
