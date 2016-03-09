@@ -64,6 +64,7 @@ function executer( parent ){
  this.calledback = addChildExecuterFunction(createExecuterFactory(calledbackExecuter, this ));
  this.httpServe = addChildExecuterFunction(createExecuterFactory(httpServeExecuter, this ));
  this.parallel = addParallelExecuterFunction( this );
+ this.collect = addCollectExecuterFunction( this );
 
  this.exec = function(){
 
@@ -118,8 +119,78 @@ function executePlan( executeFunction ){
 
 }
 
+function collectPlan( executer )
+{
+  let thisPlan = this;
+  let collectedFiles = new Map();
+
+  let collectedAll = function(){
+
+    let collectedJsons = [];
+
+      jf
+      .filed(
+        collectedFiles.keys() ,
+        ( err ) => { executer.emit('error',err); }
+      )
+      .calledback( (obj, filePath, callback) => {
+          collectedJsons.push(obj);
+          if( collectedJsons.length == collectedFiles.size ){
+            callback( collectedJsons );
+          }
+        },
+        ( err ) => executer.emit( 'error' , err )
+      )
+      .pass( (obj) => {
+
+          let collectedResult = new JsonFile( executer.collectToFilePath );
+          thisPlan.runtime.resetJsonFile ( collectedResult );
+
+          console.log('collected as array')
+
+          applyProcess(
+            executer.userProcess,
+            obj,
+            collectedResult,
+            function(afterCloseProcess){
+              afterCloseProcess();
+            },
+            calcJb( collectedResult,
+                    executer ),
+            collectedResult,
+            saveAfterApply,
+            thisPlan.next()
+          );
+
+        },
+        ( err ) => { executer.emit('error', err ); }
+      ).exec();
+    };
+
+  let collectJsonFile = function( fileThisTime ){
+
+    if( collectedFiles.size == 0 ){
+      this.runtime.once( 'empty', function() { collectedAll(); } );
+    }
+
+    if( fileThisTime != null ){
+      collectedFiles.set( fileThisTime.path() );
+      this.runtime.removeJsonFile( fileThisTime );
+    }
+
+  }
+
+  executePlan.call(
+    this,
+    collectJsonFile
+  );
+
+}
+
 function runtimeInformation(){
+
   this.jsonFilesInProcess = new Map();
+
   this.addJsonFile =
     function( jsonFile ){
       this.jsonFilesInProcess.set(jsonFile, {} );
@@ -128,10 +199,25 @@ function runtimeInformation(){
   this.removeJsonFile =
     function ( jsonFile ){
       this.jsonFilesInProcess.delete( jsonFile );
+      // to run collect when filesInProgress empty
+      if( this.jsonFilesInProcess.size == 0 ) {
+        this.emit( 'empty' );
+      }
+
     }
+
+  this.resetJsonFile =
+    function ( jsonFile ){
+      this.jsonFilesInProcess.clear();
+      this.jsonFilesInProcess.set( jsonFile );
+    }
+
+  this.countInProgress =
+    function() { return this.jsonFilesInProcess.size; }
 
 }
 
+util.inherits( runtimeInformation, EventEmitter );
 
 function notexecPlan() {
   executePlan.call(
@@ -182,7 +268,6 @@ function childExecuter( userProcess, parent ){
   executer.call( this, parent );
 
   this.generalInternalExec = function ( filePath, jb , executerFunction, executerPlan ) {
-
     executerFunction (
       filePath,
       userProcess,
@@ -190,6 +275,7 @@ function childExecuter( userProcess, parent ){
       executerPlan.next()
     );
   }
+
 }
 
 
@@ -198,6 +284,7 @@ function createPlan( executer ){
   if( executer instanceof newFileExecuter ) return createNewFilePlan( executer );
   else if( executer instanceof filedExecuter ) return createFiledPlan( executer );
   else if( executer instanceof downloadExecuter ) return createDownloadPlan(executer);
+  else if( executer instanceof collectExecuter ) return new collectPlan(executer);
   else return createChildPlan( executer );
 }
 
@@ -249,11 +336,14 @@ function createFilePlanCore( executeForFileFunction, executer ){
   return new executePlan(
     function( file ){
       if( file != null ) {
-        let itr = pathIterator( file, executer );
-        for( let jsonFile of itr ){
-          this.runtime.addJsonFile( jsonFile );
+
+        let jsonFilesArray = Array.from( pathIterator( file, executer ));
+        jsonFilesArray.forEach( this.runtime.addJsonFile, this.runtime);
+
+        for( let jsonFile of jsonFilesArray ){
           executeForFileFunction( jsonFile, this );
         }
+
       }else{
         raiseError( executer , "File must not be null", null);
       }
@@ -298,10 +388,12 @@ function createDownloadPlan( executer ){
 }
 
 
+
+
 function pathIterator( file, filedExecuter){
   try{
     if ( typeof file == 'string' ){
-      return singlePath(file);
+      return singlePath( file );
 
     } else if ( file[ Symbol.iterator ] ) {
       return multiplePath( file );
@@ -320,27 +412,12 @@ function pathIterator( file, filedExecuter){
 
 }
 
-function * singlePath( file ){
-  yield new JsonFile(file);
+function singlePath( file ){
+  return [ new JsonFile(file) ]
 }
 
 function multiplePath( file ){
-  let originalIterator =
-    file[Symbol.iterator]();
-  let itr = {};
-  itr[Symbol.iterator] =
-    function(){
-      return {
-          next: function(){
-            let result = originalIterator.next();
-            return {
-                done: result.done,
-                value: new JsonFile( result.value )
-            }
-          }
-      }
-    }
-  return itr;
+  return Array.from(file, path => new JsonFile( path ));
 }
 
 // Historycally JsonFile was developed substitugin filePath of plain String.
@@ -442,6 +519,12 @@ function parallelExecuter( userProcess, parent ) {
   calledbackExecuter.call( this, userProcess, parent);
 }
 
+function collectExecuter( userProcess, parent, filePath) {
+  executer.call( this, parent);
+  this.collectToFilePath = filePath;
+  this.userProcess = userProcess;
+
+};
 
 
 util.inherits( executer, EventEmitter);
@@ -462,8 +545,8 @@ util.inherits( passExecuter, childExecuter);
 util.inherits( filterExecuter, childExecuter);
 util.inherits( calledbackExecuter, childExecuter);
 util.inherits( httpServeExecuter, childExecuter);
-
 util.inherits( parallelExecuter, calledbackExecuter);
+util.inherits( collectExecuter, executer);
 
 function createExecuterFactory( classFunction, parent ){
   return function(userProcess){ return new classFunction( userProcess, parent ) };
@@ -543,6 +626,20 @@ function addParallelExecuterFunction( parent ){
 
     return f;
 
+}
+
+function addCollectExecuterFunction( parent ){
+
+  let f = function( userFunction, newFilePath, errListner ) { //userFunction, newly specified file path, errListner
+    let executer = new collectExecuter( userFunction, parent, newFilePath);
+    if( errListner ) executer.on('error',errListner);
+
+    userFunction._plannedExecuter = executer; //hack to emit error from userProcess by executer.
+
+    return executer;
+
+  }
+  return f;
 }
 
 function sugarnize( userArgument ) {
@@ -687,6 +784,10 @@ function calledback( filePath, userProcess, jb, nextPlan ){
     // calledback ignore creating new file, but need to invoke applycalledbacking userProcess
     function(){ applyCalledbackProcess( userProcess, {} , filePath, function(){} , jb, filePath, nextPlan );  }
   );
+}
+
+function collect( filePath, userProcess, jb, nextPlan ){
+
 }
 
 function httpServe( filePath, userProcess, jb, nextPlan ){
@@ -986,9 +1087,11 @@ function saveCore(  data,
 
 function fsCopy( copied2Path, file, closeFile, jb, originalJsonFile, nextPlan, executer ){ //"fs" is to avoid name conflict.
 
-  let itr = pathIterator( copied2Path );
-  for(let newJsonFile of itr ){
-    nextPlan.runtime.addJsonFile( newJsonFile );
+  let jsonFilesArray = Array.from(pathIterator( copied2Path ) );
+
+  jsonFilesArray.forEach( nextPlan.runtime.addJsonFile , nextPlan.runtime );
+
+  for(let newJsonFile of jsonFilesArray ){
     fsPipe(
       originalJsonFile,
       newJsonFile,
@@ -1024,9 +1127,9 @@ function fsLink( linkPath, file, closeFile, jb, originalJsonFile, nextPlan, exec
 
   //link runs only after file was closed. closeFile is passed as compatibility of postProcess interface
   //closeFile();
-  let itr = pathIterator( linkPath );
-  for(let newJsonFile of itr ){
-    nextPlan.runtime.addJsonFile( newJsonFile );
+  let newJsonFilesArray = Array.from( pathIterator( linkPath ) );
+  newJsonFilesArray.forEach( nextPlan.runtime.addJsonFile, nextPlan.runtime );
+  for(let newJsonFile of newJsonFilesArray ){
     fs.link(
       originalJsonFile.path(),
       newJsonFile.path(),
