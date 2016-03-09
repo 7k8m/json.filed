@@ -185,6 +185,18 @@ httpServer.listen( 8080 );
     + Each executers are executed and when all execcuters are finished, next executer of parallel starts
     + `.exec` functions of each chain are called inside parallel. So do not call `.exec` in argument.
 
+## Other executers
+### collect
+````
+.collect( function( json, filePath, executer ) { your code to process json here } )
+````
+
++ `function( json, filePath ) { ... }` is where process json.
+    + jsons from parent executers are concatenated as array and passed to function as a `json` parameter
+    + `filePath` is where I/O concatenated json from/to.
+    + `return json` from function, written to the file of `filePath` parameter.
+        + Nothing written, if return no object.
+    + `executer` is an event emitter and can be used in error handling
 
 # Chaining
 ````
@@ -196,7 +208,7 @@ jf.filed( file )
 .pass( function( json, filePath ) { your another code to process json here } )
 ````
 
-child executers can be chained as above.
+executers can be chained as above.
 
 # Error handling
 ## Error listener of executer
