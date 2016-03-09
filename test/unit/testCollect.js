@@ -6,6 +6,7 @@ var jf = require('../../'),
 
 const testFilePath = './' + Math.random() + '.json';
 const testFile2Path = './' + Math.random() + '.json';
+const testFile3Path = './' + Math.random() + '.json';
 
 const collectedFilePath = './' + Math.random() + '.json';
 
@@ -19,8 +20,10 @@ describe('Collect function', function () {
         return { file: filePath };
       }
     )
+    .filter( obj => obj.file != testFile3Path )
     .collect(
       function(obj){
+        expect( obj.length ).to.be.equal(2);
         obj[2] = objToAdd;
         return obj;
       },
