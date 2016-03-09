@@ -45,6 +45,16 @@ describe('Collect function', function () {
 
       expect( obj[2] ).to.be.eql( objToAdd );
 
+      jf
+      .filed( testFilePath )
+      .pass( obj =>{ expect(obj.file).to.be.equal( testFilePath ) } )
+      .pass( () => {
+        jf
+        .filed( testFile2Path )
+        .pass( obj => { expect(obj.file).to.be.equal( testFile2Path ) } )
+        .exec();
+      } ).exec();
+
       done() } )
     .exec();
   });
