@@ -416,8 +416,8 @@ function singlePath( file ){
   return [ new JsonFile(file) ]
 }
 
-function multiplePath( file ){
-  return Array.from(file, path => new JsonFile( path ));
+function multiplePath( files ){
+  return Array.from(files, path => new JsonFile( path ));
 }
 
 // Historycally JsonFile was developed substitugin filePath of plain String.
