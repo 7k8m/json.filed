@@ -26,4 +26,6 @@ mocha test/unit/testParallel_2.js
 mocha test/unit/testFileUrl.js
 mocha test/unit/writeonlyJson.js
 mocha test/unit/readonlyJson.js
+mocha test/unit/testCollect.js
+mocha test/unit/testCollect_more.js
 test/tools/rmTestJsonFile.ps1
