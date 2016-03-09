@@ -337,7 +337,7 @@ function createFilePlanCore( executeForFileFunction, executer ){
     function( file ){
       if( file != null ) {
 
-        let jsonFilesArray = Array.from( pathIterator( file, executer ));
+        let jsonFilesArray = Array.from( path2jsonFile( file, executer ));
         jsonFilesArray.forEach( this.runtime.addJsonFile, this.runtime);
 
         for( let jsonFile of jsonFilesArray ){
@@ -377,9 +377,9 @@ function createDownloadPlan( executer ){
       )
       .pass(
         function(json, filePath ){
-          let itr = pathIterator( filePath , executer);
-          for( let filePath of itr ){
-            thisPlan.next()._executeFunction( filePath );
+          let array = path2jsonFile( filePath , executer);
+          for( let jsonFile of array ){
+            thisPlan.next()._executeFunction( jsonFile );
           }
         }
       ).exec();
@@ -390,7 +390,7 @@ function createDownloadPlan( executer ){
 
 
 
-function pathIterator( file, filedExecuter){
+function path2jsonFile( file, filedExecuter){
   try{
     if ( typeof file == 'string' ){
       return singlePath( file );
@@ -399,7 +399,7 @@ function pathIterator( file, filedExecuter){
       return multiplePath( file );
 
     } else if ( typeof file == 'function' ){
-      return pathIterator( file(), filedExecuter );
+      return path2jsonFile( file(), filedExecuter );
 
     } else {
       throw new Error();
@@ -1087,7 +1087,7 @@ function saveCore(  data,
 
 function fsCopy( copied2Path, file, closeFile, jb, originalJsonFile, nextPlan, executer ){ //"fs" is to avoid name conflict.
 
-  let jsonFilesArray = Array.from(pathIterator( copied2Path ) );
+  let jsonFilesArray = Array.from(path2jsonFile( copied2Path ) );
 
   jsonFilesArray.forEach( nextPlan.runtime.addJsonFile , nextPlan.runtime );
 
@@ -1127,7 +1127,7 @@ function fsLink( linkPath, file, closeFile, jb, originalJsonFile, nextPlan, exec
 
   //link runs only after file was closed. closeFile is passed as compatibility of postProcess interface
   //closeFile();
-  let newJsonFilesArray = Array.from( pathIterator( linkPath ) );
+  let newJsonFilesArray = Array.from( path2jsonFile( linkPath ) );
   newJsonFilesArray.forEach( nextPlan.runtime.addJsonFile, nextPlan.runtime );
   for(let newJsonFile of newJsonFilesArray ){
     fs.link(
