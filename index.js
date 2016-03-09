@@ -235,7 +235,6 @@ function filedExecuter( file ){
   executer.call( this, null );
 
   let thisExecuter = this;
-  thisExecuter.fileToProcess = path2jsonFile(file);
 
   this.rootExec =
     function(executePlan){
@@ -255,11 +254,10 @@ function downloadExecuter( url, file ){
 
   executer.call( this, null );
   let thisExecuter = this;
-  thisExecuter.fileToProcess = path2jsonFile(file);
 
   this.rootExec =
     function( executePlan ){
-      executePlan._executeFunction( url, file )
+      executePlan._executeFunction( url );
     };
 
   this.url = () => url;
@@ -354,62 +352,83 @@ function createNewFilePlan( executer ){
 }
 
 function createFilePlanCore( executeForFileFunction, executer ){
-  return new executePlan(
-    function( file ){
-      if( file != null ) {
 
-        let jsonFilesArray = Array.from(executer.fileToProcess);
+  if( executer.file() != null ){
+
+    let plan =  new executePlan(
+      function(){
+
+        let jsonFilesArray = Array.from( this.fixedFiles );
         jsonFilesArray.forEach( this.runtime.addJsonFile, this.runtime);
 
         for( let jsonFile of jsonFilesArray ){
           executeForFileFunction( jsonFile, this );
         }
 
-      }else{
-        raiseError( executer , "File must not be null", null);
       }
-    }
-  );
+    );
+
+    plan.fixedFiles = fixFiles( executer.file() );
+
+    return plan;
+
+  } else {
+    raiseError( executer, "File must not be null", null);
+    return new notexecPlan();
+  }
+
 }
 
 
 function createDownloadPlan( executer ){
-  return new executePlan(
-    function( url, filePath ){
+  let plan =  new executePlan(
+
+    function(){
       let thisPlan = this;
-      jf
-      .filed( filePath,
-              err => { executer.emit( err ) } )
-      .calledback(
-        function( file, object, callback ){
-        request(
-          url,
-            function (error, response, body ) {
-            if (!error &&
-                response.statusCode == 200 &&
-                response.headers['content-type'].startsWith('application/json')) {
 
-                callback(decode(body,JB_JSON));
+      /*
+      file path as string is conflicted with file path JSONFile here....
+      More over, to realize collect executer, file path must be fixed before runtime...
+      */
 
-            }else{
-                executer.emit('error', error);
-            }
-          });
-        },
-        err => { executer.emit( err ) }
-      )
-      .pass(
-        function(json, filePath ){
-          let array = executer.fileToProcess;
-          array.forEach( thisPlan.runtime.addJsonFile, thisPlan.runtime);
-          for( let jsonFile of array ){
-            thisPlan.next()._executeFunction( jsonFile );
-          }
-        },
-        err => { executer.emit( err ) }
-      ).exec();
+      for( let fixedFile of thisPlan.fixedFiles){
+
+        jf
+        .filed( fixedFile.path(),
+                err => { executer.emit( err ) } )
+        .calledback(
+          function( object, file, callback ){
+          request(
+            executer.url(),
+              function (error, response, body ) {
+              if (!error &&
+                  response.statusCode == 200 &&
+                  response.headers['content-type'].startsWith('application/json')) {
+
+                  callback(decode(body,JB_JSON));
+
+              }else{
+                  executer.emit('error', error);
+              }
+            });
+          },
+          err => { executer.emit( err ) }
+        )
+        .pass(
+          function(json, filePath ){
+            thisPlan.runtime.addJsonFile( fixedFile );
+            thisPlan.next()._executeFunction( fixedFile );
+          },
+          err => { executer.emit( err ) }
+        ).exec();
+      }
     }
   );
+
+  plan.fixedFiles = fixFiles( executer.file() );
+
+  return plan;
+
 }
 
 function createRootsPlan( rootsExecuter ){
@@ -417,26 +436,23 @@ function createRootsPlan( rootsExecuter ){
 
     function( executers ){
 
-      executers.forEach(
-        executer => {
-          executer.fileToProcess
-          .forEach( this.runtime.addJsonFile )
+      let plans =
+        Array.from( executers, createPlan);
+
+      plans.forEach(
+        plan => {
+          plan.fixedFiles.forEach(
+            this.runtime.addJsonFile
+          );
         }
       );
 
-      for( let executer of executers ){
+      for( let plan of plans){
 
-        let plan = createPlan( executer );
         plan._nextPlan = this._nextPlan;
         plan.runtime = this.runtime;
 
-        if( executer instanceof filedExecuter ){ //also handle newFile here
-          plan._executeFunction( executer.file() );
-        } else if ( executer instanceof downloadExecuter ) {
-          plan._executeFunction( executer.url(), executer.file() )
-        }else{
-          raiseError(rootsExecuter, 'not acceptable executer ' + executer, null);
-        }
+        plan._executeFunction();
 
       }
     }
@@ -444,7 +460,7 @@ function createRootsPlan( rootsExecuter ){
 }
 
 
-function path2jsonFile( file, filedExecuter){
+function fixFiles( file, executer){
   try{
     if ( typeof file == 'string' ){
       return singlePath( file );
@@ -453,13 +469,13 @@ function path2jsonFile( file, filedExecuter){
       return multiplePath( file );
 
     } else if ( typeof file == 'function' ){
-      return path2jsonFile( file(), filedExecuter );
+      return fixFiles( file(), executer );
 
     } else {
       throw new Error();
     }
   } catch ( error ) {
-    raiseError( filedExecuter, 'Failed to create path Iterator' );
+    raiseError( executer, 'Failed to create path Iterator' );
   }
 
   return [];
@@ -1143,7 +1159,7 @@ function saveCore(  data,
 
 function fsCopy( copied2Path, file, closeFile, jb, originalJsonFile, nextPlan, executer ){ //"fs" is to avoid name conflict.
 
-  let jsonFilesArray = Array.from(path2jsonFile( copied2Path ) );
+  let jsonFilesArray = Array.from(fixFiles( copied2Path ) );
 
   jsonFilesArray.forEach( nextPlan.runtime.addJsonFile , nextPlan.runtime );
 
@@ -1183,7 +1199,7 @@ function fsLink( linkPath, file, closeFile, jb, originalJsonFile, nextPlan, exec
 
   //link runs only after file was closed. closeFile is passed as compatibility of postProcess interface
   //closeFile();
-  let newJsonFilesArray = Array.from( path2jsonFile( linkPath ) );
+  let newJsonFilesArray = Array.from( fixFiles( linkPath ) );
   newJsonFilesArray.forEach( nextPlan.runtime.addJsonFile, nextPlan.runtime );
   for(let newJsonFile of newJsonFilesArray ){
     fs.link(
