@@ -629,6 +629,8 @@ function addParallelExecuterFunction( parent ){
 function addCollectExecuterFunction( parent ){
 
   let f = function( userFunction, newFilePath, errListner ) { //userFunction, newly specified file path, errListner
+    userFunction = sugarnize( userFunction );
+
     let executer = new collectExecuter( userFunction, parent, newFilePath);
     if( errListner ) executer.on('error',errListner);
 
