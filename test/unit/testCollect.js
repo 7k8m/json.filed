@@ -51,11 +51,14 @@ describe('Collect function', function () {
       .pass( () => {
         jf
         .filed( testFile2Path )
-        .pass( obj => { expect(obj.file).to.be.equal( testFile2Path ) } )
+        .pass(
+          obj => {
+            expect(obj.file).to.be.equal( testFile2Path )
+            done();
+          } )
         .exec();
       } ).exec();
-
-      done() } )
+    } )
     .exec();
   });
 });
