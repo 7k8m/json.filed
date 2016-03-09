@@ -224,14 +224,14 @@
     .exec();
 
 ## Above script is executed as ...
-$ node collect.js 
-[ { msg: 'world' }, { msg: 'hello' } ]
-$ cat data1.json
-{"msg":"hello"}
-$ cat data2.json
-{"msg":"world"}
-$ cat data3.json
-[{"msg":"world"},{"msg":"hello"}]
+    $ node collect.js 
+    [ { msg: 'world' }, { msg: 'hello' } ]
+    $ cat data1.json
+    {"msg":"hello"}
+    $ cat data2.json
+    {"msg":"world"}
+    $ cat data3.json
+    [{"msg":"world"},{"msg":"hello"}]
 
 
 ## greeting.binary.js
