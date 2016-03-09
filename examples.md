@@ -201,6 +201,39 @@
     $ node parallel.js
     hello world
 
+
+## collect.js
+    var jf = require('json.filed');
+    
+    var msg;
+    
+    jf.filed('./data.json')
+    .parallel(
+      jf.filed('./data1.json').write( { msg:'hello' } ),
+      jf.filed('./data2.json').write( { msg:'world' } ) )
+    .pass(
+      () =>
+      {
+        jf
+        .filed( [ './data1.json', './data2.json' ] )
+        .collect( obj => obj, './data3.json' )
+        .pass( ( obj ) => { console.log( obj ) } )
+        .exec();
+      }
+    )
+    .exec();
+
+## Above script is executed as ...
+    $ node collect.js 
+    [ { msg: 'world' }, { msg: 'hello' } ]
+    $ cat data1.json
+    {"msg":"hello"}
+    $ cat data2.json
+    {"msg":"world"}
+    $ cat data3.json
+    [{"msg":"world"},{"msg":"hello"}]
+
+
 ## greeting.binary.js
     var jf = require('json.filed');
 
