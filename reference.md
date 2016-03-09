@@ -49,6 +49,17 @@ jf.download( url, file )
 + object exposes `url()` function which returns value specified `url` parameter above.
 + object exposes `file()` function which returns value specified `file` parameter above.
 
+### roots
+````
+jf.roots( <array of root executers> )
+````
+----
+
++ `<array of root executers> `
+    + array whose element is root executer
+        + when executing, those elements works as one root executer.  
+
+
 ## Child executers
 ### io
 ````
