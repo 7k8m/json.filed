@@ -47,28 +47,17 @@ describe('The value function does not return ', function () {
   it('should not be written.', function (done) {
     jf.filed( testFile3Path).io( function( obj ) {
       return initialValue;
-    }).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile3Path).io( function( obj ) {
+    })
+    .io( function( obj ) {
           expect(obj).to.eql(initialValue);
           obj.msg = "this value is not written."
           //return obj
-        }).exec();
-      },
-      100
-    );
-
-    setTimeout(
-      function(){
-        jf.filed( testFile3Path).io( function( obj ) {
-          expect(obj).to.eql(initialValue);
-          done();
-        }).exec();
-      },
-      200
-    );
+    })
+    .pass( (obj) => {
+      expect(obj).to.eql(initialValue);
+      done();
+    })
+    .exec();
 
   });
 });
