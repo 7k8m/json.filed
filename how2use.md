@@ -41,5 +41,5 @@ Result :
     {"msg":"good after noon"}
 
 
-* [More examples ...](./examples.md)
-* [Reference ...](/reference.md)
+[More examples ...](./examples.md)<br/>
+[Reference ...](/reference.md)
