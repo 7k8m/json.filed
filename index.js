@@ -355,7 +355,8 @@ function createDownloadPlan( executer ){
     function( url, filePath ){
       let thisPlan = this;
       jf
-      .filed( filePath )
+      .filed( filePath,
+              err => { executer.emit( err ) } )
       .calledback(
         function( file, object, callback ){
         request(
@@ -371,7 +372,8 @@ function createDownloadPlan( executer ){
                 executer.emit('error', error);
             }
           });
-        }
+        },
+        err => { executer.emit( err ) }
       )
       .pass(
         function(json, filePath ){
@@ -379,7 +381,8 @@ function createDownloadPlan( executer ){
           for( let jsonFile of array ){
             thisPlan.next()._executeFunction( jsonFile );
           }
-        }
+        },
+        err => { executer.emit( err ) } 
       ).exec();
     }
   );
