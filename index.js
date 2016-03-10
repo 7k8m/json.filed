@@ -201,18 +201,18 @@ function collectPlan( executer )
 
 function runtimeInformation(){
 
-  let jsonFilesInProcess = new Map();
+  let jsonFilesInProgress = new Map();
 
   this.addJsonFile =
     function( jsonFile ){
-      jsonFilesInProcess.set(jsonFile, {} );
+      jsonFilesInProgress.set(jsonFile, {} );
     }
 
   this.removeJsonFile =
     function ( jsonFile ){
-      jsonFilesInProcess.delete( jsonFile );
+      jsonFilesInProgress.delete( jsonFile );
       // to run collect when filesInProgress empty
-      if( jsonFilesInProcess.size == 0 ) {
+      if( jsonFilesInProgress.size == 0 ) {
         this.emit( 'empty' );
       }
 
@@ -220,12 +220,12 @@ function runtimeInformation(){
 
   this.resetJsonFile =
     function ( jsonFile ){
-      jsonFilesInProcess.clear();
-      jsonFilesInProcess.set( jsonFile );
+      jsonFilesInProgress.clear();
+      jsonFilesInProgress.set( jsonFile );
     }
 
   this.countInProgress =
-    function() { return jsonFilesInProcess.size; }
+    function() { return jsonFilesInProgress.size; }
 
 }
 
