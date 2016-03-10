@@ -28,4 +28,5 @@ mocha test/unit/writeonlyJson.js
 mocha test/unit/readonlyJson.js
 mocha test/unit/testCollect.js
 mocha test/unit/testCollect_more.js
+mocha test/unit/testRoots.js
 test/tools/rmTestJsonFile.ps1
