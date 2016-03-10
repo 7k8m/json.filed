@@ -182,7 +182,7 @@ function collectPlan( executer )
     // In both cases call to collectedAll is done via event of runtime.
     // So then,
     // register as listner to runtime here in collectJsonFile results
-    // judged *not collectedAll* ,when less than one file was collected.
+    // judged *not collectedAll* , when less than one file was collected.
     if( collectedFiles.size == 0 ){
       this.runtime.once( 'empty', function() { collectedAll(); } );
     }
@@ -396,11 +396,6 @@ function createDownloadPlan( executer ){
 
     function(){
       let thisPlan = this;
-
-      /*
-      file path as string is conflicted with file path JSONFile here....
-      More over, to realize collect executer, file path must be fixed before runtime...
-      */
 
       for( let fixedFile of thisPlan.fixedFiles){
 
