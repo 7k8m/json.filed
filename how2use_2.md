@@ -58,8 +58,9 @@ jf.download( ... )
 .pass( ... ).exec();
  ```
 Chain 1 consists from download and pass executer.<br/>
-download executer downloads JSON of search result to file and <br/>
-pass executer just passes itself and invoke chain2 to work inside `for` loop.
+download executer downloads JSON and <br/>
+pass executer just passes and do nothing special itself <br/>
+and invoke chain2 inside `for` loop.
 
 
 ### Chain 2
@@ -70,13 +71,13 @@ pass executer just passes itself and invoke chain2 to work inside `for` loop.
     .exec(); ...
 ````
 Inner Chain 2 consists from filed and write executer.<br/>
-Here filed executer specifies file path for item.<br/>
-write executer write item JSON to file.
+Here filed executer specifies file path for each item.<br/>
+write executer write JSON of each item to the file.
 
 ### exec ...?
 You see `.exec()` in both executer chains.<br/>
 Execution of chain started after `.exec()` function is called.<br/>
-Without `.exec()`, chain of executers is just construted, and not executed yet.<br/>
+Without `.exec()`, chain of executers is just construted and not executed.<br/>
 So please do not forget to call `.exec()`.😉
 
 [More examples ...](./examples.md)<br/>
