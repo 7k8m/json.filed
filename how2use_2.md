@@ -27,7 +27,7 @@ jf.download(
 Above script downloads JSON of search result from github to `search_result.json`.<br/>
 And next, write item in the result to `<id>_<name>.json` file.<br/>
 
-Result of script is as shown next.
+Result of script is shown as next.
 ````
 $ node search_repositories.js 
 $ ls *.json
