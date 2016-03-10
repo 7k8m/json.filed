@@ -40,5 +40,5 @@ Result :
     $ cat data.json
     {"msg":"good after noon"}
 
-[Too easy for you ? Read another ariticle 👍](./how2use_2.md)<br/>
+[Too easy for you ? Proceed next ariticle 👍](./how2use_2.md)<br/>
 [Reference ...](/reference.md)
