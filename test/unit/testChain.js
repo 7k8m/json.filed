@@ -36,17 +36,11 @@ describe('Value last chained IO function returned', function () {
       function( obj, filePath){
         return test2_2Value;
       }
-    ).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile2Path ).io( function( obj ) {
-          expect(obj).to.eql(test2_2Value);
-          done();
-        }).exec();
-      },
-      100);
-
+    ).pass(
+      function( obj ) {
+        expect(obj).to.eql(test2_2Value);
+        done();
+      }).exec();
   });
 });
 
