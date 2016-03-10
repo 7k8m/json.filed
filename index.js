@@ -238,7 +238,7 @@ function filedExecuter( file ){
 
   this.rootExec =
     function(executePlan){
-      executePlan._executeFunction( file )
+      executePlan._executeFunction()
     };
 
   this.file = () => file;
@@ -257,7 +257,7 @@ function downloadExecuter( url, file ){
 
   this.rootExec =
     function( executePlan ){
-      executePlan._executeFunction( url );
+      executePlan._executeFunction();
     };
 
   this.url = () => url;
@@ -266,7 +266,7 @@ function downloadExecuter( url, file ){
 };
 
 
-function rootsExecuter( rootExecuters ){
+function rootsExecuter( executers ){
 
   executer.call( this, null );
 
@@ -274,9 +274,10 @@ function rootsExecuter( rootExecuters ){
 
   this.rootExec =
     function( executePlan ){
-      executePlan._executeFunction( rootExecuters );
+      executePlan._executeFunction();
     };
 
+  this.executers = () => executers;
 
 };
 
@@ -434,7 +435,9 @@ function createDownloadPlan( executer ){
 function createRootsPlan( rootsExecuter ){
   return new executePlan(
 
-    function( executers ){
+    function(){
+
+      let executers = rootsExecuter.executers();
 
       let plans =
         Array.from( executers, createPlan);
