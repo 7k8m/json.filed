@@ -27,18 +27,13 @@ describe('The updated value', function () {
   it('should be read again as updated.', function (done) {
     jf.filed( testFile2Path ).io( function( obj ) {
       return updatedValue;
-    }).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile2Path ).io( function( obj ) {
-          expect(obj).to.eql(updatedValue);
-          done();
-        }).exec();
-      },
-      100);
     })
-
+    .pass(
+      function( obj ) {
+        expect(obj).to.eql(updatedValue);
+        done();
+    }).exec();
+  });
 });
 
 const testFile3Path = './' + Math.random() + '.bson';
