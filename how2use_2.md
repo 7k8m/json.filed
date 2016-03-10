@@ -59,7 +59,7 @@ jf.download( ... )
  ```
 Chain 1 consists from download and pass executer.<br/>
 download executer downloads JSON and <br/>
-pass executer just passes and do nothing special itself <br/>
+pass executer do nothing identical itself <br/>
 and invoke chain2 inside `for` loop.
 
 
