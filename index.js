@@ -438,24 +438,20 @@ function createDownloadPlan( executer ){
 }
 
 function createRootsPlan( rootsExecuter ){
-  return new executePlan(
+
+  let executers = rootsExecuter.executers();
+  let plans =
+    Array.from( executers, createPlan );
+
+  let rootsPlan =  new executePlan(
 
     function(){
 
-      let executers = rootsExecuter.executers();
-
-      let plans =
-        Array.from( executers, createPlan);
-
-      plans.forEach(
-        plan => {
-          plan.fixedFiles.forEach(
-            this.runtime.addJsonFile
-          );
-        }
+      this.fixedFiles.forEach(
+        this.runtime.addJsonFile
       );
 
-      for( let plan of plans){
+      for( let plan of plans ){
 
         plan._nextPlan = this._nextPlan;
         plan.runtime = this.runtime;
@@ -465,6 +461,19 @@ function createRootsPlan( rootsExecuter ){
       }
     }
   );
+
+  //fix files for rootsPlan
+  var files = [];
+  plans.forEach(
+    plan =>{
+      files = files.concat( plan.fixedFiles );
+    }
+  );
+
+  rootsPlan.fixedFiles = files;
+
+  return rootsPlan;
+
 }
 
 
