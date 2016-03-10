@@ -24,12 +24,35 @@ jf.download(
   }
 ).exec();
 ````
-Above script downloads JSON of search result from github to `search_result.json`.
-And next, write item in the result to `<id>_<name>.json` file.
+Above script downloads JSON of search result from github to `search_result.json`.<br/>
+And next, write item in the result to `<id>_<name>.json` file.<br/>
+
+Result of script is as shown next.
+````
+$ node search_repositories.js 
+$ ls *.json
+12029945_stream-json.json
+12604449_node-jsondir.json
+13601258_node-json-file.json
+16096720_node-xls-json.json
+1831382_ministore.json
+20915670_node-comment-json.json
+21762296_node-json-db.json
+26674028_local-json.json
+26928518_npm-license-crawler.json
+27892419_firebase-streaming-import.json
+3252428_What-is-the-package.json-file.json
+          <snip>
+9364014_three-obj.json
+976241_node_spreadsheet.json
+search_result.json
+````
+
+## Comments
 
 The script has structure of nested chain of executers.
 
-## Chain 1
+### Chain 1
  ```
 jf.download( ... )
 .pass( ... ).exec();
@@ -39,7 +62,7 @@ download executer downloads JSON of search result to file and <br/>
 pass executer just passes itself and invoke chain2 to work inside `for` loop.
 
 
-## Chain 2
+### Chain 2
 ````
 ... jf
     .filed( ...)
@@ -50,7 +73,7 @@ Inner Chain 2 consists from filed and write executer.<br/>
 Here filed executer specifies file path for item.<br/>
 write executer write item JSON to file.
 
-## exec ...?
+### exec ...?
 You see `.exec()` in both executer chains.<br/>
 Execution of chain started after `.exec()` function is called.<br/>
 Without `.exec()`, chain of executers is just construted, and not executed yet.<br/>
