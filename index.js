@@ -175,14 +175,20 @@ function collectPlan( executer )
 
   let collectJsonFile = function( fileThisTime ){
 
+    // Elaborate logic here.
+    // Above function collectedAll is called
+    // both when all files are collected by collectJsonFile and
+    // when all remained files are filtered out.
+    // In both cases call to collectedAll is done via event of runtime.
+    // So then,
+    // register as listner to runtime here in collectJsonFile results
+    // judged *not collectedAll* ,when less than one file was collected.
     if( collectedFiles.size == 0 ){
       this.runtime.once( 'empty', function() { collectedAll(); } );
     }
 
-    if( fileThisTime != null ){
-      collectedFiles.set( fileThisTime.path() );
-      this.runtime.removeJsonFile( fileThisTime );
-    }
+    collectedFiles.set( fileThisTime.path() );
+    this.runtime.removeJsonFile( fileThisTime );
 
   }
 
