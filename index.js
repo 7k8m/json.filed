@@ -88,25 +88,29 @@ function executer( parent ){
    let root = executorStack.pop();
    let rootPlan = createPlan( root );
 
-   var executor = root;
-   var plan = rootPlan;
+   if( rootPlan != null ){
 
-   executor = executorStack.pop();
+     var executor = root;
+     var plan = rootPlan;
 
-   while( executor != null ){
-     plan.runtime = runtime;
-     plan._nextPlan = createPlan( executor );
-     plan = plan._nextPlan;
      executor = executorStack.pop();
-   };
 
-   plan.runtime = runtime;
-   plan._nextPlan = new notexecPlan();
-   plan._nextPlan.runtime = runtime;
+     while( executor != null ){
+       plan.runtime = runtime;
+       plan._nextPlan = createPlan( executor );
+       plan = plan._nextPlan;
+       executor = executorStack.pop();
+     };
 
-   root.rootExec( rootPlan );
+     plan.runtime = runtime;
+     plan._nextPlan = new notexecPlan();
+     plan._nextPlan.runtime = runtime;
 
-  };
+     root.rootExec( rootPlan );
+
+    };
+
+  }
 
 }
 
@@ -375,7 +379,7 @@ function createFilePlanCore( executeForFileFunction, executer ){
 
   } else {
     raiseError( executer, "File must not be null", null);
-    return new notexecPlan();
+    return null;
   }
 
 }
