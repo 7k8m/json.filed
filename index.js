@@ -477,6 +477,12 @@ function createRootsPlan( rootsExecuter ){
 }
 
 
+//
+// basically files to process is fixed in execution plan.
+// So executePlan of filed, newFile, download have a property of 'fixedFiles'.
+//
+// exceptional case is for copy/link.
+// in those cases, files to process are added in runtime.
 function fixFiles( file, executer){
   try{
     if ( typeof file == 'string' ){
