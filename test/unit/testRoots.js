@@ -24,8 +24,9 @@ describe('Roots executer ', function () {
 
     jf.roots(
       [ jf.filed( testFilePath ),
-        jf.filed( testFile2Path ),
-        jf.newFile( testFile3Path ),
+        jf.roots(
+          [ jf.filed( testFile2Path ),
+            jf.newFile( testFile3Path ) ] ),
         jf.download( 'http://localhost:8080/', testFile4Path) ],
       ( err ) => { console.log( err ) }
     )
