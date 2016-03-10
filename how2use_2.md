@@ -1,4 +1,4 @@
-# search repositories Example
+# search repositories example
 ````
 'use strict';
 var jf = require('json.filed');
