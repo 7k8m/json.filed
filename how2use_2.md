@@ -50,16 +50,18 @@ search_result.json
 
 ## Comments
 
-The script has structure of nested chain of executers.
+The script has structure of nested *chain of executers*.
 
 ### Chain 1
  ```
 jf.download( ... )
 .pass( ... ).exec();
  ```
-Chain 1 consists from download and pass executer.<br/>
-download executer downloads JSON and <br/>
-pass executer do nothing identical itself <br/>
+Above part is chain 1.<br/>
+Chain 1 consists from download and pass *executer*.<br/>
+Calling responding json.filed function constructs executer and they are chained in the called order.<br/> 
+*download executer* downloads JSON and <br/>
+*pass executer* do nothing identical itself <br/>
 and invoke chain2 inside `for` loop.
 
 
@@ -70,9 +72,10 @@ and invoke chain2 inside `for` loop.
     .write( ... )
     .exec(); ...
 ````
-Inner Chain 2 consists from filed and write executer.<br/>
-Here filed executer specifies file path for each item.<br/>
-write executer write JSON of each item to the file.
+Above part is chain 2.<br/>
+Chain 2 consists from filed and write executer.<br/>
+Here *filed executer* specifies file path for each item.<br/>
+*write executer* writes JSON of each item to the file.
 
 ### exec ...?
 You see `.exec()` in both executer chains.<br/>
