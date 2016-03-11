@@ -785,57 +785,71 @@ function output( filePath, userProcess, jb, nextPlan ){
     saveAfterApply);
 }
 
+
 function ioCore( filePath, userProcess, jb, nextPlan, afterApply){
+
   process(
     filePath,
     userProcess,
     jb,
     nextPlan,
     afterApply,
-    function(){
-      //file to read does not exists.
-      //create file with initial value and process json.
-      fs.open(
-        filePath.path(),
-        'w',
-        (err,fd) => {
+    createWithInitial
+  );
 
-          if(err) {
-            raiseError( userProcess._plannedExecuter, 'IOError Failed to create file.') ;
-          } else {
-            //save to file and apply process.
-            save(
-              initialValue,
-              fd,
-              function(){
-                  //apply process
-                  apply(
-                    userProcess,
-                    initialValue,
-                    fd,
-                    function(afterCloseProcess){// close descriptor.
-                      fs.close(
-                        fd,
-                        function(err){
-                          if(err) raiseError( userProcess._plannedExecuter, "io:failsed to close file");
-                          else afterCloseProcess();
-                        }
-                      );
-                    },
-                    jb,
-                    filePath,
-                    afterApply,
-                    nextPlan
-                  );
-              },
-              jb
-            );
-          }
+  // called from above.
+  function createWithInitial () {
+    //file to read does not exists.
+    //create file with initial value and process json.
+    fs.open(
+      filePath.path(),
+      'w',
+      (err,fd) => {
+
+        if(err) {
+          raiseError( userProcess._plannedExecuter, 'IOError Failed to create file.') ;
+        } else {
+          saveAndContinue( fd );
+        }
+      }
+    );
+  };
+
+  //called from above.
+  function saveAndContinue( fd ){ //save to file and apply process.
+    save(
+      initialValue,
+      fd,
+      applyUserProcessAndContinue,
+      jb
+    );
+
+    //called from above
+    function applyUserProcessAndContinue(){
+      //apply process
+      apply(
+        userProcess,
+        initialValue,
+        fd,
+        closeAndContinue,
+        jb,
+        filePath,
+        afterApply,
+        nextPlan
+      );
+    };
+
+    //called from above
+    function closeAndContinue(afterCloseProcess){// close descriptor.
+      fs.close(
+        fd,
+        function(err){
+          if(err) raiseError( userProcess._plannedExecuter, "io:failsed to close file");
+          else afterCloseProcess();
         }
       );
     }
-  );
-
+  }
 }
 
 function link( filePath, userProcess, jb, nextPlan ){
