@@ -2,7 +2,8 @@
 
 var jf = require('../../'),
     expect    = require('chai').expect,
-    fs = require('fs');
+    fs = require('fs'),
+    path = require( 'path' );
 
 const testFilePath = './' + Math.random() + '.json';
 
@@ -19,19 +20,19 @@ describe('Chained IO function', function () {
       }
     ).io(
       function( obj, filePath){
-          expect( filePath ).to.eql( testFilePath );
+          expect( filePath ).to.eql( path.resolve( testFilePath ) );
           expect( obj ).to.eql( testValue );
           return test2Value;
       }
     ).io(
       function( obj, filePath){
-        expect( filePath ).to.eql( testFilePath );
+        expect( filePath ).to.eql( path.resolve( testFilePath ) );
         expect( obj ).to.eql( test2Value );
         return test3Value;
       }
     ).io(
       function( obj, filePath){
-        expect( filePath ).to.eql( testFilePath );
+        expect( filePath ).to.eql( path.resolve( testFilePath ) );
         expect( obj ).to.eql( test3Value );
       }
     ).pass(

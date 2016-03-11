@@ -2,7 +2,8 @@
 
 var jf = require('../../'),
     expect    = require('chai').expect,
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 const testFilePath0 = './' + Math.random() + '.json';
 var testValue0 = { msg: "test value of 0" };
@@ -19,7 +20,7 @@ describe('Pass function', function () {
         jf.filed( testFilePath0 )
         .pass(
           function(obj, filePath){
-            expect( filePath ).to.eql( testFilePath0 );
+            expect( filePath ).to.eql( path.resolve( testFilePath0 ) );
             expect( obj ).to.eql( testValue0 );
             done();
           }
@@ -40,7 +41,7 @@ describe('Pass function', function () {
       }
     ).pass(
       function(obj, filePath){
-          expect( filePath ).to.eql( testFilePath1 );
+          expect( filePath ).to.eql( path.resolve( testFilePath1 ) );
           expect( obj ).to.eql( testValue1 );
           done();
       }
@@ -66,7 +67,10 @@ describe('Pass IO function', function () {
     setTimeout(
       function(){
 
-        const fileMap = new Map([[testFilePath2,true], [testFilePath2_1,true],[testFilePath2_2,true]]);
+        const fileMap =
+          new Map([ [path.resolve( testFilePath2 ),true],
+                    [path.resolve( testFilePath2_1 ),true],
+                    [path.resolve( testFilePath2_2 ),true]]);
 
         jf.filed( testFilePath2 ).link(
           function( obj, filePath) {
@@ -95,12 +99,12 @@ describe('Pass function', function () {
       }
     ).pass(
       function(obj, filePath){
-          expect( filePath ).to.eql( testFilePath3 );
+          expect( filePath ).to.eql( path.resolve( testFilePath3 ) );
           expect( obj ).to.eql( testValue3 );
       }
     ).pass(
       function(obj, filePath){
-          expect( filePath ).to.eql( testFilePath3 );
+          expect( filePath ).to.eql( path.resolve( testFilePath3 ) );
           expect( obj ).to.eql( testValue3 );
           done();
       }
@@ -118,12 +122,12 @@ describe('Pass function', function () {
       }
     ).pass(
       function(obj, filePath){
-          expect( filePath ).to.eql( testFilePath4 );
+          expect( filePath ).to.eql( path.resolve( testFilePath4 ) );
           expect( obj ).to.eql( testValue4 );
       }
     ).io(
       function(obj, filePath){
-          expect( filePath ).to.eql( testFilePath4 );
+          expect( filePath ).to.eql( path.resolve( testFilePath4 ) );
           expect( obj ).to.eql( testValue4 );
           done();
       }
@@ -142,12 +146,12 @@ describe('Pass function', function () {
       }
     ).pass(
       function(obj, filePath){
-          expect( filePath ).to.eql( testFilePath5 );
+          expect( filePath ).to.eql( path.resolve( testFilePath5 ) );
           expect( obj ).to.eql( testValue5 );
       }
     ).link(
       function(obj, filePath){
-          expect( filePath ).to.eql( testFilePath5 );
+          expect( filePath ).to.eql( path.resolve( testFilePath5 ) );
           expect( obj ).to.eql( testValue5 );
           done();
       }

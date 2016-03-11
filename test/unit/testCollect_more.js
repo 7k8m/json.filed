@@ -2,7 +2,8 @@
 
 var jf = require('../../'),
     expect    = require('chai').expect,
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 const onlyCollectedFilePath = './' + Math.random() + '_.json';
 const testFilePath =
@@ -25,11 +26,11 @@ describe('Collect function', function () {
         return { file: filePath };
       }
     )
-    .filter( obj => obj.file == onlyCollectedFilePath )
+    .filter( obj => obj.file == path.resolve( onlyCollectedFilePath ) )
     .collect(
       function(obj){
         expect( obj.length ).to.be.equal(1);
-        expect(obj[0].file).to.be.equal(onlyCollectedFilePath);
+        expect(obj[0].file).to.be.equal( path.resolve ( onlyCollectedFilePath ) );
         done();
       },
       collectedToFilePath,

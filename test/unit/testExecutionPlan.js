@@ -1,7 +1,8 @@
 'use strict';
 
 var jf = require('../../'),
-    expect    = require('chai').expect;
+    expect    = require('chai').expect,
+    path = require('path');
 
 const testFilePath = './' + Math.random() + '.json';
 
@@ -19,7 +20,7 @@ describe('Chained operation ', function () {
         let rootPart =
           jf.filed( testFilePath )
           .copy( function(){ return './' + Math.random() + '.json'; }, function( err ){ console.log(err) } )
-          .filter( ( obj, filePath ) => filePath != testFilePath );
+          .filter( ( obj, filePath ) => filePath != path.resolve( testFilePath ) );
 
         rootPart
         .io( function( obj, filePath ) { return testValue1; } )

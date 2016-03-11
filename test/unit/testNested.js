@@ -2,7 +2,8 @@
 
 var jf = require('../../'),
     expect    = require('chai').expect,
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 const testPath_1 = './' + Math.random() + '.json';
 const testPath_2 = './' + Math.random() + '.json';
@@ -19,33 +20,29 @@ describe('Nested IO functions ', function () {
       }
     ).io(
       function( obj, filePath){
-          expect( filePath ).to.eql( testPath_1 );
-          expect( obj ).to.eql( testValue_1 );
+        expect( filePath ).to.eql( path.resolve( testPath_1 ) );
+        expect( obj ).to.eql( testValue_1 );
 
-          jf.filed( testPath_2 ).io(
-            function(){
-              return obj;
-            }
-          ).exec();
+        jf.filed( testPath_2 ).io(
+          function(){
+            return obj;
+          }
+        ).pass(
+          function(){
+          jf.filed( testPath_1 )
+          .io( function() { return testValue_2 } )
+          .pass(
+          function(){
+            jf.filed( testPath_1 ).io( function( o1 ) {
+              expect( o1 ).to.eql( testValue_2 );
 
-          return testValue_2;
-
-      }
-    ).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testPath_1 ).io( function( o1 ) {
-          expect( o1 ).to.eql( testValue_2 );
-
-          jf.filed( testPath_2 ).io( function ( o2 ){
-            expect( o2 ).to.eql( testValue_1 );
-            done();
+              jf.filed( testPath_2 ).io( function ( o2 ){
+                expect( o2 ).to.eql( testValue_1 );
+                done();
+              }).exec();
+            }).exec();
           }).exec();
-
         }).exec();
-      },
-      100);
-
+      }).exec();
   });
 });

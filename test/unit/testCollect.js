@@ -2,7 +2,8 @@
 
 var jf = require('../../'),
     expect    = require('chai').expect,
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 const testFilePath = './' + Math.random() + '.json';
 const testFile2Path = './' + Math.random() + '.json';
@@ -35,11 +36,11 @@ describe('Collect function', function () {
       expect( obj.length ).to.be.equal(3);
 
       expect(
-        obj[0].file == testFilePath ||
-        obj[0].file == testFile2Path ).to.be.equal( true );
+        obj[0].file == path.resolve( testFilePath ) ||
+        obj[0].file == path.resolve( testFile2Path ) ).to.be.equal( true );
       expect(
-        obj[1].file == testFilePath ||
-        obj[1].file == testFile2Path ).to.be.equal( true );
+        obj[1].file == path.resolve( testFilePath ) ||
+        obj[1].file == path.resolve( testFile2Path ) ).to.be.equal( true );
 
       expect( obj[0].file != obj[1].file ).to.be.equal(true);
 
@@ -47,13 +48,13 @@ describe('Collect function', function () {
 
       jf
       .filed( testFilePath )
-      .pass( obj =>{ expect(obj.file).to.be.equal( testFilePath ) } )
+      .pass( obj =>{ expect(obj.file).to.be.equal( path.resolve( testFilePath ) ) } )
       .pass( () => {
         jf
         .filed( testFile2Path )
         .pass(
           obj => {
-            expect(obj.file).to.be.equal( testFile2Path )
+            expect(obj.file).to.be.equal( path.resolve( testFile2Path ) )
             done();
           } )
         .exec();

@@ -2,7 +2,8 @@
 
 var jf = require('../../'),
     expect    = require('chai').expect,
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 const testFilePath = './' + Math.random() + '.json';
 var testValue = { msg: "value from previous IO." };
@@ -14,7 +15,7 @@ describe('Chained IO function', function () {
       }
     ).io(
       function(obj, filePath){
-          expect( filePath ).to.eql( testFilePath );
+          expect( filePath ).to.eql( path.resolve(testFilePath) );
           expect( obj ).to.eql( testValue );
           done();
       }
@@ -57,7 +58,7 @@ describe('Chained link function', function () {
       }
     ).link(
       function(obj, filePath){
-          expect( filePath ).to.eql( testFile3Path );
+          expect( filePath ).to.eql( path.resolve(testFile3Path) );
           expect( obj ).to.eql( test3Value );
           done();
       }
@@ -112,8 +113,8 @@ describe('Value received by link proces in 1st', function () {
           return testFile5_2Path;
 
         }).io(function(obj, filePath){
-          expect( filePath == testFile5_1Path ||
-                  filePath == testFile5_2Path).to.eql( true );
+          expect( filePath == path.resolve( testFile5_1Path ) ||
+                  filePath == path.resolve( testFile5_2Path ) ).to.eql( true );
           expect(obj).to.eql(test5Value);
           count ++;
 
@@ -140,7 +141,7 @@ describe('Link process which does not link any', function () {
       function(　object, filePath, callback　) {
         jf.filed( testFile6Path )
         .link( function( obj, filePath) {
-          expect(filePath).to.eql(testFile6Path);
+          expect( filePath).to.eql( path.resolve( testFile6Path ) );
           expect(obj).to.eql(test6Value);
 
           callback();
@@ -148,7 +149,7 @@ describe('Link process which does not link any', function () {
           return null;
 
         }).io(function(obj, filePath){
-          expect(filePath).to.equal(testFile6Path);
+          expect(filePath).to.equal( path.resolve( testFile6Path ) );
           count ++; //If test goes right, not executed.
 
         }).exec();

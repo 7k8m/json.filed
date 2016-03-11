@@ -2,7 +2,8 @@
 
 var jf = require('../../'),
     expect    = require('chai').expect,
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 const testFilePath = './' + Math.random() + '.json';
 const testFile2Path = './' + Math.random() + '.json';

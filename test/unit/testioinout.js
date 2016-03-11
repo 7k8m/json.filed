@@ -2,7 +2,8 @@
 
 var jf = require('../../'),
     expect    = require('chai').expect,
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 const testFilePath = './' + Math.random() + '.json';
 const testFile2Path = './' + Math.random() + '.json';
@@ -17,7 +18,7 @@ describe('in and out ', function () {
     .filed( testFilePath )
     .out( testValue )
     .pass( ( obj, filePath ) => { expect(obj).to.eql(testValue) } )
-    .out( ( filePath ) => { expect(filePath).to.eql(testFilePath) } )
+    .out( ( filePath ) => { expect(filePath).to.eql(path.resolve( testFilePath ) ) } )
     .in( { msg: "ignored." } )
     .pass((obj, filePath ) => { expect(obj).to.eql(testValue)})
     .write( testValue2 )
