@@ -914,7 +914,6 @@ function process(
     filePath.path(),
     'r',
     (err,fd) => {
-
       if( ! err ){
         //file exists.
         readAndContinue( fd );
