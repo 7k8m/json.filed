@@ -921,67 +921,90 @@ function process(
 
       if( ! err ){
         //file exists.
-
-        //read from file and process
-        fs.readFile(
-          fd,
-          encoding(jb),
-          (err, data) => {
-
-            if (err) {
-              raiseError( userProcess._plannedExecuter, 'IOError Failed to read file.', err);
-              fs.close(fd,function (err) {
-                if(err) raiseError( userProcess._plannedExecuter, 'IOError Failed to close file in a error handling.', err);
-              });
-
-            }else{
-              fs.close(
-                fd,
-                function(err){
-                  if(err) {
-                    raiseError( userProcess._plannedExecuter, 'IOError Failed to close file', err);
-                  }else{
-                    apply(
-                      userProcess,
-                      decode( data, jb),
-                      filePath,
-                      function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
-                      jb,
-                      filePath,
-                      jfProcess,
-                      nextPlan
-                      );
-                  }
-                }
-              );
-            }
-          }
-        );
+        readAndContinue( fd );
       }else{
-        //file not exists.
-        if (err.code == 'ENOENT') fileCreationProcess();
-        else if(
-          userProcess._plannedExecuter instanceof outExecuter &&
-          err.code == 'EACCES' ) {
-            //case for write executer with write permission only allowed file
-              apply(
-                userProcess,
-                null,
-                filePath,
-                function(afterCloseProcess){// No need to close filePath but afterClosProcess needed.
-                  afterCloseProcess();
-                },
-                jb,
-                filePath,
-                jfProcess,
-                nextPlan
-              );
-          }
-        else raiseError( userProcess._plannedExecuter, 'File open error', err);
-
+        whenOpenError( err );
       }
     }
   );
+
+  function readAndContinue( fd ){
+    //read from file and process
+    fs.readFile(
+      fd,
+      encoding(jb),
+      (err, data) => {
+
+        if (err) {
+          raiseError(
+            userProcess._plannedExecuter,
+            'IOError Failed to read file.',
+            err);
+          fs.close(fd,
+            function (err) {
+              if(err) {
+                raiseError(
+                  userProcess._plannedExecuter,
+                  'IOError Failed to close file in a error handling.',
+                  err);
+              }
+            }
+          );
+        }else{
+          closeAndContinue( fd, data );
+        }
+      }
+    );
+  }
+
+  function closeAndContinue( fd, data ){
+    fs.close(
+      fd,
+      function( err ){
+        if( err ) {
+          raiseError(
+            userProcess._plannedExecuter,
+            'IOError Failed to close file',
+            err);
+        }else{
+          applyUserFunction( decode( data, jb) );
+        }
+      }
+    );
+  }
+
+  function applyUserFunction ( json ) {
+    apply(
+      userProcess,
+      json ,
+      filePath,
+      function( afterCloseProcess ){ afterCloseProcess() }, // closed already and no need to close, but need to call chained process
+      jb,
+      filePath,
+      jfProcess,
+      nextPlan
+      );
+  }
+
+  function whenOpenError( err ){
+    //file not exists.
+    if (err.code == 'ENOENT') {
+      fileCreationProcess();
+
+    } else if( userProcess._plannedExecuter instanceof outExecuter &&
+               err.code == 'EACCES' ) {
+        //case for write executer with write permission only allowed file
+        applyUserFunction( null );
+
+    } else {
+      raiseError(
+        userProcess._plannedExecuter,
+        'File open error',
+        err);
+
+    }
+  }
+
 }
 
 
