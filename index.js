@@ -895,10 +895,6 @@ function calledback( filePath, userProcess, jb, nextPlan ){
   );
 }
 
-function collect( filePath, userProcess, jb, nextPlan ){
-
-}
-
 function httpServe( filePath, userProcess, jb, nextPlan ){
   process(filePath, userProcess, jb, nextPlan, httpServePostProcess,
     raiseFileNotFoundErrorFunction( userProcess._plannedExecuter)
