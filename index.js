@@ -930,22 +930,8 @@ function process(
       fd,
       encoding(jb),
       (err, data) => {
-
         if (err) {
-          raiseError(
-            userProcess._plannedExecuter,
-            'IOError Failed to read file.',
-            err);
-          fs.close(fd,
-            function (err) {
-              if(err) {
-                raiseError(
-                  userProcess._plannedExecuter,
-                  'IOError Failed to close file in a error handling.',
-                  err);
-              }
-            }
-          );
+          failedtoRead( err );
         }else{
           closeAndContinue( fd, data );
         }
@@ -958,10 +944,7 @@ function process(
       fd,
       function( err ){
         if( err ) {
-          raiseError(
-            userProcess._plannedExecuter,
-            'IOError Failed to close file',
-            err);
+          failedToClose( err );
         }else{
           applyUserFunction( decode( data, jb) );
         }
@@ -982,6 +965,28 @@ function process(
       );
   }
 
+  function failedToRead( err ){
+    raiseError(
+      userProcess._plannedExecuter,
+      'IOError Failed to read file.',
+      err);
+    fs.close(fd,
+      function (err) {
+        if(err) {
+          failedToClose( err );
+        }
+      }
+    );
+  }
+
+  function failedToClose(err){
+    raiseError(
+      userProcess._plannedExecuter,
+      'IOError Failed to close file',
+      err
+    );
+  }
+
   function whenOpenError( err ){
     //file not exists.
     if (err.code == 'ENOENT') {
@@ -989,18 +994,16 @@ function process(
 
     } else if( userProcess._plannedExecuter instanceof outExecuter &&
                err.code == 'EACCES' ) {
-        //case for write executer with write permission only allowed file
-        applyUserFunction( null );
+      //case for write executer with write permission only allowed file
+      applyUserFunction( null );
 
     } else {
       raiseError(
         userProcess._plannedExecuter,
         'File open error',
-        err);
-
+        err );
     }
   }
-
 }
 
 
