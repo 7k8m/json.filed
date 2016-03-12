@@ -220,32 +220,20 @@ const testFile9LinkedPath_2 = './' + Math.random() + '.json';
 
 describe('linked files ', function () {
   it('should have same values', function (done) {
+    var count = 0;
     jf.filed( testFile9Path ).io(
         function( obj, filePath ) {
           return { msg:  test9msg };
         }
-      ).exec();
-
-    setTimeout(
-      function(){
-        jf.filed( testFile9Path ).link( function( obj, filePath ) {
-          return [ testFile9LinkedPath_1, testFile9LinkedPath_2 ];
-        }).exec();
-      },
-      100);
-
-    var count = 0;
-    setTimeout(
-      function(){
-        jf.filed( [testFile9LinkedPath_1, testFile9LinkedPath_2] ).io( function( obj, filePath ) {
-          expect( obj.msg ).to.eql( test9msg );
-          count ++;
-          if(count == 2) done();
-        }).exec();
-      },
-      200);
-    })
-
+    ).link( function( obj, filePath ) {
+        return [ testFile9LinkedPath_1, testFile9LinkedPath_2 ];
+      }
+    ).io( function( obj, filePath ) {
+        expect( obj.msg ).to.eql( test9msg );
+        count ++;
+        if(count == 3) done();
+    }).exec();
+  })
 });
 
 const testFile10Path = './' + Math.random() + '.json';
