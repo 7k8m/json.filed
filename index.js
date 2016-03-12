@@ -57,17 +57,17 @@ function executer( parent ){
 
  this.parent = parent;
 
- this.io = asChildExecuterFactory(executerFactoryFactory(ioExecuter, this ));
+ this.io = childExecuterFactory( ioExecuter, this );
  this.in = this.read =
-  asChildExecuterFactory(executerFactoryFactory(inExecuter, this ));
+  childExecuterFactory( inExecuter, this );
  this.out = this.write =
-  asChildExecuterFactory(executerFactoryFactory(outExecuter, this ));
- this.copy = asChildExecuterFactory(executerFactoryFactory(copyExecuter, this ));
- this.link = asChildExecuterFactory(executerFactoryFactory(linkExecuter, this ));
- this.pass = asChildExecuterFactory(executerFactoryFactory(passExecuter, this ));
- this.filter = asChildExecuterFactory(executerFactoryFactory(filterExecuter, this ));
- this.calledback = asChildExecuterFactory(executerFactoryFactory(calledbackExecuter, this ));
- this.httpServe = asChildExecuterFactory(executerFactoryFactory(httpServeExecuter, this ));
+  childExecuterFactory( outExecuter, this );
+ this.copy = childExecuterFactory( copyExecuter, this );
+ this.link = childExecuterFactory( linkExecuter, this );
+ this.pass = childExecuterFactory( passExecuter, this );
+ this.filter = childExecuterFactory( filterExecuter, this );
+ this.calledback = childExecuterFactory( calledbackExecuter, this );
+ this.httpServe = childExecuterFactory( httpServeExecuter, this );
  this.parallel = addParallelExecuterFunction( this );
  this.collect = addCollectExecuterFunction( this );
 
@@ -642,17 +642,13 @@ util.inherits( httpServeExecuter, childExecuter);
 util.inherits( parallelExecuter, calledbackExecuter);
 util.inherits( collectExecuter, executer);
 
-function executerFactoryFactory( classFunction, parent ){
-  return function(userProcess){ return new classFunction( userProcess, parent ) };
-}
-
-function asChildExecuterFactory( executerFactory ){
+function childExecuterFactory( classFunction, parent ){
 
   var f = function( userProcess, errListener ){ //function to create child executer.
 
     userProcess = sugarnize( userProcess );
 
-    let executer = executerFactory( userProcess );
+    let executer = new classFunction( userProcess, parent );
     userProcess._plannedExecuter = executer; //hack to emit error from userProcess by executer.
 
     if( errListener != null ){
@@ -670,7 +666,7 @@ function asChildExecuterFactory( executerFactory ){
 function addParallelExecuterFunction( parent ){
 
   let parallelExecuterFunction =
-    asChildExecuterFactory( executerFactoryFactory( parallelExecuter, parent) );
+    childExecuterFactory( parallelExecuter, parent );
 
   let f = function() { //executers1,executers2....,errListener
 
