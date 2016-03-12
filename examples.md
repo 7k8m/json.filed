@@ -233,6 +233,8 @@
     $ cat data3.json
     [{"msg":"world"},{"msg":"hello"}]
 
+## Use in electron
+[See this repository](https://github.com/7k8m/electron-quick-start)
 
 ## greeting.binary.js
     var jf = require('json.filed');
