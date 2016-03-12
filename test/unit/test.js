@@ -121,29 +121,28 @@ function * testFile6 () {
 describe('File parameter', function () {
   it('can be generator', function (done) {
 
+    var i = 0;
     jf.filed( testFile6() ).io(
         function( obj, filePath ) {
           return { path: filePath};
         }
-      ).exec();
+      ).pass(
+        function(){
+          jf.filed( testFile6() ).io(
+            function( obj, filePath ) {
 
-    var i = 0;
-    setTimeout(
-      function(){
-        jf.filed( testFile6() ).io(
-          function( obj, filePath ) {
+              expect(obj.path).to.eql( filePath );
+              i ++;
+              if(i == 2){
+                done();
+              }
 
-            expect(obj.path).to.eql( filePath );
-            i ++;
-            if(i == 2){
-              done();
             }
-
-          }).exec();
-      },
-      100);
-    })
-
+          ).exec();
+        }
+      )
+      .exec();
+    });
 });
 
 var testFilePath7_1 = './' + Math.random() + '.json';
@@ -152,29 +151,27 @@ var testFilePath7_2 = './' + Math.random() + '.json';
 describe('File parameter', function () {
   it('can be array', function (done) {
 
+    var i = 0;
     jf.filed( [testFilePath7_1,testFilePath7_2] ).io(
         function( obj, filePath ) {
           return { path: filePath};
         }
+
+      ).pass(
+        function(){
+          jf.filed( testFile6() ).io(
+            function( obj, filePath ) {
+
+              expect(obj.path).to.eql( filePath );
+              i ++;
+              if(i == 2){
+                done();
+              }
+
+            }).exec();
+        }
       ).exec();
-
-    var i = 0;
-    setTimeout(
-      function(){
-        jf.filed( testFile6() ).io(
-          function( obj, filePath ) {
-
-            expect(obj.path).to.eql( filePath );
-            i ++;
-            if(i == 2){
-              done();
-            }
-
-          }).exec();
-      },
-      100);
-    })
-
+    });
 });
 
 describe('File parameter', function () {
