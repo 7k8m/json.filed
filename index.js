@@ -57,17 +57,17 @@ function executer( parent ){
 
  this.parent = parent;
 
- this.io = addChildExecuterFunction(createExecuterFactory(ioExecuter, this ));
+ this.io = asChildExecuterFactory(executerFactoryFactory(ioExecuter, this ));
  this.in = this.read =
-  addChildExecuterFunction(createExecuterFactory(inExecuter, this ));
+  asChildExecuterFactory(executerFactoryFactory(inExecuter, this ));
  this.out = this.write =
-  addChildExecuterFunction(createExecuterFactory(outExecuter, this ));
- this.copy = addChildExecuterFunction(createExecuterFactory(copyExecuter, this ));
- this.link = addChildExecuterFunction(createExecuterFactory(linkExecuter, this ));
- this.pass = addChildExecuterFunction(createExecuterFactory(passExecuter, this ));
- this.filter = addChildExecuterFunction(createExecuterFactory(filterExecuter, this ));
- this.calledback = addChildExecuterFunction(createExecuterFactory(calledbackExecuter, this ));
- this.httpServe = addChildExecuterFunction(createExecuterFactory(httpServeExecuter, this ));
+  asChildExecuterFactory(executerFactoryFactory(outExecuter, this ));
+ this.copy = asChildExecuterFactory(executerFactoryFactory(copyExecuter, this ));
+ this.link = asChildExecuterFactory(executerFactoryFactory(linkExecuter, this ));
+ this.pass = asChildExecuterFactory(executerFactoryFactory(passExecuter, this ));
+ this.filter = asChildExecuterFactory(executerFactoryFactory(filterExecuter, this ));
+ this.calledback = asChildExecuterFactory(executerFactoryFactory(calledbackExecuter, this ));
+ this.httpServe = asChildExecuterFactory(executerFactoryFactory(httpServeExecuter, this ));
  this.parallel = addParallelExecuterFunction( this );
  this.collect = addCollectExecuterFunction( this );
 
@@ -642,11 +642,11 @@ util.inherits( httpServeExecuter, childExecuter);
 util.inherits( parallelExecuter, calledbackExecuter);
 util.inherits( collectExecuter, executer);
 
-function createExecuterFactory( classFunction, parent ){
+function executerFactoryFactory( classFunction, parent ){
   return function(userProcess){ return new classFunction( userProcess, parent ) };
 }
 
-function addChildExecuterFunction( executerFactory ){
+function asChildExecuterFactory( executerFactory ){
 
   var f = function( userProcess, errListener ){ //function to create child executer.
 
@@ -670,7 +670,7 @@ function addChildExecuterFunction( executerFactory ){
 function addParallelExecuterFunction( parent ){
 
   let parallelExecuterFunction =
-    addChildExecuterFunction( createExecuterFactory( parallelExecuter, parent) );
+    asChildExecuterFactory( executerFactoryFactory( parallelExecuter, parent) );
 
   let f = function() { //executers1,executers2....,errListener
 
