@@ -665,13 +665,13 @@ function childExecuterFactory( classFunction, parent ){
 
 function parallelExecuterFactory( parent ){
 
-  let parallelExecuterFunction =
+  let factory =
     childExecuterFactory( parallelExecuter, parent );
 
   let f = function() { //executers1,executers2....,errListener
 
       if(arguments.length == 0)
-        return parallelExecuterFunction(function(){});
+        return factory(function(){});
 
       let paralleledExecuters =
         arguments[0][Symbol.iterator] ?
@@ -693,7 +693,7 @@ function parallelExecuterFactory( parent ){
         paralleledExecuters.push( tailArgument );
       }
 
-      return parallelExecuterFunction(
+      return factory(
         // paralleled sugarnize executers to one function and callback here
         function( json, filePath, callback, executer ) {
             if( errListener ) executer.addListener( 'error' , errListener );
