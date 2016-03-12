@@ -68,8 +68,8 @@ function executer( parent ){
  this.filter = childExecuterFactory( filterExecuter, this );
  this.calledback = childExecuterFactory( calledbackExecuter, this );
  this.httpServe = childExecuterFactory( httpServeExecuter, this );
- this.parallel = addParallelExecuterFunction( this );
- this.collect = addCollectExecuterFunction( this );
+ this.parallel = parallelExecuterFactory( this );
+ this.collect = collectExecuterFactory( this );
 
  this.exec = function(){
 
@@ -663,7 +663,7 @@ function childExecuterFactory( classFunction, parent ){
 
 }
 
-function addParallelExecuterFunction( parent ){
+function parallelExecuterFactory( parent ){
 
   let parallelExecuterFunction =
     childExecuterFactory( parallelExecuter, parent );
@@ -718,7 +718,7 @@ function addParallelExecuterFunction( parent ){
 
 }
 
-function addCollectExecuterFunction( parent ){
+function collectExecuterFactory( parent ){
 
   let f = function( userFunction, newFilePath, errListner ) { //userFunction, newly specified file path, errListner
     userFunction = sugarnize( userFunction );
