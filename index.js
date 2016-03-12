@@ -362,7 +362,7 @@ function createNewFilePlan( executer ){
   );
 }
 
-function createFilePlanCore( executeForFileFunction, executer ){
+function createFilePlanCore( executeForFile, executer ){
 
   if( executer.file() != null ){
 
@@ -373,7 +373,7 @@ function createFilePlanCore( executeForFileFunction, executer ){
         jsonFilesArray.forEach( this.runtime.addJsonFile, this.runtime);
 
         for( let jsonFile of jsonFilesArray ){
-          executeForFileFunction( jsonFile, this );
+          executeForFile( jsonFile, this );
         }
 
       }
