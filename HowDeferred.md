@@ -35,15 +35,17 @@ Chained executer after filed process to/from file specified by filed executer.
 Second executer `write` is a executer to write JSON object to JSON file.
 In fact, this code is using a syntactic sugar and without sugar code like as next.
 
-    .write( function() { return { msg: 'hello world' }; } )
-The write executer takes a function as a parameter and the function determines what value is written to the file as return value.
+    .out( function() { return { msg: 'hello world' }; } )
+write is a syntaxtic sugar of out. out executer outputs value to the file. <br/>
+out executer takes a function as a parameter and the function determines what value is outputted to the file as return value.
 
     .read( json => { console.log( json.msg ) } )    
 Third executer `read` is a executer to read JSON object from JSON file.
 In a fundamental form  of javascript, above code is written as next.
 
-    .read( function( json ) { console.log( json.msg ) } )
-As same as write executer, read executer takes a function as a paramter and the function determines what program do receiving read value from JSON file.
+    .in( function( json ) { console.log( json.msg ) } )
+As same as write executer, read is a syntactic sugar of in. in executer inputs value from the file<br/>
+in executer takes a function as a paramter and the function determines what program does receiving inputted value from JSON file.
 
 
 As seen above, executers takes user processing as parameters of functions.This enables user processing throughout read/write file processing can be executed in deferred manner from callback of read/write file.
