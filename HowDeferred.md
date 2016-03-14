@@ -48,6 +48,6 @@ As same as write executer, read is a syntactic sugar of in. in executer inputs v
 in executer takes a function as a paramter and the function determines what program does receiving inputted value from JSON file.
 
 
-As seen above, executers takes user processing as parameters of **functions**. This enables user processing throughout read/write file processing can be executed in deferred manner from callback functions of read/write file.<br/>
+As seen above, executers takes user processing as parameters of **functions**. This enables user processing throughout read/write file processing can be executed in deferred manner from callback functions of read / write functions in the fs module.<br/>
 And another important point is that executers are **chained**.<br/>
 Though chain of executers as whole is exeuted in deffered, each executers are executed in the sequence by the order of executer in chain. This make it possible to program read after write as above code.
