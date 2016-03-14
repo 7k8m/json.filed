@@ -1,5 +1,5 @@
 # json.filed
-library for deferred processing of JSON file 
+library for deferred processing of JSON file
 
 ## Use case
 + what
@@ -20,11 +20,11 @@ library for deferred processing of JSON file
     .write( { msg: 'hello world.'} )
     .read( json => { console.log( json.msg ) } )
     .exec();
-[how to use ...](./how2use.md)
+[how to use ...](./document/how2use.md)
 
 # Deferred ...?
-Yes, [deferred](./HowDeferred.md) ! <br/>
+Yes, [deferred](./document/HowDeferred.md) ! <br/>
 Read and write file and so on is executed in defferred manner to make best use of node.js.
 
 # Reference
-See [this page](./reference.md)
+See [this page](./document/reference.md)
