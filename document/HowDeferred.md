@@ -1,8 +1,8 @@
 # How json.filed process in deferred manner
-json.filed is a library for deferred processing JSON file.
-This mean reading and writeing file is **neither** executed immediately when read and write function is called **nor** executing thread is blocked until read and write is done.
+json.filed is a library for deferred processing JSON file. 
+Meaning reading and writing file is **neither** executed immediately when read and write function is called **nor** executing thread is blocked until read and write is done.
 
-Explain how process is deferred, seeing next example code.
+Explain how process is deferred, see next example code.
 
     var jf = require('json.filed');
 
@@ -12,9 +12,9 @@ Explain how process is deferred, seeing next example code.
     .exec();
 
 In the code above, filed function, write function and read functions are called.
-In json.filed, those functions are corresponding to *executer* and call to function constructs correspoinding executer.
-Function of executer can be called in chain as above and executers are chained in the same order as functions are called.
-In the above code, filed executer, write executer and read executer are chained in this order as result.
+In json.filed, those functions corresponds to *executer* and call to function constructs correspoinding executer.
+Function of executer can be called in chain as above and constructed executers are chained by the same order as functions are called.
+In the above code, filed executer, write executer and read executer are chained by this order as result.
 
 Constructing chain of executer does not start processing immediately.
 Call of exec function at the tail of the executer starts processing.
@@ -38,6 +38,7 @@ In fact, this code is using a syntactic sugar and without sugar code like as nex
     .out( function() { return { msg: 'hello world' }; } )
 write is a syntaxtic sugar of out. out executer outputs value to the file. <br/>
 out executer takes a function as a parameter and the function determines what value is outputted to the file as return value.
+
 
     .read( json => { console.log( json.msg ) } )    
 Third executer `read` is a executer to read JSON object from JSON file.
