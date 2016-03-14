@@ -51,4 +51,4 @@ in executer takes a function as a paramter and the function determines what prog
 
 As seen above, executers takes user processing as parameters of **functions**. This enables user process can be executed in deferred manner from callback functions of read/write functions of the fs module which are called inside json.filed.<br/>
 And another important point is that executers are **chained**.<br/>
-Though chain of executers as whole is exeuted in deffered, each executers are executed sequentially by the order of executer in the chain. This make it possible to program read after write like as above code.
+Though chain of executers as whole are executed in deffered, each executer is executed sequentially by the order of executer in the chain. This make it possible to program like as read after write in above code.
