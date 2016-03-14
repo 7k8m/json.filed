@@ -23,7 +23,8 @@ library for deferred processing of JSON file
 [how to use ...](./how2use.md)
 
 # Deferred ...?
-Yes, deferred ! Read and write file is executed in defferred manner.
+Yes, deferred ! <br/>
+Read and write file and so on is executed in defferred manner to make best use of node.js.
 
 # Reference
 See [this page](./reference.md)
