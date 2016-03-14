@@ -11,18 +11,18 @@ Explain how process is deferred, seeing next example code.
     .read( json => { console.log( json.msg ) } )
     .exec();
 
-In the code above, filed, write function and read functions are called.
+In the code above, filed function, write function and read functions are called.
 In json.filed, those functions are corresponding to *executer* and call to function constructs correspoinding executer.
 Function of executer can be called in chain as above and executers are chained in the same order as functions are called.
-In the above code, filed executer, write executer and read executer are chained in this order.
+In the above code, filed executer, write executer and read executer are chained in this order as result.
 
 Constructing chain of executer does not start processing immediately.
 Call of exec function at the tail of the executer starts processing.
 
     .exec()
-Call exec() function start process from root of executer to tail of execcuter in chain.
+Call exec() function start process from root of executer to the tail execcuter where .exec was called in the chain.
 In the above code, filed executer, write executer and read executer, in this order.
-Those processes are executed in deferred and exec() function itself finishes before process of executers are finished.  
+Actual processes of executers run in deferred and exec() function itself finishes before process of executers are finished.  
 
 Now, explain for each of executers.
 
