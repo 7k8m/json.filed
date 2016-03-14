@@ -22,5 +22,8 @@ library for deferred processing of JSON file
     .exec();
 [how to use ...](./how2use.md)
 
+# Deferred ...?
+Yes, deferred ! Read and write file is executed in defferred manner.
+
 # Reference
 See [this page](./reference.md)
