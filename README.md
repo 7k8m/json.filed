@@ -23,7 +23,7 @@ library for deferred processing of JSON file
 [how to use ...](./how2use.md)
 
 # Deferred ...?
-Yes, deferred ! <br/>
+Yes, [deferred](./HowDeferred.md) ! <br/>
 Read and write file and so on is executed in defferred manner to make best use of node.js.
 
 # Reference
