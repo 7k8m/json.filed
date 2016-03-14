@@ -50,4 +50,4 @@ in executer takes a function as a paramter and the function determines what prog
 
 As seen above, executers takes user processing as parameters of **functions**. This enables user processing throughout read/write file processing can be executed in deferred manner from callback functions of read / write functions in the fs module.<br/>
 And another important point is that executers are **chained**.<br/>
-Though chain of executers as whole is exeuted in deffered, each executers are executed sequentially by the order of executer in the chain. This make it possible to program read after write as above code.
+Though chain of executers as whole is exeuted in deffered, each executers are executed sequentially by the order of executer in the chain. This make it possible to program read after write like as above code.
