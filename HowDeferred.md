@@ -2,7 +2,7 @@
 json.filed is a library for deferred processing of JSON file.
 This mean read and write file is *neither* executed immediately when read and write function is called *nor* executing thread is blocked until read and write is done.
 
-Explain how process is done deferred on next program.
+Explain how process is deferred, seeing next example code.
 
     var jf = require('json.filed');
 
