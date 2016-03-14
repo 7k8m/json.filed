@@ -1,6 +1,6 @@
 # How json.filed process in deferred manner
 json.filed is a library for deferred processing JSON file.
-This mean reading and writeing file is **neither** executed immediately when read and write function is called *nor* executing thread is blocked until read and write is done.
+This mean reading and writeing file is **neither** executed immediately when read and write function is called **nor** executing thread is blocked until read and write is done.
 
 Explain how process is deferred, seeing next example code.
 
