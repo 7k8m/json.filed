@@ -35,7 +35,7 @@ Chained executer after filed process to/from file specified by filed executer.
 Second executer `write` is a executer to write JSON object to JSON file.
 In fact, this code is using a syntactic sugar and without sugar code like as next.
 
-    .write( function() { return { msg:'hello world' }; } )
+    .write( function() { return { msg: 'hello world' }; } )
 The write executer takes a function as a parameter and the function determines what value is written to the file as return value.
 
     .read( json => { console.log( json.msg ) } )    
