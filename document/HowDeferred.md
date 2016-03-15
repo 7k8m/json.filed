@@ -45,8 +45,8 @@ Third executer `read` is a executer to read JSON object from JSON file.
 In a fundamental form  of javascript, above code is written as next without syntactic sugar.
 
     .in( function( json ) { console.log( json.msg ) } )
-As same as write executer, `read` is a syntactic sugar of `in`. in executer inputs value from the file<br/>
-in executer takes a function as a paramter and the function determines what program does receiving inputted value from JSON file.
+As same as write executer, `read` is a syntactic sugar of `in`. in executer inputs value from the file.<br/>
+a parameter of in executer takes is a function what program does receiving inputted value from JSON file.
 
 
 As seen above, executers takes user processing as parameters of **functions**. This enables user process can be executed in deferred manner from callback functions of read/write functions of the fs module which are called inside json.filed.<br/>
