@@ -513,7 +513,7 @@ function multiplePath( files ){
   return Array.from(files, path => new JsonFile( path ));
 }
 
-// Historycally JsonFile was developed substitugin filePath of plain String.
+// Historycally JsonFile was developed substituting filePath of plain String.
 // So in several parts, JsonFile object is handled in variable named xxxxPath.
 function JsonFile( filePath ){
   let absolutePath = path.resolve( filePath );
