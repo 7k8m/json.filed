@@ -1122,19 +1122,36 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, n
   normalized(
     json,
     filePath.path(),
-    function( data ){//callback function passed to userProcess
+    function( data, newFile ){//callback function passed to userProcess
+
+      var files;
+      if( newFile ){
+
+        // when new file was specified always not null.
+        if( ! data ) data = jf.initialValue();
+
+        files = fixFiles( newFile );
+        files.forEach( nextPlan.runtime.addJsonFile , nextPlan.runtime );
+
+      }else{
+        files = [ filePath ];
+      }
+
       if( data ){
-        //when callback is called
-        //here is executed after latter save.
-        save(
-          data,
-          filePath ,
-          function(){
-            // no need to close filePath
-            nextPlan._executeFunction( filePath );
-          },
-          jb,
-          normalized._plannedExecuter);
+
+        files.forEach(
+          ( file ) => {
+            save(
+              data,
+              file ,
+              function(){
+                // no need to close filePath
+                nextPlan._executeFunction( file );
+              },
+              jb,
+              normalized._plannedExecuter);
+          }
+        );
 
       } else {
         nextPlan._executeFunction( filePath );
