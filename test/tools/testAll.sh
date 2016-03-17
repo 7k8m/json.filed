@@ -11,6 +11,7 @@ mocha test/unit/testFilter.js
 mocha test/unit/testError.js
 mocha test/unit/testCalledback.js
 mocha test/unit/testCalledback_more.js
+mocha test/unit/testCalledback_multiCallback.js
 mocha test/unit/testDownload.js
 mocha test/unit/testDownload_2.js
 mocha test/unit/testExecutionPlan.js
