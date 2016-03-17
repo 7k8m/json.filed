@@ -38,19 +38,24 @@ jf.filed( './msg01.json' )
           return obj;
 
         },'./collect.json' )
+        .calledback( (collectedObj, filePath, callback) => {
+          for( let word in collectedObj ){
+            callback({ key: word, value: collectedObj[word] }, './' + word + '.json' );
+          }
+          callback();
+        })
+        .filter( (obj, filePath) => path.basename(filePath) != 'collect.json'  )
         .io( obj => {
-          
             //Reduce phase
-            for( let word in obj ){
               var sum = 0;
-              for( let c of obj[word] ){
+              for( let c of obj.value ){
                 sum = sum + c;
               }
-              obj[word] = sum;
-            }
-            return obj;
+              return { key: obj.key, value: sum };
           }
-        ).exec();
+        )
+        .collect( obj => obj, './answer.json' )
+        .exec();
       }
     ).exec();
   }
