@@ -199,7 +199,7 @@ httpServer.listen( 8080 );
 ## Other executers
 ### collect
 ````
-.collect( function( json, filePath, executer ) { your code to process json here } )
+.collect( function( json, filePath, executer ) { your code to process json here }, collectFilePath )
 ````
 
 + `function( json, filePath ) { ... }` is where process json.
@@ -208,6 +208,7 @@ httpServer.listen( 8080 );
     + `return json` from function, written to the file of `filePath` parameter.
         + Nothing written, if return no object.
     + `executer` is an event emitter and can be used in error handling
++ `collectFilePath` is file path where collected jsons are wriiten to
 
 # Chaining
 ````
