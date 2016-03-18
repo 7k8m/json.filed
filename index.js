@@ -229,30 +229,28 @@ function eventPlan( executer ){
 
         eventListenerConfigurator(
           function( receivedObject ) {
-
-            let files = fixFiles ( filePathCalculator( receivedObject ) , executer );
-
-            files.forEach( file => { thisPlan.runtime.addJsonFile( file ) } );
-
-            for( let file of files ){
-
-              saveAfterApply(
-                receivedObject,
-                file,
-                function( executeNextPlan ){
-                  // no need to close filePath
-                  executeNextPlan();
-                },
-                calcJb( file, executer ),
-                file,
-                thisPlan.next(),
-                executer
-              );
-
+            if( thisPlan.receivingFileProxy != null ){
+              let files = fixFiles ( filePathCalculator( receivedObject ) , executer );
+              files.forEach( file => { thisPlan.runtime.addJsonFile( file ) } );
+              for( let file of files ){
+                saveAfterApply(
+                  receivedObject,
+                  file,
+                  function( executeNextPlan ){
+                    // no need to close filePath
+                    executeNextPlan();
+                  },
+                  calcJb( file, executer ),
+                  file,
+                  thisPlan.next(),
+                  executer
+                );
+              }
             }
           },
           function() {
             thisPlan.runtime.removeJsonFile( thisPlan.receivingFileProxy );
+            thisPlan.receivingFileProxy = null;
           }
         )
 
