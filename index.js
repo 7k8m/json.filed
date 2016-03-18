@@ -214,8 +214,53 @@ function rootPlan( executeFunction , fixedFile ){
   this.fixedFiles = fixedFile;
 }
 
+function eventPlan( executer ){
+
+  let thisPlan = this;
+  this.receivingFileProxy = new ReceivingFileProxy();
+
+  rootPlan.call(
+    this,
+    function(
+      eventListnerConfigurator,
+      filePathCalculator ) {
+
+        eventListnerConfigurator(
+          function( receivedObject ) {
+
+            let files = fixFiles ( filePathCalculator( receivedObject ) , executer );
+
+            files.foreach( file => thisPlan.runtime.addJsonFile( file ) );
+
+            for( let file of files ){
+
+              saveAfterApply(
+                receivedObject,
+                file.path(),
+                function( executeNextPlan ){
+                  // no need to close filePath
+                  executeNextPlan();
+                },
+                calcJb( file.path() ),
+                file.path(),
+                thisPlan.nextPlan,
+                executer
+              );
+
+            }
+          },
+          function() { thisPlan.runtime.removeJsonFile( this.receivingFileProxy ); }
+        )
+
+    },
+    this.receivingFileProxy
+  )
+}
+
+util.inherits( notexecPlan, executePlan );
 util.inherits( collectPlan, executePlan );
 util.inherits( rootPlan, executePlan );
+util.inherits( eventPlan, executePlan );
 
 function runtimeInformation(){
 
@@ -313,13 +358,13 @@ function rootsExecuter( executers ){
 
 };
 
-function eventExecuter( eventListnerCongigurator, fileNameCalculator ){
+function eventExecuter( eventListnerConfigurator, fileNameCalculator ){
   rootExecuter.call( this, null );
   let thisExecuter = this;
 
   this.rootExec =
     function( executePlan ){
-      executePlan._executeFunction();
+      executePlan._executeFunction( eventListnerConfigurator, fileNameCalculator );
     };
 
 }
@@ -569,6 +614,11 @@ function JsonFile( filePath ){
     return absolutePath;
   }
 }
+
+function ReceivingFileProxy(){
+}
+
+util.inherits( ReceivingFileProxy, JsonFile );
 
 function ioExecuter( userProcess, parent) {
   childExecuter.call( this, userProcess, parent );
@@ -1189,14 +1239,16 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, n
 
         files.forEach(
           ( file ) => {
-            save(
+            saveAfterApply(
               data,
               file ,
-              function(){
+              function( executeNextPlan ){
                 // no need to close filePath
-                nextPlan._executeFunction( file );
+                executeNextPlan();
               },
               jb,
+              file,
+              nextPlan,
               normalized._plannedExecuter);
           }
         );
