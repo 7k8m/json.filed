@@ -240,9 +240,13 @@ function notexecPlan() {
   );
 }
 
+function rootExecuter(){
+  executer.call( this, null);
+}
+
 function filedExecuter( file ){
 
-  executer.call( this, null );
+  rootExecuter.call( this, null );
 
   let thisExecuter = this;
 
@@ -262,7 +266,7 @@ function newFileExecuter( file ){
 
 function downloadExecuter( url, file ){
 
-  executer.call( this, null );
+  rootExecuter.call( this, null );
   let thisExecuter = this;
 
   this.rootExec =
@@ -278,7 +282,7 @@ function downloadExecuter( url, file ){
 
 function rootsExecuter( executers ){
 
-  executer.call( this, null );
+  rootExecuter.call( this, null );
 
   let thisExecuter = this;
 
@@ -622,11 +626,11 @@ function collectExecuter( userProcess, parent, filePath) {
 
 
 util.inherits( executer, EventEmitter);
-
-util.inherits( filedExecuter, executer);
+util.inherits( rootExecuter, executer);
+util.inherits( filedExecuter, rootExecuter);
 util.inherits( newFileExecuter, filedExecuter);
-util.inherits( downloadExecuter, executer);
-util.inherits( rootsExecuter, executer);
+util.inherits( downloadExecuter, rootExecuter);
+util.inherits( rootsExecuter, rootExecuter);
 
 util.inherits( childExecuter, executer);
 
