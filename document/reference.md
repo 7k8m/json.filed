@@ -73,9 +73,6 @@ jf.event( function( receiveJsonListener, stopReceiveListener ) { your code to co
 +  `function( receivedJson ) { ... }` is where to calculate file path according to received JSON object.
     + received JSON is written to the path returned from this function   
 
-
-+ object exposes `file()` function which returns value specified `file` parameter above.
-+ 
 ## Child executers
 ### io
 ````
