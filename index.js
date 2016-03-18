@@ -387,8 +387,6 @@ function childExecuter( userProcess, parent ){
 }
 
 
-
-
 function createPlan( executer ){
 
   if( executer instanceof newFileExecuter ) return createNewFilePlan( executer );
