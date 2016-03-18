@@ -54,7 +54,7 @@ jf.roots =
   }
 
 jf.event =
-  function( eventListnerCongigurator, fileNameCalculator, errListener ){
+  function( eventListenerConfigurator, fileNameCalculator, errListener ){
     return addErrorListener(
       new eventExecuter(
         eventListenerConfigurator,
@@ -222,34 +222,38 @@ function eventPlan( executer ){
   rootPlan.call(
     this,
     function(
-      eventListnerConfigurator,
+      eventListenerConfigurator,
       filePathCalculator ) {
 
-        eventListnerConfigurator(
+        thisPlan.runtime.addJsonFile( thisPlan.receivingFileProxy );
+
+        eventListenerConfigurator(
           function( receivedObject ) {
 
             let files = fixFiles ( filePathCalculator( receivedObject ) , executer );
 
-            files.foreach( file => thisPlan.runtime.addJsonFile( file ) );
+            files.forEach( file => { thisPlan.runtime.addJsonFile( file ) } );
 
             for( let file of files ){
 
               saveAfterApply(
                 receivedObject,
-                file.path(),
+                file,
                 function( executeNextPlan ){
                   // no need to close filePath
                   executeNextPlan();
                 },
-                calcJb( file.path() ),
-                file.path(),
-                thisPlan.nextPlan,
+                calcJb( file, executer ),
+                file,
+                thisPlan.next(),
                 executer
               );
 
             }
           },
-          function() { thisPlan.runtime.removeJsonFile( this.receivingFileProxy ); }
+          function() {
+            thisPlan.runtime.removeJsonFile( thisPlan.receivingFileProxy );
+          }
         )
 
     },
@@ -358,13 +362,13 @@ function rootsExecuter( executers ){
 
 };
 
-function eventExecuter( eventListnerConfigurator, fileNameCalculator ){
+function eventExecuter( eventListenerConfigurator, fileNameCalculator ){
   rootExecuter.call( this, null );
   let thisExecuter = this;
 
   this.rootExec =
     function( executePlan ){
-      executePlan._executeFunction( eventListnerConfigurator, fileNameCalculator );
+      executePlan._executeFunction( eventListenerConfigurator, fileNameCalculator );
     };
 
 }
@@ -590,20 +594,7 @@ function multiplePath( files ){
 }
 
 function createEventPlan( executer ){
-
-    let plan =  new executePlan(
-      function(){
-
-        let jsonFilesArray = Array.from( this.fixedFiles );
-        jsonFilesArray.forEach( this.runtime.addJsonFile, this.runtime);
-
-        for( let jsonFile of jsonFilesArray ){
-          executeForFile( jsonFile, this );
-        }
-
-      }
-    );
-
+  return new eventPlan( executer );
 }
 
 // Historycally JsonFile was developed substituting filePath of plain String.
@@ -725,6 +716,7 @@ util.inherits( filedExecuter, rootExecuter);
 util.inherits( newFileExecuter, filedExecuter);
 util.inherits( downloadExecuter, rootExecuter);
 util.inherits( rootsExecuter, rootExecuter);
+util.inherits( eventExecuter, rootExecuter);
 
 util.inherits( childExecuter, executer);
 
