@@ -71,6 +71,8 @@ jf.event( function( receiveJsonListener, stopReceiveListener ) { your code to co
         + definition is `function receiveJsonListener( obj )` and obj is received JSON
         + calling this listener function results wring received JSON to file and continue chained executer 
     + `stopReceiveListner` is a listener function to stop receiving JSON from event.
+        + definition is `function stopReceiveListner()`
+        + calling this listener notify JSON.filed no more JSON will be received. 
         + without stop receiving, collect executer fail to work correctly.
 +  `function( receivedJson ) { ... }` is where to calculate file path according to received JSON object.
     + received JSON is written to the path returned from this function   
