@@ -53,6 +53,16 @@ jf.roots =
     return addErrorListener( new rootsExecuter(rootExecuters), errListener);
   }
 
+jf.event =
+  function( eventListnerCongigurator, fileNameCalculator, errListener ){
+    return addErrorListener(
+      new eventExecuter(
+        eventListenerConfigurator,
+        fileNameCalculator ),
+      errListener
+    );
+  }
+
 function executer( parent ){
 
  this.parent = parent;
@@ -199,6 +209,14 @@ function collectPlan( executer )
 
 }
 
+function rootPlan( executeFunction , fixedFile ){
+  executePlan.call( this, executeFunction );
+  this.fixedFiles = fixedFile;
+}
+
+util.inherits( collectPlan, executePlan );
+util.inherits( rootPlan, executePlan );
+
 function runtimeInformation(){
 
   let jsonFilesInProgress = new Map();
@@ -252,7 +270,7 @@ function filedExecuter( file ){
 
   this.rootExec =
     function(executePlan){
-      executePlan._executeFunction()
+      executePlan._executeFunction();
     };
 
   this.file = () => file;
@@ -295,6 +313,16 @@ function rootsExecuter( executers ){
 
 };
 
+function eventExecuter( eventListnerCongigurator, fileNameCalculator ){
+  rootExecuter.call( this, null );
+  let thisExecuter = this;
+
+  this.rootExec =
+    function( executePlan ){
+      executePlan._executeFunction();
+    };
+
+}
 
 function childExecuter( userProcess, parent ){
 
@@ -312,6 +340,8 @@ function childExecuter( userProcess, parent ){
 }
 
 
+
+
 function createPlan( executer ){
 
   if( executer instanceof newFileExecuter ) return createNewFilePlan( executer );
@@ -319,6 +349,7 @@ function createPlan( executer ){
   else if( executer instanceof downloadExecuter ) return createDownloadPlan(executer);
   else if( executer instanceof collectExecuter ) return new collectPlan(executer);
   else if( executer instanceof rootsExecuter ) return createRootsPlan(executer);
+  else if( executer instanceof eventExecuter ) return createEventPlan( executer );
   else return createChildPlan( executer );
 }
 
@@ -370,20 +401,16 @@ function createFilePlanCore( executeForFile, executer ){
 
   if( executer.file() != null ){
 
-    let plan =  new executePlan(
+    let plan =  new rootPlan(
       function(){
-
         let jsonFilesArray = Array.from( this.fixedFiles );
         jsonFilesArray.forEach( this.runtime.addJsonFile, this.runtime);
-
         for( let jsonFile of jsonFilesArray ){
           executeForFile( jsonFile, this );
         }
-
-      }
+      },
+      fixFiles( executer.file() )
     );
-
-    plan.fixedFiles = fixFiles( executer.file() );
 
     return plan;
 
@@ -396,7 +423,7 @@ function createFilePlanCore( executeForFile, executer ){
 
 
 function createDownloadPlan( executer ){
-  let plan =  new executePlan(
+  let plan = new rootPlan(
 
     function(){
       let thisPlan = this;
@@ -432,10 +459,9 @@ function createDownloadPlan( executer ){
           err => { executer.emit( err ) }
         ).exec();
       }
-    }
+    },
+    fixFiles( executer.file() )
   );
-
-  plan.fixedFiles = fixFiles( executer.file() );
 
   return plan;
 
@@ -446,8 +472,18 @@ function createRootsPlan( rootsExecuter ){
   let executers = rootsExecuter.executers();
   let plans =
     Array.from( executers, createPlan );
+  //fix files for rootsPlan
+  let files = [];
+  plans.forEach(
+    plan =>{
+      plan.fixedFiles.forEach(
+        file => { files.push( file ); }
+      )
+    }
+  );
 
-  let rootsPlan =  new executePlan(
+
+  let rootsPlan =  new rootPlan(
 
     function(){
 
@@ -463,18 +499,9 @@ function createRootsPlan( rootsExecuter ){
         plan._executeFunction();
 
       }
-    }
+    },
+    files
   );
-
-  //fix files for rootsPlan
-  var files = [];
-  plans.forEach(
-    plan =>{
-      files = files.concat( plan.fixedFiles );
-    }
-  );
-
-  rootsPlan.fixedFiles = files;
 
   return rootsPlan;
 
@@ -515,6 +542,23 @@ function singlePath( file ){
 
 function multiplePath( files ){
   return Array.from(files, path => new JsonFile( path ));
+}
+
+function createEventPlan( executer ){
+
+    let plan =  new executePlan(
+      function(){
+
+        let jsonFilesArray = Array.from( this.fixedFiles );
+        jsonFilesArray.forEach( this.runtime.addJsonFile, this.runtime);
+
+        for( let jsonFile of jsonFilesArray ){
+          executeForFile( jsonFile, this );
+        }
+
+      }
+    );
+
 }
 
 // Historycally JsonFile was developed substituting filePath of plain String.
