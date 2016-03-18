@@ -30,4 +30,5 @@ mocha test/unit/readonlyJson.js
 mocha test/unit/testCollect.js
 mocha test/unit/testCollect_more.js
 mocha test/unit/testRoots.js
+mocha test/unit/testEvent.js
 sh test/tools/rmTestJsonFile.sh
