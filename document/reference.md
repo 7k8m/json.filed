@@ -61,7 +61,7 @@ jf.roots( <array of root executers> )
 
 ### event
 ````
-jf.event( function( receiveJsonListener, stopReceiveListener ) { your code to configurate listner here }, 
+jf.event( function( receiveJsonListener, stopReceiveListener ) { your code to configure listeners here }, 
           function( receivedJson ){ your code to calculate file path for json here } )
 ````
 ----
