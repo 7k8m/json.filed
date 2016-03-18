@@ -39,6 +39,9 @@ describe('Event executer ', function () {
         expect( obj[1] ).to.be.eql( obj2 );
         expect( obj.length ).to.be.equal( 2 );
         done();
+
+        return obj;
+
       },
       './' + Math.random() + '.json',
       function(err){ console.log(err); }
