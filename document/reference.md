@@ -61,9 +61,16 @@ jf.roots( <array of root executers> )
 
 ### event
 ````
-jf.event( function( receiveJsonListener, stopReceiveListener ) { your code to configure listeners here }, 
+jf.event( function( receive, stop ) { your code to configure listeners here }, 
           function( receivedJson ){ your code to calculate file path for json here } )
-````
+          
+let executing = 
+    jf.event( ... )
+    ....
+    .exec();
+...
+executing.receive(obj);
+
 ----
 
 + `function( receive, stop ) { ... }` is where to configure eventListeners
@@ -76,7 +83,7 @@ jf.event( function( receiveJsonListener, stopReceiveListener ) { your code to co
         + without stop receiving, collect executer fail to work correctly.
 +  `function( receivedJson ) { ... }` is where to calculate file path according to received JSON object.
     + received JSON is written to the path returned from this function   
-+ When `event` root executer is used, execution plan exposes `receive` and `stop` listner functions. The execution plan is obtained as return value from .exec and/or .plan of executers chain. Refer to [receive.js] (../examples/receive.js) and [mapReduce_like.js] (../examples/mapReduce_Like.js) for actual example.
++ When `event` root executer is used, execution plan exposes `receive` and `stop` listner functions. The execution plan is obtained as return value from .exec() of executers chain. Refer to [receive.js] (../examples/receive.js) and [mapReduce_like.js] (../examples/mapReduce_Like.js) for actual example.
  
 
 
