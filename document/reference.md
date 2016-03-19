@@ -70,7 +70,7 @@ let executing =
     .exec();
 ...
 executing.receive(obj);
-
+````
 ----
 
 + `function( receive, stop ) { ... }` is where to configure eventListeners
