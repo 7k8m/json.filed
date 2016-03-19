@@ -237,13 +237,13 @@
 [See this repository](https://github.com/7k8m/electron-quick-start)
 
 ## receive.js
-  'use strict';
-  var jf = require('json.filed');
-  var http = require('http');
-
-  var server = http.createServer();
-
-  let receive =
+    'use strict';
+    var jf = require('json.filed');
+    var http = require('http');
+    
+    var server = http.createServer();
+    
+    let receive =
     jf.event( function( receiveListener, stopListener) {
       server.on(
         'request',
