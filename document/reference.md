@@ -61,15 +61,19 @@ jf.roots( <array of root executers> )
 
 ### event
 ````
-jf.event( function( receiveJsonListener, stopReceiveListener ) { your code to configurate listner here }, function( receivedJson ){ your code to calculate file path for json here } )
+jf.event( function( receiveJsonListener, stopReceiveListener ) { your code to configure listeners here }, 
+          function( receivedJson ){ your code to calculate file path for json here } )
 ````
 ----
 
 + `function( receiveJsonListener, stopReceiveListener ) { ... }` is where to configure eventListeners
     + `receiveJsonListener` is a listener function to receive JSON from event.
         + definition is `function receiveJsonListener( obj )` and obj is received JSON
+        + calling this listener function results wring received JSON to file and continue chained executer 
     + `stopReceiveListner` is a listener function to stop receiving JSON from event.
-        + with out stop receiving, collect executer fail to work correctly.
+        + definition is `function stopReceiveListner()`
+        + calling this listener notify JSON.filed no more JSON will be received. 
+        + without stop receiving, collect executer fail to work correctly.
 +  `function( receivedJson ) { ... }` is where to calculate file path according to received JSON object.
     + received JSON is written to the path returned from this function   
 
