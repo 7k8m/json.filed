@@ -11,31 +11,46 @@ jf.filed( './msg01.json' )
     .write( { msg: 'Hello json.filed Goodbye json.filed' } )
     .pass(
       () =>{
-
         jf.filed([ './msg01.json', './msg02.json' ])
-        .pass( ( msgObj, filePath ) => {
-            //Map phase
-            for( let word of msgObj.msg.split(' ')){
-              shuffler.receive( { key : word, value: 1 });
-              count ++;
-            }
-          }
-        ).collect(
-          () => { shuffler.stop(); },
-          './collect_1.json'
-        ).exec();
+        .pass( ( msgObj ) => {
+          mapper.receive( msgObj );
+        })
+        .collect( () => {
+          mapper.stop();
+        },
+        './collect_1.json')
+        .exec();
       }
     ).exec();
   }
 ).exec();
 
-var c = 0;
+var c1 = 0;
+let mapper =
+  jf.event(
+    () => {},
+    () => {
+      c1 ++;
+      return './src' + c1 + '.json'
+    })
+  .pass( ( msgObj ) => {
+    for( let word of msgObj.msg.split(' ')){
+      shuffler.receive( { key : word, value: 1 });
+      count ++;
+    }
+  })
+  .collect(
+    () => { shuffler.stop(); },
+    './collect_2.json')
+  .exec();
+
+var c2 = 0;
 let shuffler =
   jf.event(
     ()=>{},
     () => {
-      c ++;
-      return './' + c + '.json' } )
+      c2 ++;
+      return './' + c2 + '.json' } )
   .collect( ( kvArray ) => {
       var obj = {};
       for( let kv of kvArray ){
@@ -43,7 +58,7 @@ let shuffler =
         obj[kv.key].push(kv.value);
       }
       return obj; },
-    './collect_2.json' )
+    './collect_3.json' )
   .pass( (collectedObj, filePath ) => {
     for( let word in collectedObj ){
       reducer.receive( { key: word, value: collectedObj[word] });
