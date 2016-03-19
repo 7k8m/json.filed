@@ -16,10 +16,6 @@ jf.filed( './msg01.json' )
           .pass( ( msgObj ) => {
             mapper.receive( msgObj );
           })
-          .collect( () => {
-            mapper.stop();
-          },
-          './collect_1.json')
           .plan();
 
         sourcer.runtime.on('empty',() => { mapper.stop(); })
