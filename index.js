@@ -35,32 +35,68 @@ jf.initialValue =
 
 jf.filed =
   function (file, errListener) {
-     return addErrorListener( new filedExecuter (file), errListener );
+      if( file != null ){
+        return addErrorListener( new filedExecuter (file), errListener );
+      } else {
+        if( errListener == null ) errListener = defaultErrorListener;
+        errListener( new JsonFiledError( 'File must not be null.' , null) );
+      }
    }
 
 jf.newFile =
  function (file, errListener) {
-    return addErrorListener( new newFileExecuter (file), errListener );
+    if( file != null ) {
+      return addErrorListener( new newFileExecuter (file), errListener );
+    } else {
+      if( errListener == null ) errListener = defaultErrorListener;
+      errListener( new JsonFiledError( 'File must not be null.' , null) );
+    }
   }
 
 jf.download =
  function (url, file, errListener) {
-    return addErrorListener( new downloadExecuter (url, file), errListener );
+    if( file != null  && url != null){
+      return addErrorListener( new downloadExecuter (url, file), errListener );
+    } else {
+      if( errListener == null ) errListener = defaultErrorListener;
+      if( file == null ){
+        errListener( new JsonFiledError( 'File must not be null.' , null) );
+      } else if( url == null ) {
+        errListener( new JsonFiledError( 'url must not be null.' , null) );
+      }
+    }
   }
 
 jf.roots =
   function ( rootExecuters, errListener ){
-    return addErrorListener( new rootsExecuter(rootExecuters), errListener);
+    if( rootExecuter != null) {
+      return addErrorListener( new rootsExecuter(rootExecuters), errListener);
+    } else {
+      if( errListener == null ) errListener = defaultErrorListener;
+      errListener( new JsonFiledError( 'rootsExecuters must not be null.' , null) );
+    }
   }
 
 jf.event =
   function( eventListenerConfigurator, fileNameCalculator, errListener ){
-    return addErrorListener(
-      new eventExecuter(
-        eventListenerConfigurator,
-        fileNameCalculator ),
-      errListener
-    );
+
+    if(fileNameCalculator != null ){
+
+      if(eventListenerConfigurator == null ){
+        eventListenerConfigurator = () => {};
+      }
+
+      return addErrorListener(
+        new eventExecuter(
+          eventListenerConfigurator,
+          fileNameCalculator ),
+        errListener
+      );
+
+    }else{
+      if( errListener == null ) errListener = defaultErrorListener;
+      errListener( new JsonFiledError( 'fileNameCalculator must not be null.' , null) );
+    }
   }
 
 function executer( parent ){
@@ -82,6 +118,12 @@ function executer( parent ){
  this.collect = collectExecuterFactory( this );
 
  this.exec = function(){
+   let plan = this.plan();
+   plan._executeFunction();
+   return plan;
+ }
+
+ this.plan = function(){
 
    let runtime = new runtimeInformation();
 
@@ -93,7 +135,6 @@ function executer( parent ){
      executorStack.push(toStack);
      toStack = toStack.parent;
    }
-
 
    let root = executorStack.pop();
    let rootPlan = createPlan( root );
@@ -116,7 +157,6 @@ function executer( parent ){
      plan._nextPlan = new notexecPlan();
      plan._nextPlan.runtime = runtime;
 
-     root.rootExec( rootPlan );
      return rootPlan;
 
     };
@@ -250,14 +290,12 @@ function eventPlan( executer ){
 
   rootPlan.call(
     this,
-    function(
-      eventListenerConfigurator,
-      filePathCalculator ) {
+    function() {
 
-        this.calcFilePath = filePathCalculator;
+        this.calcFilePath = executer.filePathCalculator;
 
         thisPlan.runtime.addJsonFile( thisPlan.receivingFileProxy );
-        eventListenerConfigurator(
+        executer.eventListenerConfigurator(
           thisPlan.receive,
           thisPlan.stop
         );
@@ -322,11 +360,6 @@ function filedExecuter( file ){
 
   let thisExecuter = this;
 
-  this.rootExec =
-    function(executePlan){
-      executePlan._executeFunction();
-    };
-
   this.file = () => file;
 
 };
@@ -341,11 +374,6 @@ function downloadExecuter( url, file ){
   rootExecuter.call( this, null );
   let thisExecuter = this;
 
-  this.rootExec =
-    function( executePlan ){
-      executePlan._executeFunction();
-    };
-
   this.url = () => url;
   this.file = () => file;
 
@@ -358,11 +386,6 @@ function rootsExecuter( executers ){
 
   let thisExecuter = this;
 
-  this.rootExec =
-    function( executePlan ){
-      executePlan._executeFunction();
-    };
-
   this.executers = () => executers;
 
 };
@@ -371,10 +394,8 @@ function eventExecuter( eventListenerConfigurator, fileNameCalculator ){
   rootExecuter.call( this, null );
   let thisExecuter = this;
 
-  this.rootExec =
-    function( executePlan ){
-      executePlan._executeFunction( eventListenerConfigurator, fileNameCalculator );
-    };
+  this.eventListenerConfigurator = eventListenerConfigurator;
+  this.filePathCalculator = fileNameCalculator;
 
 }
 

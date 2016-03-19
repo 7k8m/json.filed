@@ -22,9 +22,9 @@ describe('Error ', function () {
 
     jf.filed(null,
       function(err){
-        expect(err.msg).to.eql('File must not be null');
+        expect(err.msg).to.eql('File must not be null.');
       }
-    ).exec();
+    );
 
     jf.filed( testPath )
     .io(
