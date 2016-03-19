@@ -237,7 +237,8 @@ function collectPlan( executer )
     // register as listner to runtime here in collectJsonFile results
     // judged *not collectedAll* , when less than one file was collected.
     if( collectedFiles.size == 0 ){
-      this.runtime.once( 'empty', function() { collectedAll(); } );
+      this.runtime.collect();
+      this.runtime.once( 'collected', function() { collectedAll(); } );
     }
 
     collectedFiles.set( fileThisTime.path() );
@@ -314,6 +315,13 @@ util.inherits( eventPlan, executePlan );
 function runtimeInformation(){
 
   let jsonFilesInProgress = new Map();
+  let collecting = false;
+
+  this.collect =
+    function(){
+      if( collecting ) throw new JsonFiledError('Collect already started');
+      collecting = true;
+    }
 
   this.addJsonFile =
     function( jsonFile ){
@@ -325,7 +333,12 @@ function runtimeInformation(){
       jsonFilesInProgress.delete( jsonFile );
       // to run collect when filesInProgress empty
       if( jsonFilesInProgress.size == 0 ) {
-        this.emit( 'empty' );
+        if( ! collecting ){
+          this.emit( 'empty' );
+        }else{
+          this.emit( 'collected' );
+          collecting = false;
+        }
       }
 
     }
