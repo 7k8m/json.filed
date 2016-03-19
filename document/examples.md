@@ -204,9 +204,9 @@
 
 ## collect.js
     var jf = require('json.filed');
-    
+
     var msg;
-    
+
     jf.filed('./data.json')
     .parallel(
       jf.filed('./data1.json').write( { msg:'hello' } ),
@@ -224,7 +224,7 @@
     .exec();
 
 ## Above script is executed as ...
-    $ node collect.js 
+    $ node collect.js
     [ { msg: 'world' }, { msg: 'hello' } ]
     $ cat data1.json
     {"msg":"hello"}
@@ -235,6 +235,34 @@
 
 ## Use in electron
 [See this repository](https://github.com/7k8m/electron-quick-start)
+
+## receive.js
+  'use strict';
+  var jf = require('json.filed');
+  var http = require('http');
+
+  var server = http.createServer();
+
+  let receive =
+    jf.event( function( receiveListener, stopListener) {
+      server.on(
+        'request',
+        function ( request, response) {
+          receiveListener( { url : request.url } );
+          response.writeHead(200);
+          response.end();
+        } );
+      server.listen(8888);
+    },
+    () => './received.json' )
+    .exec();
+
+## Above script is executed as ...
+    $ node receive.js &
+    [1] 48344
+    $ curl http://localhost:8888/hello_world
+    $ cat received.json
+    {"url":"/hello_world"}
 
 ## greeting.binary.js
     var jf = require('json.filed');
