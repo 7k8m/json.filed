@@ -240,22 +240,22 @@
     'use strict';
     var jf = require('json.filed');
     var http = require('http');
-    
+
+    let receiver =
+      jf.event( () => {}, () => './received.json' )
+      .exec();
+
     var server = http.createServer();
-    
-    let receive =
-    jf.event( function( receiveListener, stopListener) {
-      server.on(
-        'request',
-        function ( request, response) {
-          receiveListener( { url : request.url } );
-          response.writeHead(200);
-          response.end();
-        } );
-      server.listen(8888);
-    },
-    () => './received.json' )
-    .exec();
+    server.on(
+      'request',
+      function ( request, response) {
+        receiver.receive( { url : request.url } );
+
+        response.writeHead(200);
+        response.end();
+      } );
+    server.listen(8888);
+
 
 ## Above script is executed as ...
     $ node receive.js &
