@@ -11,15 +11,19 @@ jf.filed( './msg01.json' )
     .write( { msg: 'Hello json.filed Goodbye json.filed' } )
     .pass(
       () =>{
-        jf.filed([ './msg01.json', './msg02.json' ])
-        .pass( ( msgObj ) => {
-          mapper.receive( msgObj );
-        })
-        .collect( () => {
-          mapper.stop();
-        },
-        './collect_1.json')
-        .exec();
+        let sourcer =
+          jf.filed([ './msg01.json', './msg02.json' ])
+          .pass( ( msgObj ) => {
+            mapper.receive( msgObj );
+          })
+          .collect( () => {
+            mapper.stop();
+          },
+          './collect_1.json')
+          .plan();
+
+        sourcer.runtime.on('empty',() => { mapper.stop(); })
+        sourcer.exec();
       }
     ).exec();
   }
@@ -39,10 +43,9 @@ let mapper =
       count ++;
     }
   })
-  .collect(
-    () => { shuffler.stop(); },
-    './collect_2.json')
-  .exec();
+  .plan();
+mapper.runtime.on('empty',() => { shuffler.stop(); });
+mapper.exec();
 
 var c2 = 0;
 let shuffler =
@@ -58,7 +61,7 @@ let shuffler =
         obj[kv.key].push(kv.value);
       }
       return obj; },
-    './collect_3.json' )
+    './collect.json' )
   .pass( (collectedObj, filePath ) => {
     for( let word in collectedObj ){
       reducer.receive( { key: word, value: collectedObj[word] });
