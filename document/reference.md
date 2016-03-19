@@ -66,16 +66,19 @@ jf.event( function( receiveJsonListener, stopReceiveListener ) { your code to co
 ````
 ----
 
-+ `function( receiveJsonListener, stopReceiveListener ) { ... }` is where to configure eventListeners
-    + `receiveJsonListener` is a listener function to receive JSON from event.
-        + definition is `function receiveJsonListener( obj )` and obj is received JSON
++ `function( receive, stop ) { ... }` is where to configure eventListeners
+    + `receive` is a listener function to receive JSON from event.
+        + definition is `function receive( obj )` and obj is received JSON
         + calling this listener function results wring received JSON to file and continue chained executer 
-    + `stopReceiveListner` is a listener function to stop receiving JSON from event.
-        + definition is `function stopReceiveListner()`
+    + `stop` is a listener function to stop receiving JSON from event.
+        + definition is `function stop()`
         + calling this listener notify JSON.filed no more JSON will be received. 
         + without stop receiving, collect executer fail to work correctly.
 +  `function( receivedJson ) { ... }` is where to calculate file path according to received JSON object.
     + received JSON is written to the path returned from this function   
++ When `event` root executer is used, execution plan which .exec and .plan return exposes `receive` and `stop` listner functions. Refer to [receive.js] (../examples/receive.js) and [mapReduce_like.js] (../examples/mapReduce_Like.js).
+ 
+
 
 ## Child executers
 ### io
