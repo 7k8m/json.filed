@@ -76,7 +76,7 @@ jf.event( function( receiveJsonListener, stopReceiveListener ) { your code to co
         + without stop receiving, collect executer fail to work correctly.
 +  `function( receivedJson ) { ... }` is where to calculate file path according to received JSON object.
     + received JSON is written to the path returned from this function   
-+ When `event` root executer is used, execution plan which .exec and .plan return exposes `receive` and `stop` listner functions. Refer to [receive.js] (../examples/receive.js) and [mapReduce_like.js] (../examples/mapReduce_Like.js).
++ When `event` root executer is used, execution plan exposes `receive` and `stop` listner functions. The execution plan is obtained as return value from .exec and/or .plan of executers chain. Refer to [receive.js] (../examples/receive.js) and [mapReduce_like.js] (../examples/mapReduce_Like.js) for actual example.
  
 
 
