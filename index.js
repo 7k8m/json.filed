@@ -119,7 +119,7 @@ function executer( parent ){
 
  this.exec = function(){
    let plan = this.plan();
-   plan._executeFunction();
+   plan.exec();
    return plan;
  }
 
@@ -176,6 +176,8 @@ function executePlan( executeFunction ){
     function(){
       return this._nextPlan;
     }
+
+  this.exec = function() { this._executeFunction.apply( this, arguments ) };
 
 }
 
