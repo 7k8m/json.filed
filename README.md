@@ -32,3 +32,6 @@ Read and write file and so on is executed in defferred manner to make best use o
 
 # Reference
 See [this page](./document/reference.md)
+
+# Examples
+See [this page](./document/examples.md)
