@@ -117,6 +117,7 @@ function executer( parent ){
      plan._nextPlan.runtime = runtime;
 
      root.rootExec( rootPlan );
+     return rootPlan;
 
     };
 
@@ -219,41 +220,47 @@ function eventPlan( executer ){
   let thisPlan = this;
   this.receivingFileProxy = new ReceivingFileProxy();
 
+  this.receive =
+    function( receivedObject ) {
+        if( thisPlan.receivingFileProxy != null ){
+          let files = fixFiles ( thisPlan.calcFilePath( receivedObject ) , executer );
+          files.forEach( file => { thisPlan.runtime.addJsonFile( file ) } );
+          for( let file of files ){
+            saveAfterApply(
+              receivedObject,
+              file,
+              function( executeNextPlan ){
+                // no need to close filePath
+                executeNextPlan();
+              },
+              calcJb( file, executer ),
+              file,
+              thisPlan.next(),
+              executer
+            );
+          }
+        }
+      };
+
+  this.stop =
+    function() {
+      thisPlan.runtime.removeJsonFile( thisPlan.receivingFileProxy );
+      thisPlan.receivingFileProxy = null;
+    };
+
   rootPlan.call(
     this,
     function(
       eventListenerConfigurator,
       filePathCalculator ) {
 
+        this.calcFilePath = filePathCalculator;
+
         thisPlan.runtime.addJsonFile( thisPlan.receivingFileProxy );
-
         eventListenerConfigurator(
-          function( receivedObject ) {
-            if( thisPlan.receivingFileProxy != null ){
-              let files = fixFiles ( filePathCalculator( receivedObject ) , executer );
-              files.forEach( file => { thisPlan.runtime.addJsonFile( file ) } );
-              for( let file of files ){
-                saveAfterApply(
-                  receivedObject,
-                  file,
-                  function( executeNextPlan ){
-                    // no need to close filePath
-                    executeNextPlan();
-                  },
-                  calcJb( file, executer ),
-                  file,
-                  thisPlan.next(),
-                  executer
-                );
-              }
-            }
-          },
-          function() {
-            thisPlan.runtime.removeJsonFile( thisPlan.receivingFileProxy );
-            thisPlan.receivingFileProxy = null;
-          }
-        )
-
+          thisPlan.receive,
+          thisPlan.stop
+        );
     },
     this.receivingFileProxy
   )
