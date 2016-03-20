@@ -12,7 +12,7 @@ library for deferred processing of JSON file
     + and so on.
 + when
     + Applications needs to store data, but DBMS is not the case.
-    + Server haldling JSON
+    + Server handling JSON
     + Scripts handling JSON files on a node
     + and so on.
 
