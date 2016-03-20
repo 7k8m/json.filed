@@ -265,7 +265,7 @@
     {"url":"/hello_world"}
 
 ## Map Reduce like
-See [script in examples](examples/mapReduce_Like.js)
+See [script in examples](../examples/mapReduce_Like.js)
 
 ## Above script executed as ...
     $ node mapReduce_Like.js 
