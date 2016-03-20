@@ -237,6 +237,7 @@ httpServer.listen( 8080 );
     + `executer` is an event emitter and can be used in error handling
 + `collectFilePath` is file path where collected jsons are wriiten to
 
+
 # Chaining
 ````
 jf.filed( file )
@@ -248,6 +249,14 @@ jf.filed( file )
 ````
 
 executers can be chained as above.
+
+
+# Executer and Plan
++ To start processsing, call `.exec()` function of tail executer.
++ When `.exec()` function is called, *execution plans* for executers are internally constructed.
++ `.exec()` function return execution plan of root executer.
++ `.plan()` function of executer instead of `.exec()` function return execution plan just constructed but not started.
++ execution plan exposes `.exec()` function and call `exec()` of execution plan start process.
 
 # Error handling
 ## Error listener of executer
