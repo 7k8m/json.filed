@@ -168,8 +168,6 @@ function executer( parent ){
 
 function executePlan( executeFunction ){
 
-  this._executeFunction = executeFunction;
-
   this._nextPlan = null;
 
   this.next =
@@ -177,7 +175,7 @@ function executePlan( executeFunction ){
       return this._nextPlan;
     }
 
-  this.exec = function() { this._executeFunction.apply( this, arguments ) };
+  this.exec = function() { executeFunction.apply( this, arguments ) };
 
 }
 
@@ -462,7 +460,7 @@ function createChildPlan( executer ){
 
 function createFiledPlan( executer ){
   return createFilePlanCore(
-    ( filePath, plan ) => plan.next()._executeFunction( filePath ),
+    ( filePath, plan ) => plan.next().exec( filePath ),
     executer
   );
 }
@@ -477,7 +475,7 @@ function createNewFilePlan( executer ){
         { flag: 'wx' },
         function( err ){
           if( err ) raiseError( executer, 'Failed to create new File.', err );
-          else plan.next()._executeFunction( jsonFile );
+          else plan.next().exec( jsonFile );
         }
       );
     },
@@ -542,7 +540,7 @@ function createDownloadPlan( executer ){
         .pass(
           function(json, filePath ){
             thisPlan.runtime.addJsonFile( fixedFile );
-            thisPlan.next()._executeFunction( fixedFile );
+            thisPlan.next().exec( fixedFile );
           },
           err => { executer.emit( err ) }
         ).exec();
@@ -584,7 +582,7 @@ function createRootsPlan( rootsExecuter ){
         plan._nextPlan = this._nextPlan;
         plan.runtime = this.runtime;
 
-        plan._executeFunction();
+        plan.exec();
 
       }
     },
@@ -898,7 +896,7 @@ function input( filePath, userProcess, jb, nextPlan ) {
     userProcess,
     jb,
     nextPlan,
-    () => { if( nextPlan ) nextPlan._executeFunction(filePath); });
+    () => { if( nextPlan ) nextPlan.exec(filePath); });
 }
 
 function output( filePath, userProcess, jb, nextPlan ){
@@ -1285,7 +1283,7 @@ function applyCalledbackProcess( process, json, file, closeFile, jb, filePath, n
         );
 
       } else {
-        nextPlan._executeFunction( filePath );
+        nextPlan.exec( filePath );
       }
     },
     normalized._plannedExecuter
@@ -1313,7 +1311,7 @@ function applyProcess( process, json, file, closeFile, jb, filePath, postProcess
     );
 
   }else{
-    closeFile( function(){ nextPlan._executeFunction( filePath )} );
+    closeFile( function(){ nextPlan.exec( filePath )} );
   }
 
 }
@@ -1348,7 +1346,7 @@ function saveCore(  data,
         }else{
           closeFile(
             function() {
-              if( nextPlan ) nextPlan._executeFunction(filePath);
+              if( nextPlan ) nextPlan.exec(filePath);
             }
           );//file is closed in afterSaved, if needed.
         }
@@ -1373,13 +1371,13 @@ function fsCopy( copied2Path, file, closeFile, jb, originalJsonFile, nextPlan, e
       function(err){
         if(err) raiseError( executer, "Failed to copy from " + originalJsonFile.path() + " to " + newJsonFile.path() ,err);
         else {
-          if( nextPlan ) nextPlan._executeFunction( newJsonFile ) ;
+          if( nextPlan ) nextPlan.exec( newJsonFile ) ;
         }
       }
     );
   }
 
-  if( nextPlan ) nextPlan._executeFunction( originalJsonFile ) ;
+  if( nextPlan ) nextPlan.exec( originalJsonFile ) ;
 
 }
 
@@ -1411,28 +1409,28 @@ function fsLink( linkPath, file, closeFile, jb, originalJsonFile, nextPlan, exec
       function(err){
         if(err) raiseError( executer, "Failed to link from " + originalJsonFile.path() + " to " + newJsonFile.path(),err);
         else {
-          if( nextPlan ) nextPlan._executeFunction( newJsonFile );
+          if( nextPlan ) nextPlan.exec( newJsonFile );
         }
       }
     );
   }
 
-  if( nextPlan ) nextPlan._executeFunction( originalJsonFile );
+  if( nextPlan ) nextPlan.exec( originalJsonFile );
 
 }
 
 function passPostProcess( result, file, closeFile, jb, originalFilePath, nextPlan ){
-  if( nextPlan ) nextPlan._executeFunction( originalFilePath );
+  if( nextPlan ) nextPlan.exec( originalFilePath );
 }
 
 function filterPostProcess( result, file, closeFile, jb, originalJsonFile , nextPlan ){
   if( ! result ) nextPlan.runtime.removeJsonFile( originalJsonFile);
-  if( result && nextPlan ) nextPlan._executeFunction( originalJsonFile );
+  if( result && nextPlan ) nextPlan.exec( originalJsonFile );
 }
 
 function httpServePostProcess( urlPathName, file, closeFile, jb, originalJsonFile, nextPlan ){
   httpServeJson( urlPathName, originalJsonFile );
-  if( nextPlan ) nextPlan._executeFunction( originalJsonFile );
+  if( nextPlan ) nextPlan.exec( originalJsonFile );
 }
 
 function httpServeJson( urlPathName, localJsonFile ){
