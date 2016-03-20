@@ -257,7 +257,7 @@ executers can be chained as above.
 + `.exec()` function return execution plan of root executer.
 + `.plan()` function of executer instead of `.exec()` function return execution plan just constructed but not started.
 + execution plan exposes `.runtime`. `.runtime` is an event emitter and possible to listen event emmited from runtime. See examples in [mapReduce_Like.js](../examples/mapReduce_Like.js) 
-+ execution plan exposes `.exec()` function and call `exec()` of execution plan start process.
++ execution plan also exposes `.exec()` function and call `exec()` of execution plan start process.
 
 # Error handling
 ## Error listener of executer
