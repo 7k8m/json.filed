@@ -254,7 +254,7 @@ executers can be chained as above.
 # Executer and Plan
 + To start processsing, call `.exec()` function of tail executer.
 + When `.exec()` function is called, *execution plans* for executers are internally constructed.
-+ `.exec()` function return execution plan of root executer.
++ `.exec()` function return execution plan correespond to root executer.
 + `.plan()` function of executer instead of `.exec()` function return execution plan just constructed but not started.
 + execution plan exposes `.runtime`. `.runtime` is an event emitter and possible to listen event emmited from runtime. See examples in [mapReduce_Like.js](../examples/mapReduce_Like.js) 
 + execution plan also exposes `.exec()` function and call `exec()` of execution plan start process.
