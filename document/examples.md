@@ -264,6 +264,14 @@
     $ cat received.json
     {"url":"/hello_world"}
 
+## Map Reduce like
+See [script in examples](examples/mapReduce_Like.js)
+
+## Above script executed as ...
+    $ node mapReduce_Like.js 
+    $ cat answer.json 
+    [{"key":"World","value":2},{"key":"Hello","value":2},{"key":"Bye","value":1},{"key":"json.filed","value":2},{"key":"Goodbye","value":1}]
+
 ## greeting.binary.js
     var jf = require('json.filed');
 
