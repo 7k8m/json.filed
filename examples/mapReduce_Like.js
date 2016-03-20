@@ -3,27 +3,28 @@ let jf = require('json.filed');
 let path = require('path');
 
 var count = 0;
-jf.filed( './msg01.json' )
-.write( { msg: 'Hello World Bye World' } )
-.pass(
-  () => {
-    jf.filed( './msg02.json' )
-    .write( { msg: 'Hello json.filed Goodbye json.filed' } )
-    .pass(
-      () =>{
-        let sourcer =
-          jf.filed([ './msg01.json', './msg02.json' ])
-          .pass( ( msgObj ) => {
-            mapper.receive( msgObj );
-          })
-          .plan();
+let preparer =
+  jf.filed( './msg01.json' )
+  .write( { msg: 'Hello World Bye World' } )
+  .pass(
+    () => {
+      jf.filed( './msg02.json' )
+      .write( { msg: 'Hello json.filed Goodbye json.filed' } )
+      .pass(
+        () =>{
+          sourcer.exec();
+        }
+      ).exec();
+    }
+  ).plan();
 
-        sourcer.runtime.on('empty',() => { mapper.stop(); })
-        sourcer.exec();
-      }
-    ).exec();
-  }
-).exec();
+let sourcer =
+  jf.filed([ './msg01.json', './msg02.json' ])
+  .pass( ( msgObj ) => {
+    mapper.receive( msgObj );
+  })
+  .plan();
+sourcer.runtime.on('empty',() => { mapper.stop(); });
 
 var c1 = 0;
 let mapper =
@@ -81,3 +82,5 @@ let reducer =
   )
   .collect( obj => obj, './answer.json' )
   .exec();
+
+preparer.exec();
