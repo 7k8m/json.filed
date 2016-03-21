@@ -41,4 +41,4 @@ Result :
     {"msg":"good after noon"}
 
 [Too easy for you ? Proceed next ariticle 👍](./how2use_2.md)<br/>
-[Reference ...](/reference.md)
+[Reference ...](./reference.md)
