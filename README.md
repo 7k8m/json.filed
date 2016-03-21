@@ -4,9 +4,6 @@ library for deferred processing of JSON file
 ## Use case
 + what
     + read, write and process JSON files
-        + JSON from file
-        + JSON from url
-        + JSON from listened event
     + share JSON files between nodes
     + collect contents of multiple JSON file into a JSON file.
     + and so on.
@@ -14,6 +11,10 @@ library for deferred processing of JSON file
     + Applications needs to store data, but DBMS is not the case.
     + Server handling JSON
     + Scripts handling JSON files on a node
+    + Handle JSON from several sources 
+        + JSON from file
+        + JSON from url
+        + JSON from listened event
     + and so on.
 
 
