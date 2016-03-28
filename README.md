@@ -1,5 +1,5 @@
 # json.filed
-library for deferred processing of JSON file
+Framework for deferred processing of JSON file
 
 ## Use case
 + what
@@ -11,7 +11,7 @@ library for deferred processing of JSON file
     + Applications needs to store data, but DBMS is not the case.
     + Server handling JSON
     + Scripts handling JSON files on a node
-    + Handle JSON from several sources 
+    + Handle JSON from several sources
         + JSON from file
         + JSON from url
         + JSON from listened event
