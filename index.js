@@ -308,7 +308,7 @@ function eventPlan( executer ){
 util.inherits( notexecPlan, executePlan );
 util.inherits( collectPlan, executePlan );
 util.inherits( rootPlan, executePlan );
-util.inherits( eventPlan, executePlan );
+util.inherits( eventPlan, rootPlan );
 
 function runtimeInformation(){
 
