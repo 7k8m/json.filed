@@ -9,6 +9,7 @@ mocha test/unit/testNested.js
 mocha test/unit/testCopy.js
 mocha test/unit/testFilter.js
 mocha test/unit/testError.js
+mocha test/unit/testError_nullRootExecutersForRootsExecuter.js
 mocha test/unit/testCalledback.js
 mocha test/unit/testCalledback_more.js
 mocha test/unit/testDownload.js
