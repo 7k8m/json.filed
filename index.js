@@ -1542,6 +1542,7 @@ var defaultErrorListener = function ( error ){
   throw error; //defaut Listener does not adohere keep running.
 }
 
+//return emitter after adding error listner 
 function addErrorListener(emitter, errListener){
 
   emitter.on(
