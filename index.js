@@ -38,6 +38,7 @@ jf.filed =
       if( file != null ){
         return addErrorListener( new filedExecuter (file), errListener );
       } else {
+        //error when file is null.
         if( errListener == null ) errListener = defaultErrorListener;
         errListener( new JsonFiledError( 'File must not be null.' , null) );
       }
@@ -48,6 +49,7 @@ jf.newFile =
     if( file != null ) {
       return addErrorListener( new newFileExecuter (file), errListener );
     } else {
+      //error when file is null
       if( errListener == null ) errListener = defaultErrorListener;
       errListener( new JsonFiledError( 'File must not be null.' , null) );
     }
@@ -58,6 +60,7 @@ jf.download =
     if( file != null  && url != null){
       return addErrorListener( new downloadExecuter (url, file), errListener );
     } else {
+      //error when file or url is null
       if( errListener == null ) errListener = defaultErrorListener;
       if( file == null ){
         errListener( new JsonFiledError( 'File must not be null.' , null) );
@@ -72,6 +75,7 @@ jf.roots =
     if( rootExecuter != null) {
       return addErrorListener( new rootsExecuter(rootExecuters), errListener);
     } else {
+      //error when rootExecuter is null
       if( errListener == null ) errListener = defaultErrorListener;
       errListener( new JsonFiledError( 'rootsExecuters must not be null.' , null) );
     }
@@ -94,6 +98,7 @@ jf.event =
       );
 
     }else{
+      //error when fileNameCalculator is null
       if( errListener == null ) errListener = defaultErrorListener;
       errListener( new JsonFiledError( 'fileNameCalculator must not be null.' , null) );
     }
@@ -1542,7 +1547,7 @@ var defaultErrorListener = function ( error ){
   throw error; //defaut Listener does not adohere keep running.
 }
 
-//return emitter after adding error listner 
+//return emitter after adding error listner
 function addErrorListener(emitter, errListener){
 
   emitter.on(
