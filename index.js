@@ -72,10 +72,10 @@ jf.download =
 
 jf.roots =
   function ( rootExecuters, errListener ){
-    if( rootExecuter != null) {
+    if( rootExecuters != null) {
       return addErrorListener( new rootsExecuter(rootExecuters), errListener);
     } else {
-      //error when rootExecuter is null
+      //error when rootExecuters is null
       if( errListener == null ) errListener = defaultErrorListener;
       errListener( new JsonFiledError( 'rootsExecuters must not be null.' , null) );
     }
