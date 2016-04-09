@@ -1,6 +1,9 @@
 # json.filed
 Framework for deferred processing of JSON file
 
+## Core concept
+JSON file as variable in programs run on node.js
+
 ## Use case
 + what
     + read, write and process JSON files
