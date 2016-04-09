@@ -2,7 +2,7 @@
 Framework for deferred processing of JSON file
 
 ## Core concept
-JSON file as variable in programs which run on node.js
+JSON file as variable in program which runs on node.js
 
 ## Use case
 + what
