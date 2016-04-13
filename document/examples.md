@@ -267,6 +267,9 @@
 ## Map Reduce like
 See [script in examples](../examples/mapReduce_Like.js)
 
+## Use spark-node
+See [script in examples](../examples/useSparkNode.js)
+
 ## Above script executed as ...
     $ node mapReduce_Like.js 
     $ cat answer.json 
