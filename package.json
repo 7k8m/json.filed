@@ -1,6 +1,6 @@
 {
   "name": "json.filed",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "framework for deferred processing of JSON file",
   "main": "index.js",
   "files": ["index.js"],
@@ -8,8 +8,10 @@
     "file",
     "json",
     "deferred processing",
-    "framework"
+    "framework",
+    "IoT"
   ],
+  "homepage":"http://7k8m.github.io/json.filed/",
   "author": "Tomohito Nakayama <nkym.tmht@hotmail.co.jp>",
   "license": "BSD-3-Clause",
   "devDependencies": {
