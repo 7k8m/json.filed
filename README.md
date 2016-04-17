@@ -13,6 +13,7 @@ JSON file as variable in program which runs on node.js
 + when
     + Applications needs to store data, but DBMS is not the case.
     + Server handling JSON
+    + IoT device write and read JSON
     + Scripts handling JSON files on a node
     + Handle JSON from several sources
         + JSON from file
