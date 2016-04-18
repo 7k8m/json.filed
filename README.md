@@ -1,5 +1,5 @@
 # json.filed
-Framework for processing of JSON file
+Framework for processing JSON file
 
 ## Core concept
 JSON file as variable in program which runs on node.js
