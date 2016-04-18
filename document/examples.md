@@ -271,11 +271,11 @@ See [script in examples](../examples/mapReduce_Like.js)
 See [script in examples](../examples/useSparkNode.js)
 
 ## Use Azure IoT Hub
-See [script in examples](../simple_sample_device_json.filed.js)
+See [script in examples](../useAzureIoTHub.js)
 
 ## Above script executed as ...
-    $ node mapReduce_Like.js 
-    $ cat answer.json 
+    $ node mapReduce_Like.js
+    $ cat answer.json
     [{"key":"World","value":2},{"key":"Hello","value":2},{"key":"Bye","value":1},{"key":"json.filed","value":2},{"key":"Goodbye","value":1}]
 
 ## greeting.binary.js
