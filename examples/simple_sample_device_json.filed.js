@@ -6,10 +6,10 @@
 
 'use strict';
 
-var Protocol = require('azure-iot-device-amqp').Amqp;
+//var Protocol = require('azure-iot-device-amqp').Amqp;
 // Uncomment one of these transports and then change it in fromConnectionString to test other transports
-// var Protocol = require('azure-iot-device-amqp-ws').AmqpWs;
-// var Protocol = require('azure-iot-device-http').Http;
+//var Protocol = require('azure-iot-device-amqp-ws').AmqpWs;
+var Protocol = require('azure-iot-device-http').Http;
 // var Protocol = require('azure-iot-device-mqtt').Mqtt;
 var Client = require('azure-iot-device').Client;
 var Message = require('azure-iot-device').Message;
@@ -57,15 +57,24 @@ var connectCallback = function (err) {
       ( err ) => { console.log(err) } )
     .pass(
       ( result ) => {
+
+        let messages = [];
+
         for( let item of result.items ){
           var data = JSON.stringify(item);
           var message = new Message(data);
           message.properties.add('myproperty', 'myvalue');
-          console.log('Sending message: ' + message.getData());
-          client.sendEvent(message, printResultFor('send'));
+          messages.push(message);
+
         }
 
-        //client.close( ( err ) => { if( ! err ) { console.log('closed.') } } );
+        client.sendEventBatch(messages,
+          () => {
+            client.close(
+              ( err ) => { if( ! err ) { console.log('closed.') } }
+            );
+          }
+        );
 
       }
     ).exec();
