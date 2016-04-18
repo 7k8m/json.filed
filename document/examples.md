@@ -55,11 +55,11 @@
     {"msg":"./😄.json"}
 
 ## linked_hello.js
-var jf = require('json.filed');
-
-jf.filed('./hello.json')
-.io( { msg: "hello" } ) // write 1st greeting to data.json
-.link( 'linked_hello.json' ).exec();
+    var jf = require('json.filed');
+    
+    jf.filed('./hello.json')
+    .io( { msg: "hello" } ) // write 1st greeting to data.json
+    .link( 'linked_hello.json' ).exec();
 
 
 ## Above script is executed as ...
