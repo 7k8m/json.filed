@@ -65,7 +65,7 @@ var connectCallback = function (err) {
           client.sendEvent(message, printResultFor('send'));
         }
 
-        client.close( () => { console.log('closed.') } );
+        //client.close( ( err ) => { if( ! err ) { console.log('closed.') } } );
 
       }
     ).exec();
