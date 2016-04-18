@@ -55,14 +55,15 @@
     {"msg":"./😄.json"}
 
 ## linked_hello.js
-    var jf = require('json.filed');
+var jf = require('json.filed');
 
-    jf.filed(['./hello.json','./linked_hello.json'])
-    .io( ( obj,filePath ) => { msg: filePath } ).exec();
+jf.filed('./hello.json')
+.io( { msg: "hello" } ) // write 1st greeting to data.json
+.link( 'linked_hello.json' ).exec();
 
 
 ## Above script is executed as ...
-    $ node chained_greeting.js
+    $ node linked_hello.js
     $ cat hello.json
     {"msg":"hello"}
     $ cat linked_hello.json
