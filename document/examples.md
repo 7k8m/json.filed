@@ -272,7 +272,7 @@ See [script in examples](../examples/mapReduce_Like.js)
 See [script in examples](../examples/useSparkNode.js)
 
 ## Use Azure IoT Hub
-See [script in examples](../examples/useAzureIoTHub.js)
+See [sending to Azure IoT Hub](../examples/useAzureIoTHub.js) and [receiving from Azure IoT Hub] (../examples/useAzureIoTHub_2.js)
 
 ## Above script executed as ...
     $ node mapReduce_Like.js
