@@ -270,6 +270,9 @@ See [script in examples](../examples/mapReduce_Like.js)
 ## Use spark-node
 See [script in examples](../examples/useSparkNode.js)
 
+## Use Azure IoT Hub
+See [script in examples](../simple_sample_device_json.filed.js)
+
 ## Above script executed as ...
     $ node mapReduce_Like.js 
     $ cat answer.json 
