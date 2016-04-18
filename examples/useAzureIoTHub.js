@@ -83,11 +83,3 @@ var connectCallback = function (err) {
 };
 
 client.open(connectCallback);
-
-// Helper function to print results in the console
-function printResultFor(op) {
-  return function printResult(err, res) {
-    if (err) console.log(op + ' error: ' + err.toString());
-    if (res) console.log(op + ' status: ' + res.constructor.name);
-  };
-}
