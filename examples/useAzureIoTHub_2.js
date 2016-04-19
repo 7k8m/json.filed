@@ -76,6 +76,7 @@ var deviceMetaData = {
     }]
 };
 
+//receiver writes received JSON to file
 let receiver =
   jf.event( () => {}, () => './' + Date.now() + '.json' )
   .exec();
@@ -92,6 +93,8 @@ client.open(function (err, result) {
 
       try {
         var command = JSON.parse(msg.getData());
+
+        //let receiver to receive command JSON
         receiver.receive(command);
 
         client.complete(msg, printErrorFor('complete'));

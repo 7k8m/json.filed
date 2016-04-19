@@ -45,6 +45,7 @@ var connectCallback = function (err) {
       client.connect(connectCallback);
     });
 
+    //download repositories information from github
     jf.download(
       {
         method: "GET",
@@ -68,6 +69,7 @@ var connectCallback = function (err) {
 
         }
 
+        //Send to Azure IoTHub
         client.sendEventBatch(messages,
           () => {
             client.close(
