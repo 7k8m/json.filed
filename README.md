@@ -32,7 +32,7 @@ JSON file as variable in program which runs on node.js
 [how to use ...](./document/how2use.md)
 
 # Deferred
-Read and write file and so on is executed in [deferred manner](./document/HowDeferred.md) to make best use of node.js.
+Reading and writing file and so on are executed in [deferred manner](./document/HowDeferred.md) to make best use of node.js.
 
 # Reference
 See [this page](./document/reference.md)
