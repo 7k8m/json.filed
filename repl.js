@@ -10,4 +10,10 @@ See the accompanying LICENSE file for terms.
 const jf = require('./index.js')
 const repl = require('repl');
 
-repl.start('> ').context.jf = jf;
+const replServer = repl.start('> ');
+
+replServer.context.jf = jf;
+
+replServer.on('reset', (context) => {
+  context.jf = jf;
+});
