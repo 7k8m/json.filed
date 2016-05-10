@@ -1,6 +1,6 @@
 {
   "name": "json.filed",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "framework for processing of JSON file",
   "main": "index.js",
   "files": ["index.js","repl.js"],
