@@ -8,12 +8,12 @@ JSON file as variable in program which runs on node.js
 + what
     + read, write and process JSON files
     + share JSON files between nodes
-    + collect contents of multiple JSON file into a JSON file.
+    + collect contents of multiple JSON files into a JSON file.
     + and so on.
 + when
-    + Applications needs to store data, but DBMS is not the case.
+    + Applications need to store data, but DBMS is not the case.
     + Server handling JSON
-    + IoT device write and read JSON
+    + IoT device writes and reads JSON
     + Scripts handling JSON files on a node
     + Handle JSON from several sources
         + JSON from file
@@ -32,7 +32,7 @@ JSON file as variable in program which runs on node.js
 [how to use ...](./document/how2use.md)
 
 # Deferred
-Read and write file and so on is executed in [deferred manner](./document/HowDeferred.md) to make best use of node.js.
+Reading and writing file and so on are executed in [deferred manner](./document/HowDeferred.md) to make best use of node.js.
 
 # Reference
 See [this page](./document/reference.md)
