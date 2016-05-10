@@ -1,9 +1,10 @@
 {
   "name": "json.filed",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "framework for processing of JSON file",
   "main": "index.js",
-  "files": ["index.js"],
+  "files": ["index.js","repl.js"],
+  "bin" : { "json.filed" : "./repl.js" },
   "keywords": [
     "file",
     "json",
