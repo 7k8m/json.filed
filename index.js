@@ -1447,22 +1447,34 @@ jf.httpServer = function(){
   if( httpServerObj != null ) return httpServerObj;
 
   httpServerObj = http.createServer( (request, response) => {
-    let urlpathname = URL.parse(request.url).pathname;
-    if( servedJsonPathMap.has( urlpathname ) ) {
-      response.writeHead(200, {'Content-Type': 'application/json'});
 
-      jf.filed( servedJsonPathMap.get( urlpathname ) )
-      .pass(
-        function( json ){
-          response.end( JSON.stringify( json ) );
-        }
-      )
-      .exec();
-
+    if( request.method == 'GET'){
+      handleGetMethod( request, response );
     }else{
-      response.writeHead(404);
+      response.writeHead(405);
       response.end();
     }
+
+    function handleGetMethod( request, response ){
+      
+      let urlpathname = URL.parse(request.url).pathname;
+      if( servedJsonPathMap.has( urlpathname ) ) {
+        response.writeHead(200, {'Content-Type': 'application/json'});
+
+        jf.filed( servedJsonPathMap.get( urlpathname ) )
+        .pass(
+          function( json ){
+            response.end( JSON.stringify( json ) );
+          }
+        )
+        .exec();
+
+      }else{
+        response.writeHead(404);
+        response.end();
+      }
+    }
+
   });
 
   return httpServerObj;
